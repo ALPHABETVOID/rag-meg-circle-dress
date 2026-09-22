@@ -8,6 +8,11 @@
 <style>
 :root{color-scheme:dark;--pink:#f2b8c6}*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#fff;font-family:'Courier New',monospace;overscroll-behavior:none}button{font:inherit;color:inherit;cursor:pointer}button:focus-visible{outline:1px solid var(--pink);outline-offset:5px}canvas{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}#ui{position:fixed;inset:0;pointer-events:none}.hidden{display:none!important}#title{position:absolute;top:max(12%,calc(env(safe-area-inset-top) + 36px));width:100%;text-align:center;font-size:clamp(40px,10vw,66px);line-height:.92;letter-spacing:.045em}#title small{display:block;font-size:13px;margin-top:20px;letter-spacing:.26em;font-weight:normal}#menu{position:absolute;top:38%;width:100%;text-align:center;pointer-events:auto}.item{display:block;min-width:175px;min-height:48px;margin:8px auto;border:1px solid transparent;background:#000;font-size:15px;padding:12px 24px}.item:hover{border-color:#777}#msg{position:absolute;top:max(17%,calc(env(safe-area-inset-top) + 84px));left:50%;transform:translateX(-50%);width:min(87%,610px);text-align:center;font-size:clamp(13px,3.4vw,16px);line-height:1.65;white-space:pre-line;opacity:0;transition:opacity .2s;text-shadow:0 2px 9px #000;z-index:4}#task{position:absolute;top:max(25px,calc(env(safe-area-inset-top) + 12px));left:22px;right:88px;font-size:12px;line-height:1.5;color:#bbb;max-width:460px}#chapter{display:block;color:#f2b8c6;font-size:10px;letter-spacing:.12em;margin-bottom:5px}#area{display:block;font-size:10px;letter-spacing:.18em;color:#777;margin-bottom:9px}#atlas{position:absolute;right:75px;top:max(12px,env(safe-area-inset-top));background:#0009;border:0;min-height:44px;pointer-events:auto}#hop{right:102px;font-size:12px}#routes{position:absolute;inset:12% 5% 17%;overflow:auto;background:#080b13f5;border:1px solid #aaa;padding:22px;pointer-events:auto;z-index:10}#routes button{background:#161b29;border:1px solid #666;padding:12px;margin:5px;min-height:44px}#routes p{font-size:14px;line-height:1.6}#pause{position:absolute;right:12px;top:max(12px,env(safe-area-inset-top));min-width:55px;min-height:44px;background:#0009;border:0;font-size:12px;pointer-events:auto}#hint{position:absolute;bottom:max(24px,calc(env(safe-area-inset-bottom) + 15px));width:100%;text-align:center;color:#999;font-size:12px;padding:0 18px}#settings{position:absolute;top:34%;left:50%;transform:translateX(-50%);width:min(86%,370px);background:#000;border:1px solid #666;padding:22px;text-align:center;pointer-events:auto;z-index:8}#settings p{font-size:12px;color:#999;line-height:1.6}#settings button{display:block;background:none;border:0;min-height:48px;width:100%;font-size:14px}#touch{display:none;position:absolute;left:0;right:0;bottom:max(18px,calc(env(safe-area-inset-bottom) + 8px));height:66px;pointer-events:none}.touch-button{position:absolute;bottom:0;width:62px;height:62px;border:1px solid #777;border-radius:50%;background:#000b;font-size:23px;pointer-events:auto;touch-action:none;user-select:none}#left{left:20px}#right{left:96px}#poke{right:20px;width:70px;font-size:12px}.pressed{border-color:#f2b8c6;background:#332128}.edge{position:absolute;top:58%;color:#777;font-size:20px}#west{left:12px}#east{right:12px}@media(pointer:coarse),(max-width:720px){#touch.game-on{display:block}#hint{bottom:max(100px,calc(env(safe-area-inset-bottom) + 88px));font-size:11px}#task{font-size:11px;left:18px}#msg{font-size:13px}#title{top:14%}}@media(prefers-reduced-motion:reduce){#msg{transition:none}}
 .audio-level{display:flex;align-items:center;justify-content:space-between;gap:18px;font-size:12px;margin:17px 0;color:#bbb}.audio-level input{width:65%;accent-color:#f2b8c6}#settings{top:24%}@media(max-height:520px){#settings{top:8%;max-height:85%;overflow:auto}}
+
+/* Keep narrative text separate from the quest header and eliminate blurred shadows. */
+#msg{top:max(23%,calc(env(safe-area-inset-top) + 140px));left:6%;transform:none;width:88%;max-width:610px;margin-left:max(0px,calc(44% - 305px));padding:12px 16px;background:#080b13f2;border-radius:3px;text-shadow:none;font-size:15px;line-height:1.65;transition:none}
+#task{right:145px}#hint{color:#ccc;text-shadow:none;line-height:1.5}
+@media(max-height:520px){#msg{top:26%;left:23%;width:54%;margin-left:0;font-size:13px;padding:8px 12px;line-height:1.35}#task{max-width:220px;font-size:10px}#chapter,#area{font-size:9px}}
 </style>
 </head>
 <body>
@@ -30,6 +35,7 @@ let WORLD=10700;const COLS=13,ROWS=7,cloth=[],seams=[],keys=new Set(),movePointe
 let W=innerWidth,H=innerHeight,floor=H*.72,camera=0,mode='menu',started=false,grab=null,pendingTap=null,time=0,lastTime=0,accumulator=0,stars=[],focus=null,messageUntil=0,messageTimer=0,menuTimer=0;
 let pose=null, soundOn=true,reduced=matchMedia('(prefers-reduced-motion: reduce)').matches,audioContext=null;
 const story={metGreg:false,absorbed:false,wet:false,absorb:0,ended:false,box:false,pebble:false,bell:false,dried:false,elsewhere:false,orb:false,boundary:false,homeVisits:0,dressFound:false,bureau:false,radio:false,rested:false,quests:0,pose:null};
+const freshStory={...story};
 const discoveries=new Set();
 const SAVE_KEY="rag-meg-circle-dress-save-v3";
 function saveGame(){try{localStorage.setItem(SAVE_KEY,JSON.stringify({story:{...story,realm,position:cloth.length?center():300},discoveries:[...discoveries],pebbleX}))}catch{}}
@@ -73,7 +79,7 @@ const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 function line(a,b,c,d){ctx.beginPath();ctx.moveTo(a,b);ctx.lineTo(c,d);ctx.stroke()}
 function ellipse(a,b,c,d,fill=false){ctx.beginPath();ctx.ellipse(a,b,c,d,0,0,Math.PI*2);fill?ctx.fill():ctx.stroke()}
 function center(){return cloth.reduce((s,p)=>s+p.x,0)/cloth.length}
-function say(text,duration=4200){clearTimeout(messageTimer);$('#msg').textContent=text;$('#msg').style.opacity=1;messageUntil=performance.now()+duration;messageTimer=setTimeout(()=>{$('#msg').style.opacity=0;messageUntil=0},duration)}
+function say(text,duration=4200){duration=Math.max(duration,9000,Math.min(22000,text.length*65));clearTimeout(messageTimer);$('#msg').textContent=text;$('#msg').style.opacity=1;messageUntil=performance.now()+duration;messageTimer=setTimeout(()=>{$('#msg').style.opacity=0;messageUntil=0},duration)}
 function quietMessage(){clearTimeout(messageTimer);$('#msg').style.opacity=0;messageUntil=0}
 // Original sixteen-bar void-house loop. Audio-clock scheduling keeps the groove
 // continuous across title, settings and play, without downloads or audio assets.
@@ -148,7 +154,7 @@ document.addEventListener('click',e=>{if(e.target.closest('button')&&e.target.id
 document.addEventListener('visibilitychange',()=>{if(!audioContext)return;if(document.hidden){clearInterval(musicTimer);musicTimer=null;audioContext.suspend().catch(()=>{})}else if(soundOn)audioReady()});
 function makeStars(){let seed=91;const rand=()=>((seed=Math.imul(seed,1664525)+1013904223|0)>>>0)/4294967296;stars=Array.from({length:330},()=>({x:rand()*WORLD,y:rand()*.62,r:rand()<.09?1.15:.55,phase:rand()*7}))}
 function resetCloth(cx=300){cloth.length=0;seams.length=0;for(let j=0;j<ROWS;j++)for(let i=0;i<COLS;i++){const px=cx-48+i*8,py=floor-40+j*5;cloth.push({x:px,y:py,ox:px,oy:py,row:j});if(i)seams.push([j*COLS+i-1,j*COLS+i,8]);if(j)seams.push([(j-1)*COLS+i,j*COLS+i,5]);if(i&&j)seams.push([(j-1)*COLS+i-1,j*COLS+i,Math.hypot(8,5)]);if(i<COLS-1&&j)seams.push([(j-1)*COLS+i+1,j*COLS+i,Math.hypot(8,5)])}}
-function resize(){const oldFloor=floor;W=innerWidth;H=innerHeight;floor=H*.72;const dpr=Math.min(devicePixelRatio||1,2);canvas.width=Math.round(W*dpr);canvas.height=Math.round(H*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);for(const p of cloth){p.y+=floor-oldFloor;p.oy+=floor-oldFloor}camera=clamp(camera,0,Math.max(0,WORLD-W));if(!started){camera=clamp(center()-W*.5,0,WORLD-W)}grab=null;pendingTap=null;clearMovement()}
+function resize(){const oldFloor=floor;W=innerWidth;H=innerHeight;floor=H*.72;const dpr=Math.min(devicePixelRatio||1,3);canvas.width=Math.round(W*dpr);canvas.height=Math.round(H*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);for(const p of cloth){p.y+=floor-oldFloor;p.oy+=floor-oldFloor}camera=clamp(camera,0,Math.max(0,WORLD-W));if(!started){camera=clamp(center()-W*.5,0,WORLD-W)}grab=null;pendingTap=null;clearMovement()}
 function clearMovement(){keys.clear();movePointers.clear();document.querySelectorAll('.pressed').forEach(b=>b.classList.remove('pressed'))}
 function direction(){const values=[...movePointers.values()];return ((keys.has('arrowright')||keys.has('d')||values.includes(1))?1:0)-((keys.has('arrowleft')||keys.has('a')||values.includes(-1))?1:0)}
 function clothStep(){if(story.dressFound&&mode==='game'&&!grab){dressPhysics();return}const dir=mode==='game'?direction():0;if(dir||grab?.moved){pose=null;story.pose=null}const damp=story.wet?.95:.965;for(const p of cloth){const vx=(p.x-p.ox)*damp,vy=(p.y-p.oy)*.98;p.ox=p.x;p.oy=p.y;p.x+=vx;p.y+=vy+(story.wet?.34:.28)}
@@ -191,7 +197,7 @@ function interact(id){if(mode!=='game')return;audioReady();const o=objects.find(
  updateHUD();
 }
 function stickPerson(cx,g,scale=1,arms=false){ctx.save();ctx.translate(cx,g);ctx.scale(scale,scale);ctx.lineWidth=1.7;ellipse(0,-148,8,8);ctx.strokeRect(-7,-136,14,70);line(-4,-66,-11,0);line(4,-66,11,0);line(-7,-119,-27,arms?-98:-78);line(7,-119,29,arms?-130:-78);ctx.restore()}
-function text(s,a,b,size=11,color='#888',align='center'){ctx.font=size+'px Courier New';ctx.textAlign=align;ctx.fillStyle=color;ctx.fillText(s,a,b);ctx.fillStyle='#fff'}
+function text(s,a,b,size=11,color='#888',align='center'){ctx.font=size+'px Courier New';ctx.textAlign=align;ctx.fillStyle=color;ctx.fillText(s,Math.round(a-camera)+camera,Math.round(b));ctx.fillStyle='#fff'}
 function drawWorld(){ctx.save();ctx.translate(-camera,0);ctx.strokeStyle='#ddd';ctx.fillStyle='#fff';ctx.lineWidth=1.4;line(0,floor,WORLD,floor);
  for(const o of objects){if(o.x<camera-170||o.x>camera+W+170)continue;const a=o.x,g=floor;
  if(o.portal||o.puzzle)drawRealmObject(o);else if(o.kind)drawLandmark(o);
@@ -210,7 +216,7 @@ function drawWorld(){ctx.save();ctx.translate(-camera,0);ctx.strokeStyle='#ddd';
  case 'end':line(a,g,a,g-71);ctx.strokeRect(a-25,g-96,50,25);text('EAST →',a,g-79,10,'#aaa');break;
  case 'dress':if(!story.dressFound){ctx.lineWidth=2;ctx.strokeStyle='#fff';ellipse(a,g-48,45,45);ctx.lineWidth=1.4}break;
  }
- if(focus?.id===o.id){ctx.strokeStyle='#f2b8c6';line(a-6,g+12,a+6,g+12);ctx.strokeStyle='#ddd';text(o.name,a,g+33,11,'#c3b5b9')}
+ if(focus?.id===o.id){ctx.strokeStyle='#f2b8c6';line(a-6,g+12,a+6,g+12);ctx.strokeStyle='#ddd';if(!o.portal&&!o.puzzle)text(o.name,a,g+33,12,'#eee')}
  }
  ctx.restore();
 }
@@ -244,14 +250,30 @@ function showMenu(){hopRequested=false;saveGame();$('#atlas').classList.add('hid
 function begin(){const first=!started&&!story.quests&&!story.dressFound;started=true;mode='game';$('#atlas').classList.remove('hidden');$('#hop').classList.toggle('hidden',!story.dressFound);document.activeElement?.blur();clearTimeout(menuTimer);clearMovement();$('#menu').classList.add('hidden');$('#title').classList.add('hidden');$('#settings').classList.add('hidden');$('#task').classList.remove('hidden');$('#pause').classList.remove('hidden');$('#touch').classList.add('game-on');audioReady();if(first)say('Your circle dress is missing.\nIt is a circle. It is very important.\nDrag Meg to begin looking.',6500);else quietMessage();focus=nearby();updateHUD()}
 $('#begin').onclick=begin;$('#pause').onclick=showMenu;
 $('#open-settings').onclick=()=>{mode='settings';clearMovement();grab=null;$('#settings').classList.remove('hidden');$('#menu').classList.add('hidden');$('#sound').focus()};
-$('#forget').onclick=()=>{try{localStorage.removeItem(SAVE_KEY)}catch{};location.reload()};
+function forgetJourney(){
+ // Reset memory before any menu/visibility autosave can run. No reload race.
+ clearTimeout(menuTimer);quietMessage();clearMovement();
+ for(const key of Object.keys(story))delete story[key];
+ Object.assign(story,freshStory);discoveries.clear();
+ for(const room of Object.values(realms))for(const o of room.objects){delete o.hold;delete o.sides}
+ for(const list of [townObjects,realms.hub.objects])for(let i=list.length-1;i>=0;i--)if(['colourbox','colourdoor'].includes(list[i].id))list.splice(i,1);
+ realms.hub.width=1600;realm='town';objects=townObjects;WORLD=realms.town.width;
+ pebbleX=1750;pebbleShift=0;puzzleHold=0;hopRequested=false;
+ pose=null;grab=null;pendingTap=null;focus=null;started=false;accumulator=0;
+ resetCloth(300);camera=clamp(300-W*.5,0,Math.max(0,WORLD-W));
+ try{localStorage.removeItem(SAVE_KEY)}catch{}
+ $('#settings').classList.add('hidden');showMenu();
+ say('Journey forgotten.\nMeg is back where she started.',2600);
+ $('#begin').focus();
+}
+$('#forget').onclick=forgetJourney;
 $('#back').onclick=()=>{$('#settings').classList.add('hidden');showMenu();$('#open-settings').focus()};
 $('#sound').onclick=()=>{soundOn=!soundOn;$('#sound').textContent=soundOn?'SOUND — on':'SOUND — off';if(soundOn)audioReady();applyAudioLevels();if(soundOn)fx('click')};
 $('#music-toggle').onclick=()=>{musicEnabled=!musicEnabled;$('#music-toggle').textContent=musicEnabled?'MUSIC — on':'MUSIC — off';applyAudioLevels()};
 $('#music-level').oninput=e=>{musicVolume=Number(e.target.value)/100;applyAudioLevels()};
 $('#effects-level').oninput=e=>{effectsVolume=Number(e.target.value)/100;applyAudioLevels()};
 function motionLabel(){$('#motion').textContent=reduced?'STARS — still':'STARS — moving'}motionLabel();$('#motion').onclick=()=>{reduced=!reduced;motionLabel()};
-$('#leave').onclick=()=>{clearTimeout(menuTimer);say('GOOD CHOICE.',2000);menuTimer=setTimeout(()=>{if(mode==='menu')say('You are still here.\nUnderstandable.',3000)},2100)};
+$('#leave').onclick=()=>{clearTimeout(menuTimer);say('GOOD CHOICE.',2000);menuTimer=setTimeout(()=>{if(mode==='menu')say('You are still here.\nUnderstandable.',3000)},10000)};
 function objectAt(sx,sy){const wx=sx+camera;let best=null,score=Infinity;for(const o of objects){let yy=floor-30,rx=42,ry=42;if(o.kind){yy=floor-55;rx=65;ry=72;if(['thread','pond','stone','stamp'].includes(o.kind)){yy=floor-17;rx=80;ry=40}}if(o.id==='dress'){yy=floor-48;rx=58;ry=58;if(story.dressFound)continue}if(o.id==='greg'){yy=floor-93;rx=44;ry=105}if(o.id==='home'){yy=floor-52;rx=66;ry=63}if(o.id==='puddle'){yy=floor-7;rx=70;ry=30}if(o.id==='choir'){yy=floor-34;rx=75;ry=44}if(o.id==='orb'){yy=floor-(story.orb?105:180);rx=40;ry=40}if(o.id==='bell'||o.id==='line'||o.id==='sign'||o.id==='end'){yy=floor-60;rx=o.id==='line'?80:50;ry=70}if(o.id==='bench'){yy=floor-30;rx=65;ry=45}if(o.id==='pebble'){rx=60;ry=35}if(o.id==='puddle'&&story.absorbed)continue;const d=Math.pow((wx-o.x)/rx,2)+Math.pow((sy-yy)/ry,2);if(d<1&&d<score){best=o;score=d}}return best}
 canvas.addEventListener('pointerdown',e=>{if(mode!=='game'&&(mode!=='menu'||started))return;if(grab||pendingTap)return;audioReady();let distance=30,index=-1;cloth.forEach((p,i)=>{const d=Math.hypot(e.clientX+camera-p.x,e.clientY-p.y);if(d<distance){distance=d;index=i}});canvas.setPointerCapture(e.pointerId);if(index>=0){fx('grab');grab={index,sx:e.clientX,sy:e.clientY,startX:e.clientX,startY:e.clientY,pointer:e.pointerId,moved:false}}else if(mode==='game'){pendingTap={pointer:e.pointerId,x:e.clientX,y:e.clientY,object:objectAt(e.clientX,e.clientY)}}});
 canvas.addEventListener('pointermove',e=>{if(grab?.pointer===e.pointerId){grab.sx=e.clientX;grab.sy=e.clientY;if(Math.hypot(e.clientX-grab.startX,e.clientY-grab.startY)>8)grab.moved=true}else if(!grab&&e.pointerType==='mouse'){canvas.style.cursor=objectAt(e.clientX,e.clientY)?'pointer':'default'}});
