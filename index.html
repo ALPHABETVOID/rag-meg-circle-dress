@@ -13,6 +13,9 @@
 #msg{top:max(23%,calc(env(safe-area-inset-top) + 140px));left:6%;transform:none;width:88%;max-width:610px;margin-left:max(0px,calc(44% - 305px));padding:12px 16px;background:#080b13f2;border-radius:3px;text-shadow:none;font-size:15px;line-height:1.65;transition:none}
 #task{right:145px}#hint{color:#ccc;text-shadow:none;line-height:1.5}
 @media(max-height:520px){#msg{top:26%;left:23%;width:54%;margin-left:0;font-size:13px;padding:8px 12px;line-height:1.35}#task{max-width:220px;font-size:10px}#chapter,#area{font-size:9px}}
+
+#touch, .touch-button, canvas{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-user-drag:none;touch-action:none}
+.touch-button{-webkit-appearance:none;appearance:none;-webkit-tap-highlight-color:transparent}
 </style>
 </head>
 <body>
@@ -26,7 +29,7 @@
 <button id="atlas" class="hidden">MAP</button><div id="routes" class="hidden"></div><div id="msg" role="status" aria-live="polite"></div>
 <div id="hint">you may pick up the rag</div>
 <div id="west" class="edge hidden" aria-hidden="true">‹</div><div id="east" class="edge hidden" aria-hidden="true">›</div>
-<div id="touch"><button id="left" class="touch-button" aria-label="Move left">←</button><button id="right" class="touch-button" aria-label="Move right">→</button><button id="hop" class="touch-button hidden" aria-label="Bounce or float">BOUNCE</button><button id="poke" class="touch-button" aria-label="Interact with nearby object">POKE</button></div>
+<div id="touch"><button id="left" class="touch-button" tabindex="-1" draggable="false" aria-label="Move left">←</button><button id="right" class="touch-button" tabindex="-1" draggable="false" aria-label="Move right">→</button><button id="hop" class="touch-button hidden" tabindex="-1" draggable="false" aria-label="Bounce or float">BOUNCE</button><button id="poke" class="touch-button" tabindex="-1" draggable="false" aria-label="Interact with nearby object">POKE</button></div>
 </div>
 <script>
 'use strict';
@@ -84,9 +87,9 @@ function say(text,duration=4200){duration=Math.max(duration,9000,Math.min(22000,
 function quietMessage(){clearTimeout(messageTimer);$('#msg').style.opacity=0;messageUntil=0}
 // Original sixteen-bar void-house loop. Audio-clock scheduling keeps the groove
 // continuous across title, settings and play, without downloads or audio assets.
-let masterBus,musicBus,effectsBus,duckBus,echo,noiseBuffer,musicTimer=null,nextBeat=0,musicStep=0;
+let masterBus,musicBus,effectsBus,scoreBus,duckBus,echo,noiseBuffer,musicTimer=null,nextBeat=0,musicStep=0;
 let musicEnabled=true,musicVolume=.38,effectsVolume=.65,lastRustle=0,lastLanding=0;
-const BPM=118,STEP=60/BPM/4,LOOP_STEPS=256;
+let STEP=60/118/4,activeScoreKey='';const LOOP_STEPS=256;
 function audioReady(){
  if(!soundOn)return;
  try{
@@ -97,7 +100,7 @@ function audioReady(){
    masterBus.connect(limiter);limiter.connect(audioContext.destination);
    musicBus=audioContext.createGain();musicBus.gain.value=musicVolume;musicBus.connect(masterBus);
    effectsBus=audioContext.createGain();effectsBus.gain.value=effectsVolume;effectsBus.connect(masterBus);
-   duckBus=audioContext.createGain();duckBus.connect(musicBus);
+   scoreBus=audioContext.createGain();scoreBus.connect(musicBus);duckBus=audioContext.createGain();duckBus.connect(scoreBus);
    echo=audioContext.createDelay(1);echo.delayTime.value=STEP*3;
    const feedback=audioContext.createGain(),wet=audioContext.createGain(),filter=audioContext.createBiquadFilter();feedback.gain.value=.24;wet.gain.value=.19;filter.type='lowpass';filter.frequency.value=2400;echo.connect(filter);filter.connect(feedback);feedback.connect(echo);filter.connect(wet);wet.connect(musicBus);
    noiseBuffer=audioContext.createBuffer(1,audioContext.sampleRate,audioContext.sampleRate);
@@ -117,20 +120,59 @@ function voice(freq,at,length,volume,type='sine',bus=effectsBus,cutoff=0,endFreq
 }
 function hiss(at,length,volume,frequency=6000,bus=effectsBus){if(!noiseBuffer||!bus)return;const source=audioContext.createBufferSource(),filter=audioContext.createBiquadFilter(),g=audioContext.createGain();source.buffer=noiseBuffer;filter.type='highpass';filter.frequency.value=frequency;g.gain.setValueAtTime(.0001,at);g.gain.linearRampToValueAtTime(volume,at+.004);g.gain.exponentialRampToValueAtTime(.0001,at+length);source.connect(filter);filter.connect(g);g.connect(bus);source.start(at);source.stop(at+length+.01);source.onended=()=>{source.disconnect();filter.disconnect();g.disconnect()}}
 const hz=m=>440*Math.pow(2,(m-69)/12);
-function musicBeat(step,at){
- const bar=Math.floor(step/16),beat=step%16,root=(story.dressFound?[36,41,43,36]:[36,32,39,34])[Math.floor(bar/4)];
- // Four-on-the-floor kick, soft clap, offbeat open hats and sixteenth detail.
- if(beat%4===0){voice(145,at,.26,.68,'sine',musicBus,0,44);hiss(at,.018,.035,5500,musicBus);duckBus.gain.cancelScheduledValues(at);duckBus.gain.setValueAtTime(.3,at);duckBus.gain.linearRampToValueAtTime(1,at+STEP*2.7)}
- if(beat===4||beat===12){hiss(at,.13,.19,1100,musicBus);hiss(at+.018,.09,.12,1800,musicBus);voice(180,at,.095,.08,'triangle',musicBus)}
- if(beat%4===2)hiss(at,.16,.11,7000,musicBus);else if(beat%2===0||(bar%4===3&&beat>11))hiss(at,.042,.045,8500,musicBus);
- if([2,6,10,14].includes(beat)){voice(hz(root),at,STEP*1.5,.21,'sawtooth',duckBus,650);voice(hz(root),at,STEP*1.45,.24,'sine',duckBus)}
- if(beat===0&&mode==='game'&&(direction()||grab?.moved)){voice(hz(root+19),at,STEP*14,.009,'sine',duckBus,0,0,.3)}
- if(beat===0){const third=story.dressFound?4:(root===36?3:4);for(const offset of [0,third,7,14])voice(hz(root+24+offset),at,STEP*15,.024,'triangle',duckBus,1800,0,.12)}
- const arp=[0,7,12,7,3,10,14,7];if(beat%2===0){let offset=arp[beat/2];if(root!==36&&offset===3)offset=4;const note=hz(root+24+offset);const v=voice(note,at,STEP*2.1,.085,'triangle',duckBus,2600);v?.connect(echo)}
- if(bar>=8&&[3,11,14].includes(beat)){const n=hz(root+36+[7,3,2][[3,11,14].indexOf(beat)]);const v=voice(n,at,STEP*2.8,.034,'sine',duckBus);v?.connect(echo)}
- if(bar===15&&beat===15)hiss(at,.11,.08,3500,musicBus);
+// Each location has its own tempo, harmony, melody and drum arrangement.
+const scoreData={
+ 'town-home':[108,[36,32,39,34],[0,7,12,3,7,10,5,2],0],
+ 'town-meeting':[114,[38,38,34,36],[0,0,7,2,0,5,3,7],1],
+ 'town-outskirts':[120,[41,37,44,39],[0,3,7,12,10,7,5,3],2],
+ 'town-elsewhere':[100,[33,36,31,38],[12,7,3,0,2,5,10,7],3],
+ 'town-unclaimed':[116,[35,31,38,33],[0,2,7,5,12,10,3,2],1],
+ 'town-farther':[110,[40,36,43,38],[7,12,14,10,7,3,5,2],2],
+ 'town-bureau':[122,[37,37,33,35],[0,7,0,3,2,7,2,5],0],
+ 'town-beyond':[104,[34,37,32,39],[12,10,7,5,3,7,2,0],3],
+ 'town-nearly':[96,[43,39,41,38],[0,7,14,12,10,7,12,5],2],
+ 'town-atlast':[90,[36,39,41,43],[0,3,7,14,12,7,3,0],3],
+ hub:[118,[36,34,41,39],[0,7,3,10,2,12,5,7],0],
+ attic:[112,[45,41,48,43],[12,7,14,10,3,7,17,12],2],
+ observatory:[94,[42,38,45,40],[0,14,7,19,12,10,7,2],3],
+ drain:[124,[29,32,27,34],[0,0,3,7,2,0,5,3],1],
+ pipes:[106,[31,34,29,36],[0,7,10,3,12,5,7,2],3],
+ lost:[116,[38,34,41,36],[3,0,7,2,10,5,3,12],0],
+ pocket:[102,[40,43,38,45],[0,12,3,7,2,10,5,3],2],
+ hem:[98,[35,38,40,42],[7,2,12,5,14,10,3,0],3],
+ bloom:[126,[36,41,43,40],[0,4,7,12,16,14,7,9],0],
+ garden:[114,[41,45,43,36],[12,9,7,4,2,7,14,16],2],
+ sea:[100,[38,43,45,41],[0,7,14,9,12,4,7,2],3],
+ sun:[130,[43,48,40,45],[0,4,9,7,12,16,14,7],1],
+ prism:[122,[37,42,44,41],[0,7,14,4,12,9,16,2],2],
+ homecoming:[106,[36,40,41,43],[12,7,4,0,9,7,2,0],3]
+};
+const townZones=['home','meeting','outskirts','elsewhere','unclaimed','farther','bureau','beyond','nearly','atlast'];
+function scoreKey(){if(!started)return 'town-home';if(realm!=='town')return realm;const cx=center();let i=[650,1400,2500,3600,5200,6600,7800,9350,10000].findIndex(end=>cx<end);if(i<0)i=9;return 'town-'+townZones[i]}
+function changeScore(now){const key=scoreKey()+(story.dressFound?'~colour':'');if(key===activeScoreKey)return;
+ activeScoreKey=key;const data=scoreData[scoreKey()];STEP=60/data[0]/4;
+ const oldScore=scoreBus,oldDuck=duckBus;
+ oldScore.gain.cancelScheduledValues(now);oldScore.gain.setTargetAtTime(0,now,.22);
+ scoreBus=audioContext.createGain();scoreBus.gain.setValueAtTime(.0001,now);scoreBus.gain.linearRampToValueAtTime(1,now+.8);scoreBus.connect(musicBus);
+ duckBus=audioContext.createGain();duckBus.connect(scoreBus);
+ setTimeout(()=>{oldDuck.disconnect();oldScore.disconnect()},3500);
+ echo.delayTime.setTargetAtTime(STEP*3,now,.2);musicStep=0;nextBeat=now+.04;
 }
-function scheduleMusic(){if(!audioContext||audioContext.state!=='running'||document.hidden)return;const now=audioContext.currentTime;if(nextBeat<now-.2)nextBeat=now+.04;while(nextBeat<now+.16){if(soundOn&&musicEnabled&&musicVolume>0)musicBeat(musicStep,nextBeat);musicStep=(musicStep+1)%LOOP_STEPS;nextBeat+=STEP}}
+function musicBeat(step,at){
+ const [bpm,roots,melody,style]=scoreData[activeScoreKey.split('~')[0]]||scoreData['town-home'];
+ const bar=Math.floor(step/16),beat=step%16,root=roots[Math.floor(bar/4)],bright=story.dressFound;
+ const kickPatterns=[[0,4,8,12],[0,6,8,14],[0,4,10,12],[0,8]];
+ if(kickPatterns[style].includes(beat)){voice(style===1?120:145,at,.26,style===3?.42:.58,'sine',scoreBus,0,style===1?38:44);duckBus.gain.cancelScheduledValues(at);duckBus.gain.setValueAtTime(.45,at);duckBus.gain.linearRampToValueAtTime(1,at+STEP*2.5)}
+ if((style===3?beat===12:beat===4||beat===12)){hiss(at,.11,style===3?.065:.12,style===1?800:1600,scoreBus);voice(180,at,.095,.04,'triangle',scoreBus)}
+ if(beat%(style===3?8:4)===2)hiss(at,style===2?.055:.12,.055,style===1?4500:7400,scoreBus);
+ const bassPattern=style===1?[0,3,6,10,14]:style===3?[2,10]:[2,6,10,14];
+ if(bassPattern.includes(beat)){voice(hz(root),at,STEP*(style===3?3:1.5),.18,'sine',duckBus);voice(hz(root),at,STEP*1.5,.055,style===1?'sawtooth':'triangle',duckBus,style===1?450:850)}
+ if(beat===0){for(const offset of [0,bright?4:3,7,14])voice(hz(root+24+offset),at,STEP*15,.022,'triangle',duckBus,bright?2400:1200,0,.16);if(mode==='game'&&(direction()||grab?.moved))voice(hz(root+19),at,STEP*14,.009,'sine',duckBus,0,0,.3)}
+ if(beat%2===0){const offset=melody[(beat/2+(bar%4===3?2:0))%8];const register=style===1?12:24;
+ const v=voice(hz(root+register+offset),at,STEP*(style===3?4:1.9),style===3?.06:.075,style===2?'sine':'triangle',duckBus,bright?3200:style===1?1000:2200,0,.02);v?.connect(echo)}
+ if(bar>=8&&beat===(style===1?7:11))voice(hz(root+36+melody[bar%8]),at,STEP*3,.025,'sine',duckBus);
+}
+function scheduleMusic(){if(!audioContext||audioContext.state!=='running'||document.hidden)return;const now=audioContext.currentTime;changeScore(now);if(nextBeat<now-.2)nextBeat=now+.04;while(nextBeat<now+.16){if(soundOn&&musicEnabled&&musicVolume>0)musicBeat(musicStep,nextBeat);musicStep=(musicStep+1)%LOOP_STEPS;nextBeat+=STEP}}
 function tone(freq=220,length=.25,volume=.12){if(!soundOn||!audioContext)return;voice(freq,audioContext.currentTime+.005,length,volume,'sine')}
 function fx(kind){if(!soundOn||!audioContext)return;const at=audioContext.currentTime+.005;
  if(kind==='click'){voice(620,at,.05,.12,'triangle',effectsBus,0,310);return}
@@ -281,8 +323,16 @@ canvas.addEventListener('pointermove',e=>{if(grab?.pointer===e.pointerId){grab.s
 function finishPointer(e,cancelled=false){if(grab?.pointer===e.pointerId){const wasTap=!grab.moved;if(grab.moved&&!cancelled)fx('drop');grab=null;if(wasTap&&!cancelled&&mode==='game'){if(nearby())interact();else say(story.wet?'Meg is now more damp.':'The cotton remains involved.',2000)}}if(pendingTap?.pointer===e.pointerId){const tap=pendingTap;pendingTap=null;if(!cancelled&&Math.hypot(e.clientX-tap.x,e.clientY-tap.y)<12){if(tap.object)interact(tap.object.id);else say('Drag Meg, or hold an arrow to travel.',1800)}}}
 canvas.addEventListener('pointerup',e=>finishPointer(e));canvas.addEventListener('pointercancel',e=>finishPointer(e,true));canvas.addEventListener('lostpointercapture',e=>{if(grab?.pointer===e.pointerId)grab=null;if(pendingTap?.pointer===e.pointerId)pendingTap=null});
 for(const [id,dir] of [['left',-1],['right',1]]){const b=$('#'+id);b.addEventListener('pointerdown',e=>{e.preventDefault();if(mode!=='game')return;audioReady();movePointers.set(e.pointerId,dir);b.classList.add('pressed');b.setPointerCapture(e.pointerId)});const off=e=>{movePointers.delete(e.pointerId);b.classList.toggle('pressed',[...movePointers.values()].includes(dir))};b.addEventListener('pointerup',off);b.addEventListener('pointercancel',off);b.addEventListener('lostpointercapture',off)}
+// Keep touch gestures in the game, without changing menu/settings keyboard access.
+for(const b of document.querySelectorAll('.touch-button')){
+ b.addEventListener('pointerdown',e=>{e.preventDefault();if(document.activeElement===b)b.blur()});
+ for(const type of ['contextmenu','selectstart','dragstart'])b.addEventListener(type,e=>e.preventDefault());
+ b.addEventListener('touchmove',e=>e.preventDefault(),{passive:false});
+}
+canvas.addEventListener('contextmenu',e=>e.preventDefault());
+canvas.addEventListener('selectstart',e=>e.preventDefault());
 $('#poke').onclick=()=>interact();
-addEventListener('keydown',e=>{if(e.key==='Escape'){if(mode==='game')showMenu();else if(mode==='settings')$('#back').click();return}if(mode!=='game'||e.target.closest('button,input'))return;if(['ArrowUp','w','W'].includes(e.key)){e.preventDefault();if(!e.repeat)bounce();return}if(e.key==='m'){openMap();return}const k=e.key.toLowerCase();if(['arrowleft','arrowright','a','d',' '].includes(k)){e.preventDefault();audioReady();keys.add(k);if(k===' '&&!e.repeat)interact()}});
+addEventListener('keydown',e=>{if(e.key==='Escape'){if(mode==='game')showMenu();else if(mode==='settings')$('#back').click();return}if(mode!=='game'||e.target.closest('input,textarea,select,[contenteditable=true]')||(e.target.closest('button')&&!e.target.closest('.touch-button')&&!['arrowleft','arrowright','arrowup','a','d','w'].includes(e.key.toLowerCase())))return;if(['ArrowUp','w','W'].includes(e.key)){e.preventDefault();if(!e.repeat)bounce();return}if(e.key==='m'){openMap();return}const k=e.key.toLowerCase();if(['arrowleft','arrowright','a','d',' '].includes(k)){e.preventDefault();audioReady();keys.add(k);if(k===' '&&!e.repeat)interact()}});
 addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));addEventListener('blur',()=>{clearMovement();grab=null;pendingTap=null});document.addEventListener('visibilitychange',()=>{if(document.hidden){clearMovement();grab=null;pendingTap=null}});addEventListener('resize',resize);
 
 // Connected worlds: state and coordinates belong to a room, never the old eastward strip.
