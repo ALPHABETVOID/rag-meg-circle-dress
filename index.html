@@ -831,7 +831,7 @@ const actHelp={
  6:'Water adds weight and slows flight. Dry, loose cloth catches rising wind; flat cloth glides after the storm is completed. FOLD tall to drop precisely. A downward droplet over a bowl means SQUEEZE water from above the bowl (within its dashed column). Land with FLY held after the storm to spring upward. Quarter-turn plates redirect the wind.',
  7:'The inner silhouette measures the cloth, not the circle. Use FOLD to match flat or tall, and turn the marked room plates to match orientation. Moving frames pause briefly near Meg. For hanging frames, POKE the hanger, then release toward the next opening. Combine color, water, fold and angle; each successful frame is saved.',
  8:'At a reflection point, tap ECHO (E) to start a recording of up to six seconds. Move onto the outlined echo pad and stay there, then tap ECHO again. A translucent copy loops that movement and holds its final pose briefly. Reach the numbered opening while your echo occupies the pad. Later rooms allow two echoes: record each pad in turn. A patterned pad needs that echo’s recorded color. Hold neither movement nor FLY to keep a recording still. POKE the reflection point to clear echoes and retry.',
- 9:'The three arcs can be repaired in any order. Their completed stages stay saved; MAP can take you between visited arcs. Restore water, color, and air, then enter the last loose end. All learned mechanics work here. Reflection points support two recordings. When a frame asks for two echoes, record the echoes in two different colors. The final coat hook becomes available only after the full circuit is complete.'
+ 9:'The three arcs can be repaired in any order. Their completed stages stay saved; MAP can take you between visited arcs. Restore water, color, and air, then enter the last loose end. All learned mechanics work here. Reflection points support two recordings. When a frame asks for two echoes, record the echoes in two different colors; the blue and yellow dashed pads are the visual shorthand for that two-color requirement. The final coat hook becomes available only after the full circuit is complete.'
 };
 function campaignDone(id){return id==='arcs'?['waterarc','colorarc','airarc'].every(solved):solved(id)}
 function campaignAct(){return realms[realm]?.act|| (['bloom','garden','sea','sun','prism','homecoming','highsky'].includes(realm)?2:1)}
@@ -980,7 +980,7 @@ function campaignDrawObject(o){
    if(s.turn!==undefined){for(let k=0;k<4;k++){ctx.strokeStyle=k<s.turn?'#ffe09d':'#716674';line(mx+k*6,my-5,mx+k*6,my+4)}}
    if(s.hang)text('⌁',t.x,my,22,'#ffe09d');
    if(s.pour){ctx.setLineDash([3,7]);line(a-55,g-170,a-55,g-360);line(a+55,g-170,a+55,g-360);ctx.setLineDash([]);ctx.beginPath();ctx.arc(a,g-25,35,0,Math.PI);ctx.stroke();drawWaterMark(a,g-50)}
-   for(const p of campaignPads(o,s)){ctx.strokeStyle=p.ink?pigments[p.ink].hex:'#b7dbff';ctx.setLineDash([4,5]);ellipse(p.x,p.y,48,48);ctx.setLineDash([]);if(p.ink)campaignDrawMark(p.ink,p.x,p.y+5,20)}
+   campaignPads(o,s).forEach((p,pi)=>{const visualInk=campaignAct()===9&&s.echo>=2?['blue','yellow'][pi%2]:p.ink;ctx.strokeStyle=visualInk?pigments[visualInk].hex:'#b7dbff';ctx.setLineDash([4,5]);ellipse(p.x,p.y,48,48);ctx.setLineDash([]);if(visualInk)campaignDrawMark(visualInk,p.x,p.y+5,20)});
    if(o.hold){ctx.strokeStyle='#91e7ba';ctx.lineWidth=4;ctx.beginPath();ctx.arc(t.x,t.y,t.r+5,-Math.PI/2,-Math.PI/2+Math.PI*2*Math.min(1,o.hold/.32));ctx.stroke()}ctx.globalAlpha=1;
   }
   if(showObjectLabel(o))text((done?'✓ ':'')+o.name,a,g+29,12,done?'#9ce6c1':'#eee');
