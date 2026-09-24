@@ -918,7 +918,7 @@ function campaignPhysics(){
   if(o.device==='rotor'){const contact=Math.abs(dressBody.x-o.x)<35&&dressBody.y>groundAt(o.x)-60;if(contact&&!o.wasOn&&Math.abs(dressBody.vx)>.3)rotateCampaign(stationById(o.station));o.wasOn=contact}
   if(!o.campaign||solved(o.id)||o.needs.some(n=>!solved(n)))continue;
   const i=campaignStage(o);if(i<0){completePuzzle(o);continue}const s=o.steps[i],t=campaignTarget(o,s);
-  const hanger=stationById(o.id+'-hanger');const targetTolerance=o.id==='politehinge'?105:t.r-45;const inside=s.hang?pose?.device===o.id+'-hanger'&&hanger&&Math.abs(dressBody.x-hanger.x)<25&&Math.abs(dressBody.y-(groundAt(hanger.x)-86))<28:Math.hypot(dressBody.x-t.x,dressBody.y-t.y)<targetTolerance;
+  const hanger=stationById(o.id+'-hanger');const targetTolerance=Math.max(52,t.r-12);const inside=s.hang?pose?.device===o.id+'-hanger'&&hanger&&Math.abs(dressBody.x-hanger.x)<25&&Math.abs(dressBody.y-(groundAt(hanger.x)-86))<28:Math.hypot(dressBody.x-t.x,dressBody.y-t.y)<targetTolerance;
   if(inside&&campaignConditions(o,s)){o.hold=(o.hold||0)+1/60;if(o.hold>(o.id==='politehinge'?.08:.32)){discoveries.add('stage:'+o.id+':'+i);o.hold=0;if(i===o.steps.length-1)completePuzzle(o);else{tone(440+i*88,.3,.03);say('Frame '+(i+1)+' settled.');saveGame()}}}else o.hold=0;
  }
 }
