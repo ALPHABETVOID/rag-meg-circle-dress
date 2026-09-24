@@ -46,7 +46,7 @@
 #ending{position:absolute;inset:0;background:#16131df5;z-index:30;pointer-events:auto;overflow:auto;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:7vh 22px 35px;text-align:center}
 #ending h2{font-size:clamp(32px,7vw,54px);letter-spacing:.12em;font-weight:normal;margin:18px 0 0}#ending p{line-height:1.7;font-size:14px}#ending .ending-small{color:#bcafc5;font-size:12px}#ending button{padding:14px 25px;margin:6px;min-height:48px;background:#292130;border:1px solid #a28ba9}
 .ending-circle{margin:15px 0;width:86px;height:86px;border:2px solid #eee5da;border-radius:50%;display:grid;place-items:center}.ending-circle span{width:25px;height:56px;background:repeating-linear-gradient(90deg,#c89cae 0 2px,#d5abbc 2px 4px);transform:rotate(9deg)}
-#routes details{margin:18px 0}#routes summary{cursor:pointer;min-height:44px;padding:12px 4px;color:#f2b8c6;font-size:13px;line-height:1.5}#routes button:disabled{opacity:.4;cursor:default}
+#routes details{margin:18px 0}#routes summary{cursor:pointer;min-height:44px;padding:12px 4px;color:#f2b8c6;font-size:13px;line-height:1.5}#routes button:disabled{opacity:.4;cursor:default}#routes .map-room-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:stretch}#routes .map-room-row .map-travel{margin:5px 0}#routes .map-room-row .reset-layer{width:auto;margin:5px 0;white-space:nowrap;font-size:10px;color:#f2b8c6}@media(max-width:560px){#routes .map-room-row{grid-template-columns:1fr}#routes .map-room-row .reset-layer{width:100%;text-align:center}}
 @media(max-width:400px){#task{max-width:230px}#area{font-size:11px}#resources{gap:8px}.resource-group{gap:2px}.resource-group svg{width:15px;height:19px}}
 
 /* Mobile game chrome: never invoke browser text selection/callouts while playing. */
@@ -531,7 +531,7 @@ const realms={
 function movementAudio(){} // Movement is silent; a slow pad in musicBeat follows travel.
 function unlockColourBox(){if(!realms.hub.objects.some(o=>o.id==='colourdoor')){realms.hub.width=2000;realms.hub.objects.push(portal('colourdoor',1780,'BOX ∞ · COLOUR','bloom'))}}
 function initRealms(){if(story.dressFound)unlockColourBox();townObjects.find(o=>o.id==='box').portal='hub';townObjects.push(portal('shortcut',6450,'BOX 8 · CROSSROADS','hub'));if(story.dressFound)townObjects.push(portal('colourbox',10200,'BOX ∞ · COLOUR','bloom'));realm=realms[story.realm]?story.realm:(story.dressFound?'bloom':'town');if(!story.dressFound&&realms[realm].color&&realm!=='town'&&realm!=='hub')realm='town';objects=realms[realm].objects;WORLD=realms[realm].width;}
-function travel(to,arrival=200){hopRequested=false;viewY=0;if(to==='homecoming'&&!solved('prism')){say('The way home needs an unsorted rainbow.');return}if(to==='town'&&arrival>10000&&!solved('seam')&&!story.dressFound){say('The seam is still missing its threads.');return}realm=to;objects=realms[to].objects;WORLD=realms[to].width;pose=null;grab=null;pendingTap=null;puzzleHold=0;clearMovement();resetCloth(arrival);camera=clamp(arrival-W*.43,0,Math.max(0,WORLD-W));discoveries.add('world:'+to);$('#routes').classList.add('hidden');saveGame();resetStuck();quietMessage();tone(story.dressFound?523:220,.8,.025);updateHUD()}
+function travel(to,arrival=200){hopRequested=false;viewY=0;if(!gameBeaten()&&to==='homecoming'&&!solved('prism')){say('The way home needs an unsorted rainbow.');return}if(!gameBeaten()&&to==='town'&&arrival>10000&&!solved('seam')&&!story.dressFound){say('The seam is still missing its threads.');return}realm=to;objects=realms[to].objects;WORLD=realms[to].width;pose=null;grab=null;pendingTap=null;puzzleHold=0;clearMovement();resetCloth(arrival);camera=clamp(arrival-W*.43,0,Math.max(0,WORLD-W));discoveries.add('world:'+to);$('#routes').classList.add('hidden');saveGame();resetStuck();quietMessage();tone(story.dressFound?523:220,.8,.025);updateHUD()}
 function takeDress(){if(story.dressFound)return;if(!solved('seam')){say('Your circle.\nThe seam is still closed.',6000);return}story.dressFound=true;story.ended=false;unlockColourBox();townObjects.push(portal('colourbox',10200,'BOX ∞ · COLOUR','bloom'));travel('bloom',300);$('#hop').classList.remove('hidden');say('HER CIRCLE DRESS.\nIt is just a circle.\nApparently it was holding all the colour.\nACT II — this is not the end.',10000);saveGame()}
 function inspectPuzzle(o){if(o.spatial){inspectSpatial(o);return}if(solved(o.id)){say(o.reply);return}const missing=o.needs.filter(n=>!solved(n));if(missing.length){say('Not ready yet.');return}if(o.puzzle==='rest'&&!story.dressFound){pose={type:'stone',x:o.x}}say(puzzleStatus(o))}
 function completePuzzle(o){celebration={x:o.x,y:groundAt(o.x)-70,until:time+2.4};discoveries.add('puzzle:'+o.id);puzzleHold=0;if(o.id==='homecolor')story.ended=true;tone(story.dressFound?659:330,.7,.035);say(o.reply,6500);saveGame();resetStuck()}
@@ -569,7 +569,7 @@ function drawRollingRim(){const b=dressBody;ctx.strokeStyle='#fff4e7';ctx.lineWi
 }
 function drawRealmObject(o){drawDistinctObject(o)}
 function realmHUD(){progressHUD()}
-function openMap(){showJourneyMap()}
+function openMap(){const panel=$('#routes');if(!panel.classList.contains('hidden')){panel.classList.add('hidden');return}showJourneyMap()}
 $('#atlas').onclick=openMap;$('#hop').addEventListener('pointerdown',e=>{e.preventDefault();bounce();hopRequested=true;$('#hop').setPointerCapture(e.pointerId)});for(const name of ['pointerup','pointercancel','lostpointercapture'])$('#hop').addEventListener(name,()=>hopRequested=false);
 addEventListener('keyup',e=>{if(['ArrowUp','w','W'].includes(e.key))hopRequested=false});addEventListener('blur',()=>hopRequested=false);document.addEventListener('visibilitychange',()=>{if(document.hidden){hopRequested=false;saveGame()}});setInterval(()=>{if(mode==='game')saveGame()},10000);
 
@@ -744,7 +744,7 @@ function renderResources(){const water=clamp(story.water||0,0,3),threads=['sky',
  $('#water-icons').innerHTML=[0,1,2].map(i=>iconMarkup(dropIcon,i<water)).join('');$('#water-icons').setAttribute('aria-label',water+' of 3 water drops');
  $('#thread-icons').innerHTML=threads.map(full=>iconMarkup(threadIcon,full)).join('');$('#thread-icons').setAttribute('aria-label',threads.filter(Boolean).length+' of 3 threads found');
  $('#color-icons').classList.toggle('hidden',!story.dressFound);$('#color-icons').innerHTML=colors.map((full,i)=>iconMarkup(colorIcon,full,['#79ef98','#72caff','#ffe278'][i])).join('');$('#color-icons').setAttribute('aria-label',colors.filter(Boolean).length+' of 3 colors found');}
-function showObjectLabel(o){return focus?.id===o.id&&performance.now()>=messageUntil}
+function showObjectLabel(o){return focus?.id===o.id}
 function drawWaterMark(x,y){ctx.save();ctx.translate(x,y);ctx.strokeStyle='#a8dfff';ctx.lineWidth=1.3;ctx.beginPath();ctx.moveTo(0,-10);ctx.bezierCurveTo(-3,-5,-7,0,-7,4);ctx.bezierCurveTo(-7,13,7,13,7,4);ctx.bezierCurveTo(7,0,3,-5,0,-10);ctx.stroke();ctx.restore()}
 
 // Acts III–IX. All durable progress lives in the existing save, including each puzzle stage.
@@ -831,10 +831,32 @@ const actHelp={
  6:'Water adds weight and slows flight. Dry, loose cloth catches rising wind; flat cloth glides after the storm is completed. FOLD tall to drop precisely. A downward droplet over a bowl means SQUEEZE water from above the bowl (within its dashed column). Land with FLY held after the storm to spring upward. Quarter-turn plates redirect the wind.',
  7:'The inner silhouette measures the cloth, not the circle. Use FOLD to match flat or tall, and turn the marked room plates to match orientation. Moving frames pause briefly near Meg. For hanging frames, POKE the hanger, then release toward the next opening. Combine color, water, fold and angle; each successful frame is saved.',
  8:'At a reflection point, tap ECHO (E) to start a recording of up to six seconds. Move onto the outlined echo pad and stay there, then tap ECHO again. A translucent copy loops that movement and holds its final pose briefly. Reach the numbered opening while your echo occupies the pad. Later rooms allow two echoes: record each pad in turn. A patterned pad needs that echo’s recorded color. Hold neither movement nor FLY to keep a recording still. POKE the reflection point to clear echoes and retry.',
- 9:'The three arcs can be repaired in any order. Their completed stages stay saved; MAP can take you between visited arcs. Restore water, color, and air, then enter the last loose end. All learned mechanics work here. Reflection points support two recordings. The final coat hook becomes available only after the full circuit is complete.'
+ 9:'The three arcs can be repaired in any order. Their completed stages stay saved; MAP can take you between visited arcs. Restore water, color, and air, then enter the last loose end. All learned mechanics work here. Reflection points support two recordings. When a frame asks for two echoes, record the echoes in two different colors. The final coat hook becomes available only after the full circuit is complete.'
 };
 function campaignDone(id){return id==='arcs'?['waterarc','colorarc','airarc'].every(solved):solved(id)}
 function campaignAct(){return realms[realm]?.act|| (['bloom','garden','sea','sun','prism','homecoming','highsky'].includes(realm)?2:1)}
+
+function gameBeaten(){return !!story.gameBeaten||solved('adequatehook')}
+function resetLayer(key){
+ if(!gameBeaten())return;
+ const r=realms[key];if(!r)return;
+ const ids=r.objects.filter(o=>o.puzzle).map(o=>o.id);
+ if(!ids.length)return;
+ story.gameBeaten=true;
+ const prefixes=[];
+ for(const id of ids)prefixes.push('stage:'+id+':','step:'+id+':','rotation:'+id+':');
+ for(const d of [...discoveries]){
+  if(ids.some(id=>d==='puzzle:'+id||d==='poured:'+id||d==='watered:'+id)||prefixes.some(p=>d.startsWith(p)))discoveries.delete(d);
+ }
+ story.turns=story.turns||{};story.basins=story.basins||{};
+ for(const id of ids){delete story.turns[id];delete story.basins[id+'-basin']}
+ for(const o of r.objects){o.hold=0;o.wasOn=false;o.absorbing=0;delete o.sides;if(o.baseX)o.x=o.baseX}
+ echoActors=[];echoRecord=null;echoHistory=[];
+ saveGame();resetStuck();
+ if(key===realm){pose=null;hangLocked=false;clearMovement()}
+ say(r.name+' reset.\nIts puzzles are ready again.',4200);
+ showJourneyMap();
+}
 function campaignFold(){return time<squeezeUntil?1:(story.fold||0)}
 function campaignColor(){return pigments[story.ink]||pigments.pink}
 function campaignStage(o){return o.steps.findIndex((_,i)=>!discoveries.has('stage:'+o.id+':'+i))}
@@ -1019,8 +1041,8 @@ const originalInteract=interact;interact=function(id){
  }
  originalInteract(id)
 };
-const originalTravel=travel;travel=function(to,arrival=200){const r=realms[to];if(!r)return;if(r.act&&(!story.dressFound||!campaignDone(r.gate))){say(to==='circlefinish'?'Three arcs are still unfinished.':'This door is waiting for '+puzzleName(r.gate).toLowerCase()+'.');return}const oldRealm=realm;originalTravel(to,clamp(arrival,70,r.width-70));if(realm!==to)return;echoActors=[];echoRecord=null;echoHistory=[];for(const o of objects){o.hold=0;o.wasOn=false}if(r.act&&!discoveries.has('intro:'+r.act)){discoveries.add('intro:'+r.act);say('ACT '+actNumerals[r.act]+'\n'+actNames[r.act]+'\n'+({3:'You are home. The house disagrees.',4:'You have been sorted incorrectly.',5:'These colors are on loan.',6:'The sky has a basement.',7:'Please become the correct shape.',8:'Someone has already been here. It was you, shortly.',9:'There is one loose end. It is architectural.'}[r.act]),12000);saveGame()}if(oldRealm!==realm)campaignControls()};
-const originalCompletePuzzle=completePuzzle;completePuzzle=function(o){originalCompletePuzzle(o);if(o.id==='homecolor')story.ended=false;if(o.id==='firstdye'){story.ink='blue';discoveries.add('dye:blue')}if(o.id==='adequatehook'){story.ended=true;saveGame();showCampaignEnding()}else saveGame();campaignControls()};
+const originalTravel=travel;travel=function(to,arrival=200){const r=realms[to];if(!r)return;if(!gameBeaten()&&r.act&&(!story.dressFound||!campaignDone(r.gate))){say(to==='circlefinish'?'Three arcs are still unfinished.':'This door is waiting for '+puzzleName(r.gate).toLowerCase()+'.');return}const oldRealm=realm;originalTravel(to,clamp(arrival,70,r.width-70));if(realm!==to)return;echoActors=[];echoRecord=null;echoHistory=[];for(const o of objects){o.hold=0;o.wasOn=false}if(r.act&&!discoveries.has('intro:'+r.act)){discoveries.add('intro:'+r.act);say('ACT '+actNumerals[r.act]+'\n'+actNames[r.act]+'\n'+({3:'You are home. The house disagrees.',4:'You have been sorted incorrectly.',5:'These colors are on loan.',6:'The sky has a basement.',7:'Please become the correct shape.',8:'Someone has already been here. It was you, shortly.',9:'There is one loose end. It is architectural.'}[r.act]),12000);saveGame()}if(oldRealm!==realm)campaignControls()};
+const originalCompletePuzzle=completePuzzle;completePuzzle=function(o){originalCompletePuzzle(o);if(o.id==='homecolor')story.ended=false;if(o.id==='firstdye'){story.ink='blue';discoveries.add('dye:blue')}if(o.id==='adequatehook'){story.gameBeaten=true;story.ended=true;saveGame();showCampaignEnding()}else saveGame();campaignControls()};
 const originalRealmPhysics=realmPhysics;realmPhysics=function(){originalRealmPhysics();campaignPhysics()};
 const originalSqueeze=squeezeMeg;squeezeMeg=function(){if(mode!=='game')return;if(!campaignSqueeze())originalSqueeze()};
 const originalDressPhysics=dressPhysics;dressPhysics=function(){const oldY=dressBody?.y;campaignDressForces();originalDressPhysics();if(realms[realm]?.act&&dressBody){const b=dressBody;if(b.vy>=0&&!grab&&!pose)for(const p of campaignPlatforms()){if(p.ink&&p.ink!==story.ink)continue;if(Math.abs(b.x-p.x)<p.w/2+20&&oldY+45<=p.y+5&&b.y+45>=p.y){const dy=p.y-45-b.y;b.y+=dy;b.vy=0;for(const v of cloth){v.y+=dy;v.oy+=dy}break}}const top=floor-1000;if(b.y<top){const dy=top-b.y;b.y=top;b.vy=0;for(const p of cloth){p.y+=dy;p.oy+=dy}}}campaignClothShape()};
@@ -1030,10 +1052,30 @@ const originalDrawWorld=drawWorld;drawWorld=function(){originalDrawWorld();drawC
 const originalDrawCloth=drawCloth;drawCloth=function(){originalDrawCloth();if(dressBody&&story.ink&&story.ink!=='pink'){ctx.save();ctx.translate(-camera,-viewY);ctx.globalAlpha=.8;campaignDrawMark(story.ink,dressBody.x,dressBody.y+5,14);ctx.restore()}};
 const originalProgressHUD=progressHUD;progressHUD=function(){originalProgressHUD();campaignControls()};
 function campaignControls(){const active=mode==='game';$('#fold-meg').classList.toggle('hidden',!active||!solved('ownhook'));$('#fold-meg').textContent=['FOLD ◇','FOLD ▱','FOLD ▯'][story.fold||0];$('#echo-meg').classList.toggle('hidden',!active||campaignAct()<8);$('#echo-meg').textContent=echoRecord?'STOP ●':'ECHO ◌';if(realms[realm]?.act)$('#chapter').textContent+=' · ACT '+actNumerals[campaignAct()]+' / IX';}
-showJourneyMap=function(){if(mode!=='game')return;clearMovement();hopRequested=false;grab=null;const panel=$('#routes');panel.replaceChildren();const h=document.createElement('h2');h.textContent='YOUR JOURNEY';panel.append(h);const summary=document.createElement('p');summary.textContent='ACT '+(actNumerals[campaignAct()]||campaignAct())+' / IX · '+(story.ended?'COMPLETE':'IN PROGRESS');panel.append(summary);
- for(let act=1;act<=9;act++){const group=document.createElement('details');group.open=act===campaignAct();const title=document.createElement('summary');title.textContent='ACT '+(actNumerals[act]||act)+' · '+(actNames[act]||(act===1?'THE MISSING DRESS':'COLOR HAS HAPPENED'));group.append(title);let visitedAny=false;
- for(const [key,r] of Object.entries(realms)){const roomAct=r.act||(['bloom','garden','sea','sun','prism','homecoming','highsky'].includes(key)?2:1);if(roomAct!==act)continue;const visited=key===realm||discoveries.has('world:'+key),tasks=r.objects.filter(o=>o.puzzle),done=tasks.filter(o=>solved(o.id)).length;visitedAny ||=visited;const b=document.createElement('button');b.textContent=(key===realm?'YOU ARE HERE · ':done===tasks.length&&tasks.length?'✓ ':visited?'↩ ':'○ ')+r.name+(tasks.length?' · '+done+'/'+tasks.length:'');b.disabled=!visited;b.className=key===realm?'current':'';b.onclick=()=>travel(key);group.append(b)}if(act>2&&!visitedAny)title.textContent+=' · NOT VISITED';panel.append(group)}
- const close=document.createElement('button');close.textContent='BACK TO MEG';close.onclick=()=>panel.classList.add('hidden');panel.append(close);panel.classList.remove('hidden')};
+showJourneyMap=function(){
+ if(mode!=='game')return;
+ if(solved('adequatehook')&&!story.gameBeaten){story.gameBeaten=true;saveGame()}
+ clearMovement();hopRequested=false;grab=null;
+ const panel=$('#routes');panel.replaceChildren();
+ const h=document.createElement('h2');h.textContent='YOUR JOURNEY';panel.append(h);
+ const summary=document.createElement('p');summary.textContent='ACT '+(actNumerals[campaignAct()]||campaignAct())+' / IX · '+(gameBeaten()?'COMPLETE':'IN PROGRESS');panel.append(summary);
+ for(let act=1;act<=9;act++){
+  const group=document.createElement('details');group.open=act===campaignAct();
+  const title=document.createElement('summary');title.textContent='ACT '+(actNumerals[act]||act)+' · '+(actNames[act]||(act===1?'THE MISSING DRESS':'COLOR HAS HAPPENED'));group.append(title);
+  let visitedAny=false;
+  for(const [key,r] of Object.entries(realms)){
+   const roomAct=r.act||(['bloom','garden','sea','sun','prism','homecoming','highsky'].includes(key)?2:1);if(roomAct!==act)continue;
+   const visited=key===realm||discoveries.has('world:'+key),tasks=r.objects.filter(o=>o.puzzle),done=tasks.filter(o=>solved(o.id)).length;visitedAny ||=visited;
+   const row=document.createElement('div');row.className='map-room-row';
+   const b=document.createElement('button');b.className='map-travel'+(key===realm?' current':'');b.textContent=(key===realm?'YOU ARE HERE · ':done===tasks.length&&tasks.length?'✓ ':visited?'↩ ':'○ ')+r.name+(tasks.length?' · '+done+'/'+tasks.length:'');b.disabled=!visited;b.onclick=()=>travel(key);row.append(b);
+   if(gameBeaten()&&visited&&tasks.length){const reset=document.createElement('button');reset.className='reset-layer';reset.textContent='RESET LAYER';reset.onclick=()=>resetLayer(key);row.append(reset)}
+   group.append(row)
+  }
+  if(act>2&&!visitedAny)title.textContent+=' · NOT VISITED';
+  panel.append(group)
+ }
+ const close=document.createElement('button');close.textContent='BACK TO MEG';close.onclick=()=>panel.classList.add('hidden');panel.append(close);panel.classList.remove('hidden')
+};
 const originalForget=forgetJourney;forgetJourney=function(){echoActors=[];echoRecord=null;echoHistory=[];campaignClock=0;endingVisible=false;$('#ending').classList.add('hidden');originalForget();story.ink='pink';story.fold=0;story.turns={};story.basins={};for(const r of Object.values(realms))for(const o of r.objects){delete o.wasOn;if(o.baseX)o.x=o.baseX}saveGame();campaignControls()};$('#forget').onclick=forgetJourney;
 addEventListener('keydown',e=>{if(mode!=='game'||e.repeat||e.target.closest('input,textarea,select,[contenteditable=true]'))return;if(e.key.toLowerCase()==='f'){e.preventDefault();cycleCampaignFold()}if(e.key.toLowerCase()==='e'){e.preventDefault();recordCampaignEcho()}});
 
@@ -1049,7 +1091,11 @@ function makeGameForgiving(){
 campaignTarget=function(o,s){const turn=campaignTurn(o),moving=s.moving?Math.sin(campaignClock*.5+o.art)*Number(s.moving)*.35:0;return {x:o.x+moving+(s.turn!==undefined?Math.sin(turn*Math.PI/2)*62:0),y:groundAt(o.x)-Math.max(60,(s.dy||130)*.86),r:s.fold!==undefined?112:118}};
 campaignEchoesFit=function(o,s){
  if(!s.echo)return true;
- const actors=echoActors.filter(e=>e.station===o.id);if(!actors.length)return false;
+ const actors=echoActors.filter(e=>e.station===o.id);if(actors.length<s.echo)return false;
+ if(campaignAct()===9&&s.echo>=2){
+  const colors=actors.slice(-s.echo).map(e=>e.frames.find(f=>f?.ink)?.ink||'pink');
+  if(new Set(colors).size<s.echo)return false;
+ }
  return campaignPads(o,s).some(p=>actors.some(e=>{const f=echoPosition(e);return f&&Math.abs(f.x-p.x)<120&&Math.abs(f.y-p.y)<120&&(!p.ink||f.ink===p.ink)}));
 };
 campaignConditions=function(o,s){
