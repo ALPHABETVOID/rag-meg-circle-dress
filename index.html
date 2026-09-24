@@ -6,54 +6,155 @@
 <meta name="theme-color" content="#000000">
 <title>RAG MEG — CIRCLE DRESS</title>
 <style>
-:root{color-scheme:dark;--pink:#f2b8c6}*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}html,body{margin:0;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;width:100%;height:100%;overflow:hidden;background:#000;color:#fff;font-family:'Courier New',monospace;overscroll-behavior:none}button{font:inherit;color:inherit;cursor:pointer}button:focus-visible{outline:1px solid var(--pink);outline-offset:5px}canvas{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}#ui{position:fixed;inset:0;pointer-events:none}.hidden{display:none!important}#title{position:absolute;top:max(12%,calc(env(safe-area-inset-top) + 36px));width:100%;text-align:center;font-size:clamp(40px,10vw,66px);line-height:.92;letter-spacing:.045em}#title small{display:block;font-size:13px;margin-top:20px;letter-spacing:.26em;font-weight:normal}#menu{position:absolute;top:38%;width:100%;text-align:center;pointer-events:auto}.item{display:block;min-width:175px;min-height:48px;margin:8px auto;border:1px solid transparent;background:#000;font-size:15px;padding:12px 24px}.item:hover{border-color:#777}#msg{position:absolute;top:max(17%,calc(env(safe-area-inset-top) + 84px));left:50%;transform:translateX(-50%);width:min(87%,610px);text-align:center;font-size:clamp(13px,3.4vw,16px);line-height:1.65;white-space:pre-line;opacity:0;transition:opacity .2s;text-shadow:0 2px 9px #000;z-index:4}#task{position:absolute;top:max(25px,calc(env(safe-area-inset-top) + 12px));left:22px;right:88px;font-size:12px;line-height:1.5;color:#bbb;max-width:460px}#chapter{display:block;color:#f2b8c6;font-size:10px;letter-spacing:.12em;margin-bottom:5px}#area{display:block;font-size:10px;letter-spacing:.18em;color:#777;margin-bottom:9px}#pause{position:absolute;right:12px;top:max(12px,env(safe-area-inset-top));min-width:55px;min-height:44px;background:#0009;border:0;font-size:12px;pointer-events:auto}#hint{position:absolute;bottom:max(24px,calc(env(safe-area-inset-bottom) + 15px));width:100%;text-align:center;color:#999;font-size:12px;padding:0 18px}#settings{position:absolute;top:34%;left:50%;transform:translateX(-50%);width:min(86%,370px);background:#000;border:1px solid #666;padding:22px;text-align:center;pointer-events:auto;z-index:8}#settings p{font-size:12px;color:#999;line-height:1.6}#settings button{display:block;background:none;border:0;min-height:48px;width:100%;font-size:14px}#touch{display:none;position:absolute;left:0;right:0;bottom:max(18px,calc(env(safe-area-inset-bottom) + 8px));height:66px;pointer-events:none}.touch-button{position:absolute;bottom:0;width:62px;height:62px;border:1px solid #777;border-radius:50%;background:#000b;font-size:23px;pointer-events:auto;touch-action:none;user-select:none}#left{left:20px}#right{left:96px}.pressed{border-color:#f2b8c6;background:#332128}.edge{position:absolute;top:58%;color:#777;font-size:20px}#west{left:12px}#east{right:12px}@media(pointer:coarse),(max-width:720px){#touch.game-on{display:block}#hint{bottom:max(100px,calc(env(safe-area-inset-bottom) + 88px));font-size:11px}#task{font-size:11px;left:18px}#msg{font-size:13px}#title{top:14%}}@media(prefers-reduced-motion:reduce){#msg{transition:none}}
+:root{color-scheme:dark;--pink:#f2b8c6}*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#fff;font-family:'Courier New',monospace;overscroll-behavior:none}button{font:inherit;color:inherit;cursor:pointer}button:focus-visible{outline:1px solid var(--pink);outline-offset:5px}canvas{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}#ui{position:fixed;inset:0;pointer-events:none}.hidden{display:none!important}#title{position:absolute;top:max(12%,calc(env(safe-area-inset-top) + 36px));width:100%;text-align:center;font-size:clamp(40px,10vw,66px);line-height:.92;letter-spacing:.045em}#title small{display:block;font-size:13px;margin-top:20px;letter-spacing:.26em;font-weight:normal}#menu{position:absolute;top:38%;width:100%;text-align:center;pointer-events:auto}.item{display:block;min-width:175px;min-height:48px;margin:8px auto;border:1px solid transparent;background:#000;font-size:15px;padding:12px 24px}.item:hover{border-color:#777}#msg{position:absolute;top:max(17%,calc(env(safe-area-inset-top) + 84px));left:50%;transform:translateX(-50%);width:min(87%,610px);text-align:center;font-size:clamp(13px,3.4vw,16px);line-height:1.65;white-space:pre-line;opacity:0;transition:opacity .2s;text-shadow:0 2px 9px #000;z-index:4}#task{position:absolute;top:max(25px,calc(env(safe-area-inset-top) + 12px));left:22px;right:88px;font-size:12px;line-height:1.5;color:#bbb;max-width:460px}#chapter{display:block;color:#f2b8c6;font-size:10px;letter-spacing:.12em;margin-bottom:5px}#area{display:block;font-size:10px;letter-spacing:.18em;color:#777;margin-bottom:9px}#atlas{position:absolute;right:75px;top:max(12px,env(safe-area-inset-top));background:#0009;border:0;min-height:44px;pointer-events:auto}#hop{right:102px;font-size:12px}#routes{position:absolute;inset:12% 5% 17%;overflow:auto;background:#080b13f5;border:1px solid #aaa;padding:22px;pointer-events:auto;z-index:10}#routes button{background:#161b29;border:1px solid #666;padding:12px;margin:5px;min-height:44px}#routes p{font-size:14px;line-height:1.6}#pause{position:absolute;right:12px;top:max(12px,env(safe-area-inset-top));min-width:55px;min-height:44px;background:#0009;border:0;font-size:12px;pointer-events:auto}#hint{position:absolute;bottom:max(24px,calc(env(safe-area-inset-bottom) + 15px));width:100%;text-align:center;color:#999;font-size:12px;padding:0 18px}#settings{position:absolute;top:34%;left:50%;transform:translateX(-50%);width:min(86%,370px);background:#000;border:1px solid #666;padding:22px;text-align:center;pointer-events:auto;z-index:8}#settings p{font-size:12px;color:#999;line-height:1.6}#settings button{display:block;background:none;border:0;min-height:48px;width:100%;font-size:14px}#touch{display:none;position:absolute;left:0;right:0;bottom:max(18px,calc(env(safe-area-inset-bottom) + 8px));height:66px;pointer-events:none}.touch-button{position:absolute;bottom:0;width:62px;height:62px;border:1px solid #777;border-radius:50%;background:#000b;font-size:23px;pointer-events:auto;touch-action:none;user-select:none}#poke{right:20px;width:70px;font-size:12px}.pressed{border-color:#f2b8c6;background:#332128}.edge{position:absolute;top:58%;color:#777;font-size:20px}#west{left:12px}#east{right:12px}@media(pointer:coarse),(max-width:720px){#touch.game-on{display:block}#hint{bottom:max(100px,calc(env(safe-area-inset-bottom) + 88px));font-size:11px}#task{font-size:11px;left:18px}#msg{font-size:13px}#title{top:14%}}@media(prefers-reduced-motion:reduce){#msg{transition:none}}
 .audio-level{display:flex;align-items:center;justify-content:space-between;gap:18px;font-size:12px;margin:17px 0;color:#bbb}.audio-level input{width:65%;accent-color:#f2b8c6}#settings{top:24%}@media(max-height:520px){#settings{top:8%;max-height:85%;overflow:auto}}
+
+/* Keep narrative text separate from the quest header and eliminate blurred shadows. */
+#msg{top:max(23%,calc(env(safe-area-inset-top) + 140px));left:6%;transform:none;width:88%;max-width:610px;margin-left:max(0px,calc(44% - 305px));padding:12px 16px;background:#080b13f2;border-radius:3px;text-shadow:none;font-size:15px;line-height:1.65;transition:none}
+#task{right:145px}#hint{color:#ccc;text-shadow:none;line-height:1.5}
+@media(max-height:520px){#msg{top:26%;left:23%;width:54%;margin-left:0;font-size:13px;padding:8px 12px;line-height:1.35}#task{max-width:220px;font-size:10px}#chapter,#area{font-size:9px}}
+
+#touch, .touch-button, canvas{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-user-drag:none;touch-action:none}
+.touch-button{-webkit-appearance:none;appearance:none;-webkit-tap-highlight-color:transparent}
+
+#touch{height:112px}#touch.game-on{display:block}
+#joystick{left:max(20px,calc(env(safe-area-inset-left) + 12px));width:112px;height:112px;padding:0;border:1px solid #aaa;background:radial-gradient(circle,#161019cc 0 44%,#000b 45%);display:grid;place-items:center;cursor:grab}
+#joystick.pressed{border-color:#f2b8c6;cursor:grabbing}
+#stick{display:block;width:44px;height:44px;border-radius:50%;border:1px solid #f6d6df;background:#dbadbb;box-shadow:0 3px 12px #0008;pointer-events:none;will-change:transform}
+#hint{bottom:max(148px,calc(env(safe-area-inset-bottom) + 136px))}
+@media(max-height:520px){#hint{bottom:12px;left:145px;width:calc(100% - 320px);padding:0;font-size:10px}}
+
+#squeeze{right:22px;bottom:80px;width:66px;height:52px;font-size:10px;border-radius:18px}
+#task{max-width:520px;font-size:12px}#area{font-size:12px;color:#eee;letter-spacing:.06em}#chapter{font-size:11px;color:#f2b8c6;letter-spacing:0}
+#routes .current{border-color:#f2b8c6;background:#362133}#routes button{display:block;width:100%;margin:8px 0;text-align:left}#routes .map-summary{color:#f2b8c6}
+
+#hint,#objective{display:none!important}
+#task{left:20px;right:136px;max-width:500px;line-height:1.5}
+#area{white-space:pre-line;color:#eee;font-size:13px;font-weight:normal;letter-spacing:.035em;margin-bottom:5px}
+#chapter{font-size:13px;color:#ccc;margin-bottom:8px}
+#resources{display:flex;align-items:center;flex-wrap:wrap;gap:12px}
+.resource-group{display:inline-flex;gap:4px;align-items:center}.resource-group svg{width:18px;height:22px;display:block;color:#8d8d98;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+#water-icons svg.full{color:#9ddcff;fill:#9ddcff}#thread-icons svg.full{color:#f2b8c6;fill:#f2b8c6}#thread-icons svg.full path+path{stroke:#704c5b}#color-icons svg.full{fill:currentColor}
+#msg{top:clamp(170px,25vh,430px);bottom:auto;left:50%;transform:translateX(-50%);width:min(86%,620px);max-width:620px;margin-left:0;padding:12px 16px;font-size:16px;line-height:1.5;letter-spacing:0;background:#080b13f5;border:1px solid #ffffff18;box-shadow:none;white-space:pre-line}
+#settings{top:15%;max-height:76%;overflow-y:auto;overscroll-behavior:contain}
+#guide{position:absolute;inset:12% 6% 15%;max-width:480px;margin:auto;background:#0a0a0ff7;border:1px solid #777;padding:24px;z-index:20;pointer-events:auto;overflow-y:auto;overscroll-behavior:contain}
+#guide-step{font-size:12px;color:#c8a5b1;letter-spacing:.12em}#guide h2{font-size:23px;font-weight:normal;margin:18px 0}#guide p{font-size:16px;line-height:1.6;color:#ddd;margin:14px 0}#guide strong{color:#fff;font-weight:normal}.guide-actions{display:flex;justify-content:space-between;gap:20px;margin-top:24px}.guide-actions button{min-height:48px;background:#17121c;border:1px solid #8e737e;padding:10px 20px}
+@media(max-height:520px){#task{max-width:270px}#area{font-size:12px}#chapter{font-size:12px}#msg{top:150px;bottom:auto;left:50%;width:min(76%,520px);margin:0;transform:translateX(-50%);font-size:14px;padding:8px;line-height:1.4}#guide{inset:5% 12%;padding:16px 24px}}
+
+#fold-meg{right:102px;bottom:80px;width:62px;height:52px;border-radius:18px;font-size:10px}
+#echo-meg{right:22px;bottom:144px;width:66px;height:48px;border-radius:18px;font-size:10px}
+#ending{position:absolute;inset:0;background:#16131df5;z-index:30;pointer-events:auto;overflow:auto;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:7vh 22px 35px;text-align:center}
+#ending h2{font-size:clamp(32px,7vw,54px);letter-spacing:.12em;font-weight:normal;margin:18px 0 0}#ending p{line-height:1.7;font-size:14px}#ending .ending-small{color:#bcafc5;font-size:12px}#ending button{padding:14px 25px;margin:6px;min-height:48px;background:#292130;border:1px solid #a28ba9}
+.ending-circle{margin:15px 0;width:86px;height:86px;border:2px solid #eee5da;border-radius:50%;display:grid;place-items:center}.ending-circle span{width:25px;height:56px;background:repeating-linear-gradient(90deg,#c89cae 0 2px,#d5abbc 2px 4px);transform:rotate(9deg)}
+#routes details{margin:18px 0}#routes summary{cursor:pointer;min-height:44px;padding:12px 4px;color:#f2b8c6;font-size:13px;line-height:1.5}#routes button:disabled{opacity:.4;cursor:default}
+@media(max-width:400px){#task{max-width:230px}#area{font-size:11px}#resources{gap:8px}.resource-group{gap:2px}.resource-group svg{width:15px;height:19px}}
+
+/* Mobile game chrome: never invoke browser text selection/callouts while playing. */
+*,*::before,*::after{-webkit-user-select:none!important;user-select:none!important;-webkit-touch-callout:none!important}
+html,body,#ui,canvas,button,#menu,#settings,#guide,#routes,#ending,#touch{-webkit-user-select:none!important;user-select:none!important;-webkit-touch-callout:none!important}
+button,a,[role="button"]{-webkit-user-drag:none!important;user-drag:none!important}
+#slots{position:absolute;top:25%;left:50%;transform:translateX(-50%);width:min(88%,390px);background:#09090df5;border:1px solid #777;padding:22px;pointer-events:auto;z-index:18;text-align:center}
+#slots h2{font-size:20px;font-weight:normal;letter-spacing:.12em;margin:0 0 16px}
+#slot-list{display:grid;gap:8px}
+#slot-list button,#slots-back{display:block;width:100%;min-height:50px;background:#15131a;border:1px solid #666;padding:10px 12px;text-align:left}
+#slot-list button.active{border-color:#f2b8c6;background:#332128}
+#slots-back{margin-top:16px;text-align:center}
+#slot-note{font-size:11px;color:#aaa;line-height:1.5;margin:12px 0 0}
 </style>
 </head>
 <body>
 <canvas id="c" aria-label="Rag Meg: drag a pink kitchen rag through a quiet, side-scrolling town."></canvas>
 <div id="ui">
 <h1 id="title">RAG MEG<small>CIRCLE DRESS</small></h1>
-<div id="menu"><button class="item" id="begin">BEGIN</button><button class="item" id="open-settings">SETTINGS</button><button class="item" id="leave">LEAVE</button></div>
-<div id="settings" class="hidden" role="dialog" aria-label="Settings"><button id="sound">SOUND — on</button><button id="music-toggle">MUSIC — on</button><label class="audio-level">music <input id="music-level" type="range" min="0" max="100" value="38" aria-label="Music volume"></label><label class="audio-level">effects <input id="effects-level" type="range" min="0" max="100" value="65" aria-label="Sound effects volume"></label><button id="motion">STARS — moving</button><p>MATERIAL — damp cotton.<br>No further qualifications.</p><button id="forget">FORGET THIS JOURNEY</button><button id="back">BACK</button></div>
-<div id="task" class="hidden"><span id="area"></span><span id="chapter"></span><span id="objective"></span></div>
+<div id="menu"><button class="item" id="begin">BEGIN</button><button class="item" id="save-slots">SAVE SLOTS</button><button class="item" id="open-settings">SETTINGS</button><button class="item" id="leave">LEAVE</button></div>
+<div id="slots" class="hidden" role="dialog" aria-label="Save slots"><h2>FOUR JOURNEYS</h2><div id="slot-list"></div><p id="slot-note">Each slot keeps its own progress. Switching slots reloads the game into that journey.</p><button id="slots-back">BACK</button></div>
+<div id="settings" class="hidden" role="dialog" aria-label="Settings"><button id="controls-help">CONTROLS &amp; TUTORIAL</button><button id="room-notes">ROOM NOTES</button><button id="sound">SOUND — on</button><button id="music-toggle">MUSIC — on</button><label class="audio-level">music <input id="music-level" type="range" min="0" max="100" value="38" aria-label="Music volume"></label><label class="audio-level">effects <input id="effects-level" type="range" min="0" max="100" value="65" aria-label="Sound effects volume"></label><button id="motion">STARS — moving</button><p>MATERIAL — damp cotton.<br>No further qualifications.</p><button id="forget">FORGET THIS JOURNEY</button><button id="back">BACK</button></div>
+<div id="task" class="hidden"><span id="area"></span><span id="chapter"></span><div id="resources"><span id="water-icons" class="resource-group" role="img"></span><span id="thread-icons" class="resource-group" role="img"></span><span id="color-icons" class="resource-group hidden" role="img"></span></div><span id="objective" hidden></span></div>
 <button id="pause" class="hidden" aria-label="Return to title menu">MENU</button>
-<div id="msg" role="status" aria-live="polite"></div>
-<div id="hint">you may pick up the rag</div>
-<div id="west" class="edge hidden" aria-hidden="true">‹</div><div id="east" class="edge hidden" aria-hidden="true">›</div>
-<div id="touch"><button id="left" class="touch-button" aria-label="Move left">←</button><button id="right" class="touch-button" aria-label="Move right">→</button></div>
+<button id="atlas" class="hidden">MAP</button><div id="routes" class="hidden"></div><div id="msg" role="status" aria-live="polite"></div>
+<section id="ending" class="hidden" role="dialog" aria-modal="true" aria-labelledby="ending-title"><p class="ending-small">RAG MEG · CIRCLE DRESS</p><h2 id="ending-title">THE END</h2><p>ALL NINE ACTS COMPLETE</p><div class="ending-circle" aria-hidden="true"><span></span></div><p>Meg is home.<br>The hook is adequate.</p><p class="ending-small">An ALPHABETVOID game<br>Made with Amanda<br>Starring one kitchen rag<br>And one circle</p><button id="ending-wander">KEEP WANDERING</button><button id="ending-map">YOUR JOURNEY</button></section><div id="hint" hidden></div>
+<section id="guide" class="hidden" role="dialog" aria-modal="true" aria-labelledby="guide-title"><span id="guide-step"></span><h2 id="guide-title"></h2><div id="guide-body"></div><div class="guide-actions"><button id="guide-skip">SKIP</button><button id="guide-next">NEXT</button></div></section><div id="west" class="edge hidden" aria-hidden="true">‹</div><div id="east" class="edge hidden" aria-hidden="true">›</div>
+<div id="touch"><button id="joystick" class="touch-button" tabindex="-1" draggable="false" aria-label="Movement joystick: drag left or right to move, up to lift or bounce"><span id="stick" aria-hidden="true"></span></button><button id="squeeze" class="touch-button" tabindex="-1" draggable="false" aria-label="Squeeze water or fold Meg">SQUEEZE</button><button id="hop" class="touch-button hidden" tabindex="-1" draggable="false" aria-label="Bounce or float">BOUNCE</button><button id="fold-meg" class="touch-button hidden" tabindex="-1" draggable="false" aria-label="Change remembered fold">FOLD ◇</button><button id="echo-meg" class="touch-button hidden" tabindex="-1" draggable="false" aria-label="Record or stop a cloth echo">ECHO ◌</button></div>
 </div>
 <script>
 'use strict';
 const $=s=>document.querySelector(s),canvas=$('#c'),ctx=canvas.getContext('2d');
-const WORLD=10700,COLS=13,ROWS=7,cloth=[],seams=[],keys=new Set(),movePointers=new Map();
+let WORLD=10700;const COLS=13,ROWS=7,cloth=[],seams=[],keys=new Set();
+const joystick={pointer:null,x:0,y:0,cx:0,cy:0};
+const screenHolds=new Map();
 let W=innerWidth,H=innerHeight,floor=H*.72,camera=0,mode='menu',started=false,grab=null,pendingTap=null,time=0,lastTime=0,accumulator=0,stars=[],focus=null,messageUntil=0,messageTimer=0,menuTimer=0;
+let dressBody=null,viewY=0,squeezeUntil=0,celebration=null;
 let pose=null,hangLocked=false, soundOn=true,reduced=matchMedia('(prefers-reduced-motion: reduce)').matches,audioContext=null;
-const story={metGreg:false,absorbed:false,wet:false,absorb:0,ended:false,box:false,pebble:false,bell:false,dried:false,elsewhere:false,orb:false,boundary:false,homeVisits:0,dressFound:false,bureau:false,radio:false,rested:false,quests:0,pose:null};
+const story={metGreg:false,absorbed:false,wet:false,absorb:0,ended:false,box:false,pebble:false,bell:false,dried:false,elsewhere:false,orb:false,boundary:false,homeVisits:0,dressFound:false,bureau:false,radio:false,rested:false,quests:0,pose:null,water:0};
+const freshStory={...story};
 const discoveries=new Set();
-const SAVE_KEY="rag-meg-circle-dress-save-v3";
-let stuckSince=0,lastHintAt=0,hintNumber=0,lastHintKey='';
-function hintKey(){if(story.dressFound)return 'done';if(!story.metGreg&&center()>650)return 'greg';if(!story.absorbed)return 'puddle';if(story.wet&&!story.dried)return 'dry';if(!story.bell)return 'bell';if(!story.elsewhere)return 'box3';if(!story.orb)return 'orb';if(!story.bureau)return 'bureau';if(!story.radio)return 'radio';if(!story.rested)return 'stone';return center()>10000?'dress':'east'}
-const HINTS={
- greg:['Try tapping anywhere near the tall stick figure.','Long Greg is farther right. The nearest thing usually responds to a tap.'],
- puddle:['The puddle is the committee member. Drag Meg across it until it disappears.','Keep Meg low and move slowly across the puddle. She absorbs it by being a rag.'],
- dry:['Meg is damp. Find the washing line farther east and tap it.','The washing line can dry her. You do not need to solve anything first.'],
- bell:['The public bell is farther east. Get near it and lift a corner, or simply tap when close.','Move Meg beneath the bell and tap. The game will help with the rest.'],
- box3:['BOX 3 is farther east, near the bench.','Follow the signs toward ELSEWHERE. BOX 3 is waiting there.'],
- orb:['Bring Meg near the local orb and tap anywhere.','The orb comes down when the rag gets close.'],
- bureau:['Circular Affairs is the office farther east.','Look for the building marked CIRCULAR.'],
- radio:['The unattended radio is farther east, beyond the office.','Follow the little landmarks until the radio speaks.'],
- stone:['Find the resting stone and tap it.','Meg is allowed to stop. Look for the low stone in the far stretch.'],
- east:['Keep moving east. The circle dress is still farther away.','Follow the signs. There is a lot of town, and the circle is at the end.'],
- dress:['You are almost there. Keep going east until you find the plain white circle.','The circle dress is the last object in the world.']
-};
-function resetStuck(){stuckSince=performance.now();lastHintAt=0;hintNumber=0;lastHintKey=hintKey()}
-function maybeHint(now){if(mode!=='game'||story.dressFound)return;const key=hintKey();if(key!==lastHintKey){resetStuck();return}if(now-stuckSince<120000||now-lastHintAt<90000||messageUntil>now)return;const lines=HINTS[key]||HINTS.east;say(lines[Math.min(hintNumber,lines.length-1)],6200);hintNumber++;lastHintAt=now}
-function saveGame(){try{localStorage.setItem(SAVE_KEY,JSON.stringify({story,discoveries:[...discoveries],pebbleX}))}catch{}}
-function loadGame(){try{const v=JSON.parse(localStorage.getItem(SAVE_KEY)||"null");if(v?.story)Object.assign(story,v.story);if(Array.isArray(v?.discoveries))v.discoveries.forEach(x=>discoveries.add(x));if(Number.isFinite(v?.pebbleX))pebbleX=v.pebbleX;hangLocked=false;pose=null}catch{}}
+const LEGACY_SAVE_KEY="rag-meg-circle-dress-save-v3";
+const SAVE_PREFIX="rag-meg-circle-dress-save-slot-v1-";
+const ACTIVE_SLOT_KEY="rag-meg-circle-dress-active-slot-v1";
+const MIGRATION_KEY="rag-meg-circle-dress-slots-migrated-v1";
+let activeSaveSlot=1;
+try{
+ activeSaveSlot=Math.min(4,Math.max(1,Number(localStorage.getItem(ACTIVE_SLOT_KEY))||1));
+ if(localStorage.getItem(MIGRATION_KEY)!=='yes'){
+  const legacy=localStorage.getItem(LEGACY_SAVE_KEY);
+  if(legacy&&!localStorage.getItem(SAVE_PREFIX+'1'))localStorage.setItem(SAVE_PREFIX+'1',legacy);
+  localStorage.setItem(MIGRATION_KEY,'yes');
+ }
+}catch{}
+const SAVE_KEY=SAVE_PREFIX+activeSaveSlot;
+function saveGame(){try{localStorage.setItem(SAVE_KEY,JSON.stringify({story:{...story,realm,position:cloth.length?center():300},discoveries:[...discoveries],pebbleX,savedAt:Date.now()}))}catch{}}
+function loadGame(){try{const v=JSON.parse(localStorage.getItem(SAVE_KEY)||"null");if(v?.story)Object.assign(story,v.story);if(Array.isArray(v?.discoveries))v.discoveries.forEach(x=>discoveries.add(x));if(Number.isFinite(v?.pebbleX))pebbleX=v.pebbleX}catch{}}
 function chapter(){if(story.dressFound)return 10;if(story.rested)return 9;if(story.radio)return 8;if(story.bureau)return 7;if(story.orb)return 6;if(story.elsewhere)return 5;if(story.bell)return 4;if(story.dried)return 3;if(story.absorbed)return 2;return 1}
+
+let stuckSince=0,lastHintAt=0,lastHintKey='';
+const earlyHints={
+ greg:'Long Greg is farther right. Tap anywhere near him.',
+ puddle:'Drag Meg across the puddle. The absorption zone is generous now.',
+ dry:'Find the washing line farther east and tap it to dry Meg.',
+ bell:'Get near the public bell and tap anywhere; you no longer need a perfect lift.',
+ box3:'Keep going east toward ELSEWHERE and BOX 3.',
+ orb:'Get near the local orb and tap anywhere; it will come down to you.',
+ bureau:'Circular Affairs is farther east. Tap the building when you reach it.',
+ radio:'The unattended radio is beyond Circular Affairs.',
+ stone:'Find the resting stone and tap it. A brief rest is enough.',
+ east:'Hold the left or right half of the screen to move. The circle is farther east.',
+ dress:'You are almost there. Keep moving east toward the plain white circle.'
+};
+function currentStuckTask(){if(typeof nextTask==='function'){try{return nextTask()}catch{}}return null}
+function hintKey(){
+ if(mode!=='game')return '';
+ if(realm==='town'&&!story.dressFound){
+  if(!story.metGreg&&center()>650)return 'town:greg';
+  if(!story.absorbed)return 'town:puddle';
+  if(story.wet&&!story.dried)return 'town:dry';
+  if(!story.bell)return 'town:bell';
+  if(!story.elsewhere)return 'town:box3';
+  if(!story.orb)return 'town:orb';
+  if(!story.bureau)return 'town:bureau';
+  if(!story.radio)return 'town:radio';
+  if(!story.rested)return 'town:stone';
+  return center()>10000?'town:dress':'town:east';
+ }
+ const task=currentStuckTask();
+ if(task){
+  let stage='';try{stage=task.campaign?campaignStage(task):task.spatial?activeStep(task):''}catch{}
+  return [realm,task.id,stage,story.water||0,story.fold||0,story.ink||'pink',story.turns?.[task.id]||0].join(':');
+ }
+ return realm+':explore:'+String(story.dressFound)+':'+String(story.ended);
+}
+function hintText(){
+ if(realm==='town'&&!story.dressFound){const k=hintKey().split(':')[1]||'east';return earlyHints[k]||earlyHints.east}
+ const task=currentStuckTask();
+ if(task?.campaign){const i=campaignStage(task),step=task.steps?.[Math.max(0,i)];return 'Try '+task.name+'. '+(step?campaignConditionText(step):'Tap the station.')+' The target zones are intentionally forgiving.'}
+ if(task?.spatial)return (task.hint||'Fit Meg into the highlighted outline.')+' The outline is larger than it looks; close is good enough.';
+ if(task?.puzzle)return task.hint||puzzleStatus(task);
+ const exit=objects?.find?.(o=>o.portal&&(!o.needs||o.needs.every(n=>typeof campaignDone==='function'?campaignDone(n):solved(n))));
+ return exit?'Try tapping '+exit.name+'.':'Hold the left or right half of the screen to keep Meg moving. Tap anything interesting to poke it.';
+}
+function resetStuck(){stuckSince=performance.now();lastHintAt=0;lastHintKey=hintKey()}
+function maybeHint(now){if(mode!=='game')return;const key=hintKey();if(key!==lastHintKey){resetStuck();return}if(now-stuckSince<120000||now-lastHintAt<90000||messageUntil>now)return;say(hintText(),6500);lastHintAt=now}
 function questComplete(){story.quests=Math.max(story.quests,chapter()-1);saveGame();resetStuck()}
-const objects=[
+let objects=[
  {id:'home',x:160,name:'HOME, APPARENTLY',reach:95},
  {id:'box',x:485,name:'BOX 4',reach:80},
  {id:'greg',x:815,name:'LONG GREG',reach:90},
@@ -89,14 +190,14 @@ let pebbleX=1750,pebbleShift=0;
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 function line(a,b,c,d){ctx.beginPath();ctx.moveTo(a,b);ctx.lineTo(c,d);ctx.stroke()}
 function ellipse(a,b,c,d,fill=false){ctx.beginPath();ctx.ellipse(a,b,c,d,0,0,Math.PI*2);fill?ctx.fill():ctx.stroke()}
-function center(){return cloth.reduce((s,p)=>s+p.x,0)/cloth.length}
-function say(text,duration=4200){clearTimeout(messageTimer);$('#msg').textContent=text;$('#msg').style.opacity=1;messageUntil=performance.now()+duration;messageTimer=setTimeout(()=>{$('#msg').style.opacity=0;messageUntil=0},duration)}
+function center(){if(story.dressFound&&dressBody)return dressBody.x;return cloth.reduce((s,p)=>s+p.x,0)/cloth.length}
+function say(text,duration=4200){duration=Math.max(duration,9000,Math.min(22000,text.length*65));clearTimeout(messageTimer);$('#msg').textContent=text;$('#msg').style.opacity=1;messageUntil=performance.now()+duration;messageTimer=setTimeout(()=>{$('#msg').style.opacity=0;messageUntil=0},duration)}
 function quietMessage(){clearTimeout(messageTimer);$('#msg').style.opacity=0;messageUntil=0}
 // Original sixteen-bar void-house loop. Audio-clock scheduling keeps the groove
 // continuous across title, settings and play, without downloads or audio assets.
-let masterBus,musicBus,effectsBus,duckBus,echo,noiseBuffer,musicTimer=null,nextBeat=0,musicStep=0;
+let masterBus,musicBus,effectsBus,scoreBus,duckBus,echo,noiseBuffer,musicTimer=null,nextBeat=0,musicStep=0;
 let musicEnabled=true,musicVolume=.38,effectsVolume=.65,lastRustle=0,lastLanding=0;
-const BPM=118,STEP=60/BPM/4,LOOP_STEPS=256;
+let STEP=60/118/4,activeScoreKey='';const LOOP_STEPS=256;
 function audioReady(){
  if(!soundOn)return;
  try{
@@ -107,7 +208,7 @@ function audioReady(){
    masterBus.connect(limiter);limiter.connect(audioContext.destination);
    musicBus=audioContext.createGain();musicBus.gain.value=musicVolume;musicBus.connect(masterBus);
    effectsBus=audioContext.createGain();effectsBus.gain.value=effectsVolume;effectsBus.connect(masterBus);
-   duckBus=audioContext.createGain();duckBus.connect(musicBus);
+   scoreBus=audioContext.createGain();scoreBus.connect(musicBus);duckBus=audioContext.createGain();duckBus.connect(scoreBus);
    echo=audioContext.createDelay(1);echo.delayTime.value=STEP*3;
    const feedback=audioContext.createGain(),wet=audioContext.createGain(),filter=audioContext.createBiquadFilter();feedback.gain.value=.24;wet.gain.value=.19;filter.type='lowpass';filter.frequency.value=2400;echo.connect(filter);filter.connect(feedback);feedback.connect(echo);filter.connect(wet);wet.connect(musicBus);
    noiseBuffer=audioContext.createBuffer(1,audioContext.sampleRate,audioContext.sampleRate);
@@ -127,24 +228,64 @@ function voice(freq,at,length,volume,type='sine',bus=effectsBus,cutoff=0,endFreq
 }
 function hiss(at,length,volume,frequency=6000,bus=effectsBus){if(!noiseBuffer||!bus)return;const source=audioContext.createBufferSource(),filter=audioContext.createBiquadFilter(),g=audioContext.createGain();source.buffer=noiseBuffer;filter.type='highpass';filter.frequency.value=frequency;g.gain.setValueAtTime(.0001,at);g.gain.linearRampToValueAtTime(volume,at+.004);g.gain.exponentialRampToValueAtTime(.0001,at+length);source.connect(filter);filter.connect(g);g.connect(bus);source.start(at);source.stop(at+length+.01);source.onended=()=>{source.disconnect();filter.disconnect();g.disconnect()}}
 const hz=m=>440*Math.pow(2,(m-69)/12);
-function musicBeat(step,at){
- const bar=Math.floor(step/16),beat=step%16,root=[36,32,39,34][Math.floor(bar/4)];
- // Four-on-the-floor kick, soft clap, offbeat open hats and sixteenth detail.
- if(beat%4===0){voice(145,at,.26,.68,'sine',musicBus,0,44);hiss(at,.018,.035,5500,musicBus);duckBus.gain.cancelScheduledValues(at);duckBus.gain.setValueAtTime(.3,at);duckBus.gain.linearRampToValueAtTime(1,at+STEP*2.7)}
- if(beat===4||beat===12){hiss(at,.13,.19,1100,musicBus);hiss(at+.018,.09,.12,1800,musicBus);voice(180,at,.095,.08,'triangle',musicBus)}
- if(beat%4===2)hiss(at,.16,.11,7000,musicBus);else if(beat%2===0||(bar%4===3&&beat>11))hiss(at,.042,.045,8500,musicBus);
- if([2,6,10,14].includes(beat)){voice(hz(root),at,STEP*1.5,.21,'sawtooth',duckBus,650);voice(hz(root),at,STEP*1.45,.24,'sine',duckBus)}
- if(beat===0){const third=(root===36?3:4);for(const offset of [0,third,7,14])voice(hz(root+24+offset),at,STEP*15,.024,'triangle',duckBus,1800,0,.12)}
- const arp=[0,7,12,7,3,10,14,7];if(beat%2===0){let offset=arp[beat/2];if(root!==36&&offset===3)offset=4;const note=hz(root+24+offset);const v=voice(note,at,STEP*2.1,.085,'triangle',duckBus,2600);v?.connect(echo)}
- if(bar>=8&&[3,11,14].includes(beat)){const n=hz(root+36+[7,3,2][[3,11,14].indexOf(beat)]);const v=voice(n,at,STEP*2.8,.034,'sine',duckBus);v?.connect(echo)}
- if(bar===15&&beat===15)hiss(at,.11,.08,3500,musicBus);
+// Each location has its own tempo, harmony, melody and drum arrangement.
+const scoreData={
+ 'town-home':[108,[36,32,39,34],[0,7,12,3,7,10,5,2],0],
+ 'town-meeting':[114,[38,38,34,36],[0,0,7,2,0,5,3,7],1],
+ 'town-outskirts':[120,[41,37,44,39],[0,3,7,12,10,7,5,3],2],
+ 'town-elsewhere':[100,[33,36,31,38],[12,7,3,0,2,5,10,7],3],
+ 'town-unclaimed':[116,[35,31,38,33],[0,2,7,5,12,10,3,2],1],
+ 'town-farther':[110,[40,36,43,38],[7,12,14,10,7,3,5,2],2],
+ 'town-bureau':[122,[37,37,33,35],[0,7,0,3,2,7,2,5],0],
+ 'town-beyond':[104,[34,37,32,39],[12,10,7,5,3,7,2,0],3],
+ 'town-nearly':[96,[43,39,41,38],[0,7,14,12,10,7,12,5],2],
+ 'town-atlast':[90,[36,39,41,43],[0,3,7,14,12,7,3,0],3],
+ hub:[118,[36,34,41,39],[0,7,3,10,2,12,5,7],0],
+ attic:[112,[45,41,48,43],[12,7,14,10,3,7,17,12],2],
+ observatory:[94,[42,38,45,40],[0,14,7,19,12,10,7,2],3],
+ drain:[124,[29,32,27,34],[0,0,3,7,2,0,5,3],1],
+ pipes:[106,[31,34,29,36],[0,7,10,3,12,5,7,2],3],
+ lost:[116,[38,34,41,36],[3,0,7,2,10,5,3,12],0],
+ pocket:[102,[40,43,38,45],[0,12,3,7,2,10,5,3],2],
+ hem:[98,[35,38,40,42],[7,2,12,5,14,10,3,0],3],
+ bloom:[126,[36,41,43,40],[0,4,7,12,16,14,7,9],0],
+ garden:[114,[41,45,43,36],[12,9,7,4,2,7,14,16],2],
+ sea:[100,[38,43,45,41],[0,7,14,9,12,4,7,2],3],
+ sun:[130,[43,48,40,45],[0,4,9,7,12,16,14,7],1],
+ prism:[122,[37,42,44,41],[0,7,14,4,12,9,16,2],2],
+ homecoming:[106,[36,40,41,43],[12,7,4,0,9,7,2,0],3]
+};
+const townZones=['home','meeting','outskirts','elsewhere','unclaimed','farther','bureau','beyond','nearly','atlast'];
+function scoreKey(){if(!started)return 'town-home';if(realm!=='town')return realm;const cx=center();let i=[650,1400,2500,3600,5200,6600,7800,9350,10000].findIndex(end=>cx<end);if(i<0)i=9;return 'town-'+townZones[i]}
+function changeScore(now){const key=scoreKey()+(story.dressFound?'~colour':'');if(key===activeScoreKey)return;
+ activeScoreKey=key;const data=scoreData[scoreKey()];STEP=60/data[0]/4;
+ const oldScore=scoreBus,oldDuck=duckBus;
+ oldScore.gain.cancelScheduledValues(now);oldScore.gain.setTargetAtTime(0,now,.22);
+ scoreBus=audioContext.createGain();scoreBus.gain.setValueAtTime(.0001,now);scoreBus.gain.linearRampToValueAtTime(1,now+.8);scoreBus.connect(musicBus);
+ duckBus=audioContext.createGain();duckBus.connect(scoreBus);
+ setTimeout(()=>{oldDuck.disconnect();oldScore.disconnect()},3500);
+ echo.delayTime.setTargetAtTime(STEP*3,now,.2);musicStep=0;nextBeat=now+.04;
 }
-function scheduleMusic(){if(!audioContext||audioContext.state!=='running'||document.hidden)return;const now=audioContext.currentTime;if(nextBeat<now-.2)nextBeat=now+.04;while(nextBeat<now+.16){if(soundOn&&musicEnabled&&musicVolume>0)musicBeat(musicStep,nextBeat);musicStep=(musicStep+1)%LOOP_STEPS;nextBeat+=STEP}}
+function musicBeat(step,at){
+ const [bpm,roots,melody,style]=scoreData[activeScoreKey.split('~')[0]]||scoreData['town-home'];
+ const bar=Math.floor(step/16),beat=step%16,root=roots[Math.floor(bar/4)],bright=story.dressFound;
+ const kickPatterns=[[0,4,8,12],[0,6,8,14],[0,4,10,12],[0,8]];
+ if(kickPatterns[style].includes(beat)){voice(style===1?120:145,at,.26,style===3?.42:.58,'sine',scoreBus,0,style===1?38:44);duckBus.gain.cancelScheduledValues(at);duckBus.gain.setValueAtTime(.45,at);duckBus.gain.linearRampToValueAtTime(1,at+STEP*2.5)}
+ if((style===3?beat===12:beat===4||beat===12)){hiss(at,.11,style===3?.065:.12,style===1?800:1600,scoreBus);voice(180,at,.095,.04,'triangle',scoreBus)}
+ if(beat%(style===3?8:4)===2)hiss(at,style===2?.055:.12,.055,style===1?4500:7400,scoreBus);
+ const bassPattern=style===1?[0,3,6,10,14]:style===3?[2,10]:[2,6,10,14];
+ if(bassPattern.includes(beat)){voice(hz(root),at,STEP*(style===3?3:1.5),.18,'sine',duckBus);voice(hz(root),at,STEP*1.5,.055,style===1?'sawtooth':'triangle',duckBus,style===1?450:850)}
+ if(beat===0){for(const offset of [0,bright?4:3,7,14])voice(hz(root+24+offset),at,STEP*15,.022,'triangle',duckBus,bright?2400:1200,0,.16);if(mode==='game'&&(direction()||grab?.moved))voice(hz(root+19),at,STEP*14,.009,'sine',duckBus,0,0,.3)}
+ if(beat%2===0){const offset=melody[(beat/2+(bar%4===3?2:0))%8];const register=style===1?12:24;
+ const v=voice(hz(root+register+offset),at,STEP*(style===3?4:1.9),style===3?.06:.075,style===2?'sine':'triangle',duckBus,bright?3200:style===1?1000:2200,0,.02);v?.connect(echo)}
+ if(bar>=8&&beat===(style===1?7:11))voice(hz(root+36+melody[bar%8]),at,STEP*3,.025,'sine',duckBus);
+}
+function scheduleMusic(){if(!audioContext||audioContext.state!=='running'||document.hidden)return;const now=audioContext.currentTime;changeScore(now);if(nextBeat<now-.2)nextBeat=now+.04;while(nextBeat<now+.16){if(soundOn&&musicEnabled&&musicVolume>0)musicBeat(musicStep,nextBeat);musicStep=(musicStep+1)%LOOP_STEPS;nextBeat+=STEP}}
 function tone(freq=220,length=.25,volume=.12){if(!soundOn||!audioContext)return;voice(freq,audioContext.currentTime+.005,length,volume,'sine')}
 function fx(kind){if(!soundOn||!audioContext)return;const at=audioContext.currentTime+.005;
  if(kind==='click'){voice(620,at,.05,.12,'triangle',effectsBus,0,310);return}
- if(kind==='grab'){hiss(at,.12,.15,1800);voice(180,at,.09,.1,'sine',effectsBus,0,90);return}
- if(kind==='drop'){voice(story.wet?90:140,at,.18,.22,'sine',effectsBus,0,45);hiss(at,.12,story.wet?.2:.09,story.wet?650:2200);return}
+ if(kind==='grab')return;
+ if(kind==='drop'){voice(110,at,.22,.018,'sine',effectsBus,0,75,.035);return}
  if(kind==='rustle'){hiss(at,.085,story.wet?.1:.055,story.wet?750:3000);return}
  if(kind==='puddle'){for(let i=0;i<6;i++)voice(180+i*49,at+i*.075,.19,.13,'sine',effectsBus,0,70+i*15);hiss(at,.48,.17,600);return}
  if(kind==='greg'){voice(102,at,.1,.18,'triangle',effectsBus,550);voice(82,at+.14,.14,.13,'triangle',effectsBus,500);return}
@@ -156,8 +297,6 @@ function fx(kind){if(!soundOn||!audioContext)return;const at=audioContext.curren
  if(kind==='bell'){voice(1046.5,at,1.2,.06,'sine');return}
  voice(380,at,.08,.09,'triangle');
 }
-function fabricGroove(){if(!soundOn||!audioContext)return;const at=audioContext.currentTime+.004;const root=[36,32,39,34][Math.floor(musicStep/64)%4];const note=hz(root+([0,7,12,7][musicStep%4]));const v=voice(note,at,.075,.022,'triangle',duckBus,1900,0,.004);v?.connect(echo)}
-function movementAudio(){if(!soundOn||!audioContext||mode!=='game')return;const now=audioContext.currentTime;const moving=direction()!==0||(grab&&grab.moved);if(moving&&now-lastRustle>.27){fabricGroove();lastRustle=now}const falling=cloth.some(p=>p.y>floor-9&&p.y-p.oy>2);if(falling&&now-lastLanding>.5){fx('drop');lastLanding=now}}
 function applyAudioLevels(){if(!audioContext)return;const at=audioContext.currentTime;masterBus.gain.setTargetAtTime(soundOn?.72:0,at,.025);musicBus.gain.setTargetAtTime(musicEnabled?musicVolume:0,at,.04);effectsBus.gain.setTargetAtTime(effectsVolume,at,.025)}
 // Unlock on the first deliberate gesture, including title-screen settings.
 document.addEventListener('pointerdown',()=>audioReady(),{capture:true});
@@ -165,41 +304,46 @@ document.addEventListener('keydown',e=>{if(['Enter',' ','ArrowLeft','ArrowRight'
 document.addEventListener('click',e=>{if(e.target.closest('button')&&e.target.id!=='sound')fx('click')});
 document.addEventListener('visibilitychange',()=>{if(!audioContext)return;if(document.hidden){clearInterval(musicTimer);musicTimer=null;audioContext.suspend().catch(()=>{})}else if(soundOn)audioReady()});
 function makeStars(){let seed=91;const rand=()=>((seed=Math.imul(seed,1664525)+1013904223|0)>>>0)/4294967296;stars=Array.from({length:330},()=>({x:rand()*WORLD,y:rand()*.62,r:rand()<.09?1.15:.55,phase:rand()*7}))}
-function resetCloth(cx=300){cloth.length=0;seams.length=0;for(let j=0;j<ROWS;j++)for(let i=0;i<COLS;i++){const px=cx-48+i*8,py=floor-40+j*5;cloth.push({x:px,y:py,ox:px,oy:py,row:j});if(i)seams.push([j*COLS+i-1,j*COLS+i,8]);if(j)seams.push([(j-1)*COLS+i,j*COLS+i,5]);if(i&&j)seams.push([(j-1)*COLS+i-1,j*COLS+i,Math.hypot(8,5)]);if(i<COLS-1&&j)seams.push([(j-1)*COLS+i+1,j*COLS+i,Math.hypot(8,5)])}}
-function resize(){const oldFloor=floor;W=innerWidth;H=innerHeight;floor=H*.72;const dpr=Math.min(devicePixelRatio||1,2);canvas.width=Math.round(W*dpr);canvas.height=Math.round(H*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);for(const p of cloth){p.y+=floor-oldFloor;p.oy+=floor-oldFloor}camera=clamp(camera,0,Math.max(0,WORLD-W));if(!started){camera=clamp(center()-W*.5,0,WORLD-W)}grab=null;pendingTap=null;clearMovement()}
-function clearMovement(){keys.clear();movePointers.clear();document.querySelectorAll('.pressed').forEach(b=>b.classList.remove('pressed'))}
-function direction(){const values=[...movePointers.values()];return ((keys.has('arrowright')||keys.has('d')||values.includes(1))?1:0)-((keys.has('arrowleft')||keys.has('a')||values.includes(-1))?1:0)}
-function clothStep(){const dir=mode==='game'?(hangLocked?0:direction()):0;if((dir||grab?.moved)&&!hangLocked){pose=null;story.pose=null}const damp=story.wet?.95:.965;for(const p of cloth){const vx=(p.x-p.ox)*damp,vy=(p.y-p.oy)*.98;p.ox=p.x;p.oy=p.y;p.x+=vx;p.y+=vy+(story.wet?.34:.28)}
+function resetCloth(cx=300){dressBody=story.dressFound?{x:cx,y:groundAt(cx)-45,vx:0,vy:0,angle:0,spin:0,clothSpin:0}:null;cloth.length=0;seams.length=0;for(let j=0;j<ROWS;j++)for(let i=0;i<COLS;i++){const px=cx+(i-6)*(story.dressFound?5:8),py=story.dressFound?groundAt(cx)-48+(j-3)*5:groundAt(cx)-40+j*5;cloth.push({x:px,y:py,ox:px,oy:py,row:j});if(i)seams.push([j*COLS+i-1,j*COLS+i,8]);if(j)seams.push([(j-1)*COLS+i,j*COLS+i,5]);if(i&&j)seams.push([(j-1)*COLS+i-1,j*COLS+i,Math.hypot(8,5)]);if(i<COLS-1&&j)seams.push([(j-1)*COLS+i+1,j*COLS+i,Math.hypot(8,5)])}}
+function resize(){const oldFloor=floor;W=innerWidth;H=innerHeight;floor=H*.72;const dpr=Math.min(devicePixelRatio||1,3);canvas.width=Math.round(W*dpr);canvas.height=Math.round(H*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);for(const p of cloth){p.y+=floor-oldFloor;p.oy+=floor-oldFloor}camera=clamp(camera,0,Math.max(0,WORLD-W));if(dressBody)dressBody.y+=floor-oldFloor;if(!started){camera=clamp(center()-W*.5,0,Math.max(0,WORLD-W))}grab=null;pendingTap=null;clearMovement()}
+function clearMovement(){squeezePointer=null;keys.clear();screenHolds.clear();releaseJoystick();document.querySelectorAll('.pressed').forEach(b=>b.classList.remove('pressed'))}
+function direction(){if(hangLocked)return 0;const keyboard=((keys.has('arrowright')||keys.has('d'))?1:0)-((keys.has('arrowleft')||keys.has('a'))?1:0),held=[...screenHolds.values()].reduce((a,b)=>a+b,0);return keyboard||joystick.x||(held>0?1:held<0?-1:0)}
+function clothStep(){if(squeezePointer!==null||keys.has('s'))squeezeUntil=time+.2;if(story.dressFound&&mode==='game'){dressPhysics();return}const dir=mode==='game'?direction():0,lift=mode==='game'&&!hangLocked?Math.max(0,-joystick.y):0;if(grab?.moved&&hangLocked){hangLocked=false;pose=null;story.pose=null}if((dir||lift||grab?.moved)&&!hangLocked){pose=null;story.pose=null}const damp=story.wet?.95:.965;for(const p of cloth){const vx=(p.x-p.ox)*damp,vy=(p.y-p.oy)*.98;p.ox=p.x;p.oy=p.y;p.x+=vx;p.y+=vy+(story.wet?.34:.28)}
  const edge=cloth[3*COLS+(dir<0?0:COLS-1)],pull=edge.x+dir*(story.wet?3.4:4.0);
- for(let k=0;k<8;k++){for(const [ai,bi,rest] of seams){const a=cloth[ai],b=cloth[bi],dx=b.x-a.x,dy=b.y-a.y,len=Math.hypot(dx,dy)||1,f=(len-rest)/len*.42;a.x+=dx*f;a.y+=dy*f;b.x-=dx*f;b.y-=dy*f}
- for(const p of cloth){const ground=floor+(p.row-3)*2+Math.sin((p.x-centerSafe())*.08)*1.2;if(p.y>ground){p.y=ground;p.oy=p.y;p.ox=p.x-(p.x-p.ox)*.7}p.x=clamp(p.x,8,WORLD-8)}
- if(pose&&!grab&&!dir){for(let j=0;j<ROWS;j++)for(let i=0;i<COLS;i++){const p=cloth[j*COLS+i],u=i/(COLS-1),v=j/(ROWS-1);let tx,ty;if(pose.type==='rack'){tx=pose.x+(u-.5)*34;ty=floor-122+v*97}else if(pose.type==='bench'){tx=pose.x-53+u*106;ty=floor-47+v*20+Math.sin(u*Math.PI)*5}else if(pose.type==='stone'){tx=pose.x-52+u*104;ty=floor-20+v*15+Math.sin(u*Math.PI)*4}else{tx=pose.x-58+u*116;ty=floor-99+v*10+Math.sin(u*Math.PI)*4}p.x+=(tx-p.x)*.14;p.y+=(ty-p.y)*.14;p.ox=p.x;p.oy=p.y}}
- if(dir&&!grab){edge.x=clamp(pull,8,WORLD-8);edge.y=floor-12;edge.ox=edge.x;edge.oy=edge.y}
- if(grab){const p=cloth[grab.index];p.x=clamp(grab.sx+camera,8,WORLD-8);p.y=clamp(grab.sy,45,floor);p.ox=p.x;p.oy=p.y}}
+ for(let k=0;k<8;k++){for(const [ai,bi,rest] of seams){const a=cloth[ai],b=cloth[bi],dx=b.x-a.x,dy=b.y-a.y,len=Math.hypot(dx,dy)||1,f=(len-rest*(time<squeezeUntil?.48:1))/len*.42;a.x+=dx*f;a.y+=dy*f;b.x-=dx*f;b.y-=dy*f}
+ for(const p of cloth){const ground=groundAt(p.x)+(p.row-3)*2+Math.sin((p.x-centerSafe())*.08)*1.2;if(p.y>ground){p.y=ground;p.oy=p.y;p.ox=p.x-(p.x-p.ox)*.7}p.x=clamp(p.x,8,WORLD-8)}
+ if(pose&&!grab&&!dir&&!lift){for(let j=0;j<ROWS;j++)for(let i=0;i<COLS;i++){const p=cloth[j*COLS+i],u=i/(COLS-1),v=j/(ROWS-1);let tx,ty;if(pose.type==='rack'){tx=pose.x+(u-.5)*34;ty=groundAt(pose.x)-122+v*97}else if(pose.type==='bench'){tx=pose.x-53+u*106;ty=groundAt(pose.x)-47+v*20+Math.sin(u*Math.PI)*5}else if(pose.type==='stone'){tx=pose.x-52+u*104;ty=groundAt(pose.x)-20+v*15+Math.sin(u*Math.PI)*4}else{tx=pose.x-58+u*116;ty=groundAt(pose.x)-99+v*10+Math.sin(u*Math.PI)*4}p.x+=(tx-p.x)*.14;p.y+=(ty-p.y)*.14;p.ox=p.x;p.oy=p.y}}
+ if((dir||lift)&&!grab){edge.x=clamp(pull,8,WORLD-8);edge.y=groundAt(edge.x)-12-lift*Math.min(180,H*.33);edge.ox=edge.x;edge.oy=edge.y}
+ if(grab){const p=cloth[grab.index];p.x=clamp(grab.sx+camera,8,WORLD-8);p.y=Math.min(grab.sy+viewY,groundAt(p.x));p.ox=p.x;p.oy=p.y}}
 }
 // A shared floor plane keeps the mesh's lower edge quietly rumpled.
 function centerSafe(){return cloth[3*COLS+6].x}
 function nearby(){const cx=center();let best=null,dist=Infinity;for(const o of objects){const d=Math.abs(cx-o.x);if(d<o.reach&&d<dist){if((o.id==='puddle'&&story.absorbed)||(o.id==='dress'&&story.dressFound))continue;dist=d;best=o}}return best}
-function absorbPuddle(){if(story.absorbed)return;const touching=cloth.filter(p=>p.x>979&&p.x<1101&&p.y>floor-15).length>6;story.absorb=touching?Math.min(1,story.absorb+1/36):Math.max(0,story.absorb-.025);if(story.absorb>=1){story.absorbed=true;story.wet=true;fx('puddle');tone(130,.5);say(story.metGreg?'LONG GREG: We no longer have quorum.\nMEETING ADJOURNED.':'The puddle was a committee member.\nThe meeting has lost quorum.',5800);questComplete()}}
-function physicalDiscoveries(){absorbPuddle();const cx=center();
+function absorbPuddle(){if(story.absorbed)return;const touching=cloth.filter(p=>p.x>979&&p.x<1101&&p.y>groundAt(p.x)-15).length>2;story.absorb=touching?Math.min(1,story.absorb+1/14):Math.max(0,story.absorb-.025);if(story.absorb>=1){story.absorbed=true;story.wet=true;story.water=Math.min(3,(story.water||0)+1);fx('puddle');tone(130,.5);say(story.metGreg?'LONG GREG: We no longer have quorum.\nMEETING ADJOURNED.':'The puddle was a committee member.\nThe meeting has lost quorum.',5800);questComplete()}}
+function physicalDiscoveries(){waterPhysics();skyPhysics();if(realm!=='town'){realmPhysics();return}absorbPuddle();const cx=center();
  // Each chapter asks the cloth to occupy a slightly different physical relationship.
- if(!story.bell&&Math.abs(cx-2020)<105&&(cloth.some(p=>p.y<floor-48)||Math.abs(cx-2020)<46)){story.bell=true;fx('bell');say('The bell has been reached by fabric.\nIt rings for nobody in particular.',4800);questComplete()}
- if(!story.orb&&Math.abs(cx-2680)<110&&(cloth.some(p=>p.y<floor-95)||Math.abs(cx-2680)<48)){story.orb=true;fx('orb');say('The orb comes down to your level.\nThis is considered a successful negotiation.',4800);questComplete()}
- const vx=cloth.reduce((s,p)=>s+p.x-p.ox,0)/cloth.length;const push=direction()||(Math.abs(vx)>.15?Math.sign(vx):0);if(Math.abs(center()-pebbleX)<46&&cloth.some(p=>Math.abs(p.x-pebbleX)<16&&p.y>floor-17)&&push!==0){pebbleShift=clamp(pebbleShift+push*1.4,0,45);pebbleX=1750+pebbleShift;if(pebbleShift>27&&!story.pebble){story.pebble=true;say('Something was growing under that.\nThe pebble has been reassigned.');tone(420,.22);questComplete()}}}
-function setPose(type,x,name){if(type==='rack'&&hangLocked&&pose?.x===x){hangLocked=false;pose=null;story.pose=null;fx('drop');say('Meg lets go.\nThe coat rack will continue without her.',3000);saveGame();updateHUD();return}pose={type,x};hangLocked=type==='rack';story.pose=type;fx(type==='rack'?'box':'drop');say(type==='rack'?`Meg hangs on the ${name}.\nMovement is suspended until she lets go.`:type==='bench'?`Meg flops onto the ${name}.\nThe bench accepts this.`:type==='stone'?`Meg rests on the stone.\nThe stone does not object.`:`Meg is resting on the line.\nShe is not technically dry.`,3900);saveGame();updateHUD()}
-function interact(id){if(mode!=='game')return;audioReady();const o=objects.find(a=>a.id===id)||nearby();if(!o){say('Nothing within poking distance.',1800);return}if(Math.abs(center()-o.x)>o.reach+85){say('A little closer.',1200);return}
+ if(!story.bell&&Math.abs(cx-2020)<62&&cloth.some(p=>p.y<groundAt(2020)-68)){story.bell=true;fx('bell');say('The bell has been reached by fabric.\nIt rings for nobody in particular.',4800);questComplete()}
+ if(!story.orb&&Math.abs(cx-2680)<80&&cloth.some(p=>p.y<groundAt(2680)-125)){story.orb=true;fx('orb');say('The orb comes down to your level.\nThis is considered a successful negotiation.',4800);questComplete()}
+ const vx=cloth.reduce((s,p)=>s+p.x-p.ox,0)/cloth.length;const push=direction()||(Math.abs(vx)>.15?Math.sign(vx):0);if(Math.abs(center()-pebbleX)<46&&cloth.some(p=>Math.abs(p.x-pebbleX)<16&&p.y>groundAt(pebbleX)-17)&&push!==0){pebbleShift=clamp(pebbleShift+push*1.4,0,45);pebbleX=1750+pebbleShift;if(pebbleShift>27&&!story.pebble){story.pebble=true;say('Something was growing under that.\nThe pebble has been reassigned.');tone(420,.22);questComplete()}}}
+function setPose(type,x,name){
+ if(type==='rack'&&hangLocked&&pose?.x===x){hangLocked=false;pose=null;story.pose=null;fx('drop');say('Meg lets go.',1800);saveGame();updateHUD();return}
+ pose={type,x};story.pose=type;hangLocked=type==='rack';if(hangLocked)clearMovement();fx(type==='rack'?'box':'drop');
+ say(type==='rack'?`Meg hangs on the ${name}.\nMovement stops until you tap it again or drag Meg free.`:type==='bench'?`Meg flops onto the ${name}.\nThe bench accepts this.`:type==='stone'?`Meg rests on the stone.\nThe stone does not object.`:`Meg is resting on the line.\nShe is not technically dry.`,3900);saveGame();updateHUD()
+}
+function interact(id){if(mode!=='game')return;audioReady();const o=objects.find(a=>a.id===id)||nearby();if(!o){say('Nothing within poking distance.',1800);return}if(Math.abs(center()-o.x)>o.reach+25){say('Out of reach.',1500);return}
+ if(o.water){say('A small spill.');return}if(o.hang){setPose('rack',o.x,o.name.toLowerCase());return}if(o.skySign){say('The sky is a place.');return}if(o.portal){if(realm==='highsky'&&o.id==='descent')travel(realms[story.skyOrigin]?story.skyOrigin:'bloom',story.skyOriginX||500);else travel(o.portal,o.arrival);return}if(o.puzzle){inspectPuzzle(o);return}if(o.id==='dress'){takeDress();return}
  fx(o.id);
  if(o.kind){const seen=discoveries.has(o.id);discoveries.add(o.id);if(o.id==='bureau')story.bureau=true;if(o.id==='radio')story.radio=true;if(o.id==='stone')story.rested=true;questComplete();say(story.dressFound?(o.id==='bureau'?'The office has closed your file.\nYour circle remains your business.':'Your circle is still with you.\nThere is no hurry now.'):(seen?o.again:o.first),o.id==='bureau'?7000:4800);if(o.kind==='stand'){setPose('rack',o.x,'coat rack');return}if(o.kind==='stone'){setPose('stone',o.x,'stone');return}if(o.kind==='line'&&!story.wet){setPose('line',o.x,'washing line');return}if(o.kind==='wind'){for(const p of cloth){p.ox=p.x-1.4;p.oy=p.y+1.3}}if(o.kind==='radio')tone(523,.45);if(o.kind==='quiet')tone(784,1.3);if(o.kind==='stamp')fx('drop');updateHUD();saveGame();return}
  switch(o.id){
  case 'home':story.homeVisits++;say(story.dressFound?'Rag Meg Circle Dress.\nHome, with her circle dress.':'Rag Meg Circle Dress. That is your full name.\nYour circle dress is missing. It is very important.',5500);break;
  case 'box':if(!story.box){story.box=true;tone(280,.12);say('BOX 4 contains a receipt.\n“BOX 3 — delivered elsewhere.”\nNo circle dress.')}else say(story.elsewhere?'The receipt is finally correct.':'The receipt insists: elsewhere.');break;
- case 'greg':if(story.dressFound){say('LONG GREG: Circle Dress.\nMEG: yes.\nLONG GREG: Both of you.');break}if(story.absorbed)say('LONG GREG: It was our most fluid member.\nYour circle went east. I should have led with that.');else if(!story.metGreg){story.metGreg=true;questComplete();say('LONG GREG: The puddle has the floor.\nIt has had the floor since Tuesday.',5500)}else say('LONG GREG: You are absorbent.\nThis is being treated as consent.',4700);break;
- case 'puddle':say('A voting member.\nDrag Meg across it to absorb it.');break;
+ case 'greg':if(story.dressFound){say('LONG GREG: Circle Dress.\nMEG: yes.\nLONG GREG: Both of you.');break}if(story.absorbed)say('LONG GREG: It was our most fluid member.\nYour circle went east. I should have led with that.');else if(!story.metGreg){story.metGreg=true;say('LONG GREG: The puddle has the floor.\nIt has had the floor since Tuesday.',5500)}else say('LONG GREG: You are absorbent.\nThis is being treated as consent.',4700);break;
+ case 'puddle':say('The committee member remains liquid.');break;
  case 'choir':if(story.absorbed)say('The choir is on its own time now.');else{tone(174.61,.7);say('One note.\nThe minutes will reflect this.')}break;
  case 'sign':say('OUTSKIRTS\nThe town becomes less certain from here.');break;
  case 'pebble':if(!story.pebble){pebbleShift=45;pebbleX=1795;story.pebble=true;tone(420,.22);say('Something was growing under that.\nThe pebble has been reassigned.')}else say('The sprout does not need a committee.');break;
  case 'bell':if(!story.bell){story.bell=true;tone(523.25,1.7);say('The bell rings.\nNobody reports for anything.')}else{tone(392,1.2);say('Still no emergency.')}break;
- case 'line':if(!story.wet){setPose('line',o.x,'washing line');break}if(story.wet){story.wet=false;story.dried=true;for(const p of cloth){p.ox=p.x;p.oy=p.y}tone(330,.3);say('You are dry now.\nThis changes nothing about your employment.')}else say(story.dried?'The line has nothing else to add.':'A place to dry off.\nNo appointment necessary.');break;
+ case 'line':if(!story.wet){setPose('line',o.x,'washing line');break}if(story.wet){story.wet=false;story.water=0;story.dried=true;for(const p of cloth){p.ox=p.x;p.oy=p.y}tone(330,.3);say('You are dry now.\nThis changes nothing about your employment.')}else say(story.dried?'The line has nothing else to add.':'A place to dry off.\nNo appointment necessary.');break;
  case 'orb':if(!story.orb){story.orb=true;tone(261.63,1.4);say('LOCAL ORB: I am off duty.\nIt comes a little closer anyway.')}else say('For a moment, neither of you is required.');break;
  case 'bench':if(!story.elsewhere){story.elsewhere=true;tone(392,.4);say('YOU FOUND BOX 3.\nIt contains a small amount of elsewhere.\nYour circle went farther.')}else say('You sit with the small amount of elsewhere.');setPose('bench',o.x,'bench');break;
  case 'end':story.boundary=true;say(story.dressFound?'END OF TOWN.\nYou and your circle may come and go.':'END OF TOWN.\nNot the end of looking. Your circle is farther east.');break;
@@ -208,11 +352,11 @@ function interact(id){if(mode!=='game')return;audioReady();const o=objects.find(
  updateHUD();
 }
 function stickPerson(cx,g,scale=1,arms=false){ctx.save();ctx.translate(cx,g);ctx.scale(scale,scale);ctx.lineWidth=1.7;ellipse(0,-148,8,8);ctx.strokeRect(-7,-136,14,70);line(-4,-66,-11,0);line(4,-66,11,0);line(-7,-119,-27,arms?-98:-78);line(7,-119,29,arms?-130:-78);ctx.restore()}
-function text(s,a,b,size=11,color='#888',align='center'){ctx.font=size+'px Courier New';ctx.textAlign=align;ctx.fillStyle=color;ctx.fillText(s,a,b);ctx.fillStyle='#fff'}
-function drawWorld(){ctx.save();ctx.translate(-camera,0);ctx.strokeStyle='#ddd';ctx.fillStyle='#fff';ctx.lineWidth=1.4;line(0,floor,WORLD,floor);
- for(const o of objects){if(o.x<camera-170||o.x>camera+W+170)continue;const a=o.x,g=floor;
- if(o.kind)drawLandmark(o);
- switch(o.id){
+function text(s,a,b,size=11,color='#888',align='center'){ctx.font=size+'px Courier New';ctx.textAlign=align;ctx.fillStyle=color;ctx.fillText(s,Math.round(a-camera)+camera,Math.round(b));ctx.fillStyle='#fff'}
+function drawWorld(){ctx.save();ctx.translate(-camera,-viewY);ctx.strokeStyle='#ddd';ctx.fillStyle='#fff';ctx.lineWidth=1.4;drawTerrain();
+ for(const o of objects){if(o.x<camera-170||o.x>camera+W+170)continue;const a=o.x,g=groundAt(o.x);
+ if(o.portal||o.puzzle||o.water||o.hang||o.skySign||o.device)drawRealmObject(o);else if(o.kind)drawLandmark(o);
+ switch(o.portal||o.water||o.hang||o.skySign?'':o.id){
  case 'home':ctx.beginPath();ctx.moveTo(a-55,g);ctx.lineTo(a-55,g-75);ctx.quadraticCurveTo(a,g-133,a+55,g-75);ctx.lineTo(a+55,g);ctx.stroke();ctx.strokeRect(a-12,g-50,24,50);ellipse(a+5,g-26,1.5,1.5,true);if(story.ended){ctx.fillStyle='#f2b8c655';ctx.fillRect(a-10,g-48,20,46);ctx.fillStyle='#fff'}break;
  case 'box':ctx.strokeRect(a-24,g-34,48,34);line(a-24,g-34,a+(story.box?42:24),g-(story.box?57:34));text('4',a,g-11,14,'#ddd');if(story.box){ctx.save();ctx.translate(a+35,g-10);ctx.rotate(.15);ctx.strokeRect(0,-24,14,24);line(3,-17,11,-17);line(3,-12,9,-12);ctx.restore()}break;
  case 'greg':stickPerson(a,g,1.18,!story.absorbed);break;
@@ -227,12 +371,12 @@ function drawWorld(){ctx.save();ctx.translate(-camera,0);ctx.strokeStyle='#ddd';
  case 'end':line(a,g,a,g-71);ctx.strokeRect(a-25,g-96,50,25);text('EAST →',a,g-79,10,'#aaa');break;
  case 'dress':if(!story.dressFound){ctx.lineWidth=2;ctx.strokeStyle='#fff';ellipse(a,g-48,45,45);ctx.lineWidth=1.4}break;
  }
- if(focus?.id===o.id){ctx.strokeStyle='#f2b8c6';line(a-6,g+12,a+6,g+12);ctx.strokeStyle='#ddd';text(o.name,a,g+33,11,'#c3b5b9')}
+ if(showObjectLabel(o)){ctx.strokeStyle='#f2b8c6';line(a-6,g+12,a+6,g+12);ctx.strokeStyle='#ddd';if(!o.portal&&!o.puzzle&&!o.water&&!o.hang&&!o.skySign&&!o.device)text(o.name,a,g+33,12,'#eee')}
  }
  ctx.restore();
 }
 
-function drawLandmark(o){const a=o.x,g=floor,seen=discoveries.has(o.id);ctx.lineWidth=1.4;
+function drawLandmark(o){const a=o.x,g=groundAt(o.x),seen=discoveries.has(o.id);ctx.lineWidth=1.4;if(o.id==='lastline'){line(a-55,g,a-55,g-100);line(a+55,g,a+55,g-85);line(a-55,g-100,a+55,g-85);for(let i=0;i<5;i++)line(a-40+i*18,g-98+i*2,a-40+i*18,g-55+i*3);return}
  switch(o.kind){
  case 'post':line(a,g,a,g-65);ctx.strokeRect(a-28,g-105,56,40);line(a-28,g-105,a,g-82);line(a+28,g-105,a,g-82);if(seen){line(a-28,g-105,a,g-125);line(a,g-125,a+28,g-105)}break;
  case 'thread':ctx.beginPath();ctx.moveTo(a-44,g-2);ctx.bezierCurveTo(a-30,g-25,a-13,g+5,a+5,g-8);ctx.bezierCurveTo(a+28,g-25,a-20,g-29,a+7,g-3);ctx.lineTo(a+(seen?65:28),g-2);ctx.stroke();if(seen){line(a+56,g-8,a+65,g-2);line(a+56,g+4,a+65,g-2)}break;
@@ -251,33 +395,662 @@ function drawLandmark(o){const a=o.x,g=floor,seen=discoveries.has(o.id);ctx.line
  }
 }
 
-function drawCloth(){ctx.save();ctx.translate(-camera,0);if(story.dressFound){const cy=cloth.reduce((sum,p)=>sum+p.y,0)/cloth.length;ctx.strokeStyle='#fff';ctx.lineWidth=2;ellipse(center(),cy-25,45,45)}for(let j=0;j<ROWS-1;j++)for(let i=0;i<COLS-1;i++){const a=cloth[j*COLS+i],b=cloth[j*COLS+i+1],c=cloth[(j+1)*COLS+i+1],d=cloth[(j+1)*COLS+i];let shade=clamp((story.wet?59:76)+(b.y-a.y)*.8-(d.x-a.x)*.4,story.wet?39:52,84);ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.lineTo(c.x,c.y);ctx.lineTo(d.x,d.y);ctx.closePath();ctx.fillStyle=`hsl(344 45% ${shade}%)`;ctx.fill();ctx.strokeStyle=`hsl(344 32% ${shade-9}%)`;ctx.lineWidth=.5;ctx.stroke();for(let n=1;n<=2;n++){const f=n/3;ctx.strokeStyle='rgba(255,225,233,.28)';ctx.lineWidth=.45;line(a.x+(d.x-a.x)*f,a.y+(d.y-a.y)*f,b.x+(c.x-b.x)*f,b.y+(c.y-b.y)*f)}}ctx.strokeStyle=story.wet?'#c88d9d':'#f5c5d1';ctx.lineWidth=1.3;for(let i=0;i<COLS-1;i++){const a=cloth[i],b=cloth[i+1],c=cloth[(ROWS-1)*COLS+i],d=cloth[(ROWS-1)*COLS+i+1];line(a.x,a.y,b.x,b.y);line(c.x,c.y,d.x,d.y)}for(let j=0;j<ROWS-1;j++)for(const i of [0,COLS-1]){const a=cloth[j*COLS+i],b=cloth[(j+1)*COLS+i];line(a.x,a.y,b.x,b.y)}ctx.restore()}
-function background(){ctx.fillStyle='#000';ctx.fillRect(0,0,W,H);ctx.fillStyle='#fff';for(const s of stars){const sx=s.x-camera*.25;if(sx<0||sx>W)continue;ctx.globalAlpha=reduced?.55:.36+.25*(.5+.5*Math.sin(time*.4+s.phase));ellipse(sx,s.y*H,s.r,s.r,true)}ctx.globalAlpha=1;ctx.lineCap='round';ctx.lineJoin='round'}
-function updateHUD(){if(mode!=='game')return;const cx=center();$('#chapter').textContent=`CHAPTER ${chapter()} / 10 · ${story.quests} QUEST${story.quests===1?'':'S'} SETTLED`;
- $('#area').textContent=cx<650?'HOME, APPARENTLY':cx<1400?'THE MEETING':cx<2500?'THE OUTSKIRTS':cx<3600?'ELSEWHERE':cx<5200?'THE UNCLAIMED':cx<6600?'FARTHER':cx<7800?'CIRCULAR AFFAIRS':cx<9350?'BEYOND THAT':cx<10000?'NEARLY':'AT LAST';
- $('#objective').textContent=story.dressFound?'Circle dress found. You are together again.':!story.absorbed&&cx>900?'Absorb the committee member. Drag across the puddle.':story.absorbed&&!story.dried?'Find somewhere to dry Meg.':story.dried&&!story.bell?'Reach the public bell with a lifted corner.':story.bell&&!story.elsewhere?'Find BOX 3 farther east.':story.elsewhere&&!story.orb?'Bring the cloth to the local orb.':story.orb&&!story.bureau?'Visit Circular Affairs.':story.bureau&&!story.radio?'Find the unattended radio.':story.radio&&!story.rested?'Rest on the stone.':cx>10000?'Your circle dress. At last.':cx>9350?'Find your circle dress. Just a little farther →.':'Find your circle dress. Keep going →.';$('#hint').textContent=pose?'drag or move to get down':grab?'drag toward the edge to keep going':focus?(focus.id==='puddle'&&!story.absorbed?'drag over the puddle to absorb it':`tap anywhere to poke ${focus.id==='greg'?'Greg':'the object'}`):matchMedia('(pointer:coarse)').matches?'drag Meg · hold arrows to travel · tap to poke':'drag Meg · ← → / A D travel · tap anywhere to poke';$('#west').classList.toggle('hidden',camera<5);$('#east').classList.toggle('hidden',camera>=WORLD-W-5);}
-function frame(now){let dt=Math.min((now-lastTime)/1000||0,.05);lastTime=now;time+=dt;accumulator+=dt;while(accumulator>=1/60){if(mode==='game'||(!started&&mode==='menu')){if(grab&&mode==='game'){const margin=Math.min(75,W*.2);const scroll=grab.sx>W-margin?(grab.sx-(W-margin))/margin:grab.sx<margin?-(margin-grab.sx)/margin:0;camera=clamp(camera+scroll*5.8,0,Math.max(0,WORLD-W))}clothStep();if(mode==='game'){physicalDiscoveries();if(!grab){const target=clamp(center()-W*.43,0,Math.max(0,WORLD-W));camera+=(target-camera)*.09}focus=nearby()}}accumulator-=1/60}movementAudio();background();if(mode==='game'){drawWorld();drawCloth();updateHUD();maybeHint(now)}else if(!started){drawCloth()}else{ctx.save();ctx.globalAlpha=.32;drawWorld();drawCloth();ctx.restore()}requestAnimationFrame(frame)}
-function showMenu(){mode='menu';grab=null;pendingTap=null;clearMovement();quietMessage();$('#menu').classList.remove('hidden');$('#title').classList.remove('hidden');$('#begin').textContent=started?'RESUME':'BEGIN';$('#task').classList.add('hidden');$('#pause').classList.add('hidden');$('#touch').classList.remove('game-on');$('#west').classList.add('hidden');$('#east').classList.add('hidden');$('#hint').textContent=started?'the town will wait':'drag the rag · tap anywhere to poke'}
-function begin(){const first=!started&&!story.quests&&!story.dressFound;started=true;mode='game';document.activeElement?.blur();clearTimeout(menuTimer);clearMovement();$('#menu').classList.add('hidden');$('#title').classList.add('hidden');$('#settings').classList.add('hidden');$('#task').classList.remove('hidden');$('#pause').classList.remove('hidden');$('#touch').classList.add('game-on');audioReady();if(first)say('Your circle dress is missing.\nIt is a circle. It is very important.\nDrag Meg to begin looking.',6500);else quietMessage();focus=nearby();resetStuck();updateHUD()}
-$('#begin').onclick=begin;$('#pause').onclick=showMenu;
+function drawCloth(){ctx.save();ctx.translate(-camera,-viewY);if(story.dressFound&&dressBody){ctx.save();ctx.beginPath();ctx.arc(dressBody.x,dressBody.y,43,0,Math.PI*2);ctx.clip()}for(let j=0;j<ROWS-1;j++)for(let i=0;i<COLS-1;i++){const a=cloth[j*COLS+i],b=cloth[j*COLS+i+1],c=cloth[(j+1)*COLS+i+1],d=cloth[(j+1)*COLS+i];let shade=clamp((story.wet?59:76)+(b.y-a.y)*.8-(d.x-a.x)*.4,story.wet?39:52,84);ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.lineTo(c.x,c.y);ctx.lineTo(d.x,d.y);ctx.closePath();ctx.fillStyle=`hsl(${campaignColor().hue} 45% ${shade}%)`;ctx.fill();ctx.strokeStyle=`hsl(${campaignColor().hue} 32% ${shade-9}%)`;ctx.lineWidth=.5;ctx.stroke();for(let n=1;n<=2;n++){const f=n/3;ctx.strokeStyle='rgba(255,225,233,.28)';ctx.lineWidth=.45;line(a.x+(d.x-a.x)*f,a.y+(d.y-a.y)*f,b.x+(c.x-b.x)*f,b.y+(c.y-b.y)*f)}}ctx.strokeStyle=story.wet?'#c88d9d':'#f5c5d1';ctx.lineWidth=1.3;for(let i=0;i<COLS-1;i++){const a=cloth[i],b=cloth[i+1],c=cloth[(ROWS-1)*COLS+i],d=cloth[(ROWS-1)*COLS+i+1];line(a.x,a.y,b.x,b.y);line(c.x,c.y,d.x,d.y)}for(let j=0;j<ROWS-1;j++)for(const i of [0,COLS-1]){const a=cloth[j*COLS+i],b=cloth[(j+1)*COLS+i];line(a.x,a.y,b.x,b.y)}if(story.dressFound&&dressBody){ctx.restore();drawRollingRim()}ctx.restore()}
+function background(){ctx.fillStyle=story.dressFound?(realms[realm]?.color||'#19356b'):'#000';ctx.fillRect(0,0,W,H);if(story.dressFound){const glow=ctx.createLinearGradient(0,0,W,H);glow.addColorStop(0,'#ff6a7a38');glow.addColorStop(1,'#40f7c838');ctx.fillStyle=glow;ctx.fillRect(0,0,W,H)}ctx.fillStyle='#fff';for(const s of stars){const sx=s.x-camera*.25;if(sx<0||sx>W)continue;ctx.globalAlpha=reduced?.55:.36+.25*(.5+.5*Math.sin(time*.4+s.phase));ellipse(sx,s.y*H,s.r,s.r,true)}ctx.globalAlpha=1;ctx.lineCap='round';ctx.lineJoin='round'}
+function updateHUD(){if(mode==='game')progressHUD()}
+function frame(now){let dt=Math.min((now-lastTime)/1000||0,.05);lastTime=now;time+=dt;accumulator+=dt;while(accumulator>=1/60){if(mode==='game'||(!started&&mode==='menu')){if(grab&&mode==='game'){const margin=Math.min(75,W*.2);const scroll=grab.sx>W-margin?(grab.sx-(W-margin))/margin:grab.sx<margin?-(margin-grab.sx)/margin:0;camera=clamp(camera+scroll*5.8,0,Math.max(0,WORLD-W))}clothStep();if(mode==='game'){viewY+=((story.dressFound&&dressBody?Math.min(0,dressBody.y-H*.42):0)-viewY)*.12;physicalDiscoveries();if(!grab){const target=clamp(center()-W*.43,0,Math.max(0,WORLD-W));camera+=(target-camera)*.09}focus=nearby()}}accumulator-=1/60}movementAudio();background();if(mode==='game'){drawWorld();drawCloth();updateHUD();maybeHint(now)}else if(!started){drawCloth()}else{ctx.save();ctx.globalAlpha=.32;drawWorld();drawCloth();ctx.restore()}requestAnimationFrame(frame)}
+function showMenu(){$('#slots').classList.add('hidden');$('#guide').classList.add('hidden');hopRequested=false;saveGame();$('#atlas').classList.add('hidden');$('#hop').classList.add('hidden');$('#routes').classList.add('hidden');mode='menu';grab=null;pendingTap=null;clearMovement();quietMessage();$('#menu').classList.remove('hidden');$('#title').classList.remove('hidden');$('#begin').textContent=started?'RESUME':'BEGIN';$('#task').classList.add('hidden');$('#pause').classList.add('hidden');$('#touch').classList.remove('game-on');$('#west').classList.add('hidden');$('#east').classList.add('hidden');$('#hint').textContent=started?'the town will wait':'you may pick up the rag'}
+function begin(){if(!tutorialSeen){openGuide(true);return}const first=!started&&!story.quests&&!story.dressFound;started=true;mode='game';$('#atlas').classList.remove('hidden');$('#hop').classList.toggle('hidden',!story.dressFound);document.activeElement?.blur();clearTimeout(menuTimer);clearMovement();$('#menu').classList.add('hidden');$('#title').classList.add('hidden');$('#settings').classList.add('hidden');$('#task').classList.remove('hidden');$('#pause').classList.remove('hidden');$('#touch').classList.add('game-on');audioReady();if(first)say('Your circle dress is missing.\nIt is a circle. It is very important.',6500);else quietMessage();focus=nearby();resetStuck();updateHUD()}
+function slotSummary(slot){
+ let v=null;try{v=JSON.parse(localStorage.getItem(SAVE_PREFIX+slot)||'null')}catch{}
+ if(!v?.story)return 'SLOT '+slot+' — EMPTY';
+ const r=v.story.realm||'town';let act=v.story.dressFound?2:1;
+ try{if(realms[r]?.act)act=realms[r].act;else if(['bloom','garden','sea','sun','prism','homecoming','highsky'].includes(r))act=2}catch{}
+ return 'SLOT '+slot+' — ACT '+(typeof actNumerals!=='undefined'?(actNumerals[act]||act):act)+(v.story.ended?' · COMPLETE':'');
+}
+function showSaveSlots(){
+ if(started)saveGame();mode='slots';clearMovement();$('#menu').classList.add('hidden');$('#settings').classList.add('hidden');$('#slots').classList.remove('hidden');
+ const list=$('#slot-list');list.replaceChildren();
+ for(let n=1;n<=4;n++){const b=document.createElement('button');b.textContent=slotSummary(n)+(n===activeSaveSlot?' · ACTIVE':'');b.classList.toggle('active',n===activeSaveSlot);b.onclick=()=>{try{localStorage.setItem(ACTIVE_SLOT_KEY,String(n))}catch{};location.reload()};list.append(b)}
+}
+$('#begin').onclick=begin;$('#pause').onclick=showMenu;$('#save-slots').onclick=showSaveSlots;$('#slots-back').onclick=()=>{mode='menu';$('#slots').classList.add('hidden');$('#menu').classList.remove('hidden')};
 $('#open-settings').onclick=()=>{mode='settings';clearMovement();grab=null;$('#settings').classList.remove('hidden');$('#menu').classList.add('hidden');$('#sound').focus()};
-$('#forget').onclick=()=>{try{localStorage.removeItem(SAVE_KEY)}catch{};location.reload()};
+function forgetJourney(){
+ // Reset memory before any menu/visibility autosave can run. No reload race.
+ clearTimeout(menuTimer);quietMessage();clearMovement();
+ for(const key of Object.keys(story))delete story[key];
+ Object.assign(story,freshStory);discoveries.clear();
+ for(const room of Object.values(realms))for(const o of room.objects){delete o.hold;delete o.sides;delete o.absorbing;delete o.refillAt}
+ for(const list of [townObjects,realms.hub.objects])for(let i=list.length-1;i>=0;i--)if(['colourbox','colourdoor'].includes(list[i].id))list.splice(i,1);
+ realms.hub.width=1600;realm='town';objects=townObjects;WORLD=realms.town.width;
+ pebbleX=1750;pebbleShift=0;puzzleHold=0;hopRequested=false;
+ pose=null;grab=null;pendingTap=null;focus=null;started=false;accumulator=0;viewY=0;squeezeUntil=0;
+ resetCloth(300);camera=clamp(300-W*.5,0,Math.max(0,WORLD-W));
+ try{localStorage.removeItem(SAVE_KEY)}catch{}
+ $('#settings').classList.add('hidden');showMenu();
+ say('Journey forgotten.\nMeg is back where she started.',2600);
+ $('#begin').focus();
+}
+$('#forget').onclick=forgetJourney;
 $('#back').onclick=()=>{$('#settings').classList.add('hidden');showMenu();$('#open-settings').focus()};
 $('#sound').onclick=()=>{soundOn=!soundOn;$('#sound').textContent=soundOn?'SOUND — on':'SOUND — off';if(soundOn)audioReady();applyAudioLevels();if(soundOn)fx('click')};
 $('#music-toggle').onclick=()=>{musicEnabled=!musicEnabled;$('#music-toggle').textContent=musicEnabled?'MUSIC — on':'MUSIC — off';applyAudioLevels()};
 $('#music-level').oninput=e=>{musicVolume=Number(e.target.value)/100;applyAudioLevels()};
 $('#effects-level').oninput=e=>{effectsVolume=Number(e.target.value)/100;applyAudioLevels()};
 function motionLabel(){$('#motion').textContent=reduced?'STARS — still':'STARS — moving'}motionLabel();$('#motion').onclick=()=>{reduced=!reduced;motionLabel()};
-$('#leave').onclick=()=>{clearTimeout(menuTimer);say('GOOD CHOICE.',2000);menuTimer=setTimeout(()=>{if(mode==='menu')say('You are still here.\nUnderstandable.',3000)},2100)};
-function objectAt(sx,sy){const wx=sx+camera;let best=null,score=Infinity;for(const o of objects){let yy=floor-30,rx=42,ry=42;if(o.kind){yy=floor-55;rx=65;ry=72;if(['thread','pond','stone','stamp'].includes(o.kind)){yy=floor-17;rx=80;ry=40}}if(o.id==='dress'){yy=floor-48;rx=58;ry=58;if(story.dressFound)continue}if(o.id==='greg'){yy=floor-93;rx=44;ry=105}if(o.id==='home'){yy=floor-52;rx=66;ry=63}if(o.id==='puddle'){yy=floor-7;rx=70;ry=30}if(o.id==='choir'){yy=floor-34;rx=75;ry=44}if(o.id==='orb'){yy=floor-(story.orb?105:180);rx=40;ry=40}if(o.id==='bell'||o.id==='line'||o.id==='sign'||o.id==='end'){yy=floor-60;rx=o.id==='line'?80:50;ry=70}if(o.id==='bench'){yy=floor-30;rx=65;ry=45}if(o.id==='pebble'){rx=60;ry=35}if(o.id==='puddle'&&story.absorbed)continue;const d=Math.pow((wx-o.x)/rx,2)+Math.pow((sy-yy)/ry,2);if(d<1&&d<score){best=o;score=d}}return best}
-canvas.addEventListener('pointerdown',e=>{if(mode!=='game'&&(mode!=='menu'||started))return;if(grab||pendingTap)return;audioReady();let distance=30,index=-1;cloth.forEach((p,i)=>{const d=Math.hypot(e.clientX+camera-p.x,e.clientY-p.y);if(d<distance){distance=d;index=i}});canvas.setPointerCapture(e.pointerId);if(index>=0){fx('grab');grab={index,sx:e.clientX,sy:e.clientY,startX:e.clientX,startY:e.clientY,pointer:e.pointerId,moved:false}}else if(mode==='game'){pendingTap={pointer:e.pointerId,x:e.clientX,y:e.clientY,object:objectAt(e.clientX,e.clientY)}}});
-canvas.addEventListener('pointermove',e=>{if(grab?.pointer===e.pointerId){grab.sx=e.clientX;grab.sy=e.clientY;if(Math.hypot(e.clientX-grab.startX,e.clientY-grab.startY)>8)grab.moved=true}else if(!grab&&e.pointerType==='mouse'){canvas.style.cursor=objectAt(e.clientX,e.clientY)?'pointer':'default'}});
-function finishPointer(e,cancelled=false){if(grab?.pointer===e.pointerId){const wasTap=!grab.moved;if(grab.moved&&!cancelled){hangLocked=false;pose=null;story.pose=null;fx('drop')}grab=null;if(wasTap&&!cancelled&&mode==='game'){if(nearby())interact();else say(story.wet?'Meg is now more damp.':'The cotton remains involved.',2000)}}if(pendingTap?.pointer===e.pointerId){const tap=pendingTap;pendingTap=null;if(!cancelled&&Math.hypot(e.clientX-tap.x,e.clientY-tap.y)<12){if(tap.object)interact(tap.object.id);else if(!hangLocked)interact()}}}
-canvas.addEventListener('pointerup',e=>finishPointer(e));canvas.addEventListener('pointercancel',e=>finishPointer(e,true));canvas.addEventListener('lostpointercapture',e=>{if(grab?.pointer===e.pointerId)grab=null;if(pendingTap?.pointer===e.pointerId)pendingTap=null});
-for(const [id,dir] of [['left',-1],['right',1]]){const b=$('#'+id);b.addEventListener('pointerdown',e=>{e.preventDefault();if(mode!=='game')return;audioReady();movePointers.set(e.pointerId,dir);b.classList.add('pressed');b.setPointerCapture(e.pointerId)});const off=e=>{movePointers.delete(e.pointerId);b.classList.toggle('pressed',[...movePointers.values()].includes(dir))};b.addEventListener('pointerup',off);b.addEventListener('pointercancel',off);b.addEventListener('lostpointercapture',off)}
-addEventListener('keydown',e=>{if(e.key==='Escape'){if(mode==='game')showMenu();else if(mode==='settings')$('#back').click();return}if(mode!=='game'||e.target.closest('button,input'))return;const k=e.key.toLowerCase();if(['arrowleft','arrowright','a','d',' '].includes(k)){e.preventDefault();audioReady();keys.add(k);if(k===' '&&!e.repeat)interact()}});
-addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));addEventListener('blur',()=>{clearMovement();grab=null;pendingTap=null});document.addEventListener('selectstart',e=>e.preventDefault());document.addEventListener('contextmenu',e=>e.preventDefault());document.addEventListener('visibilitychange',()=>{if(document.hidden){clearMovement();grab=null;pendingTap=null}});addEventListener('resize',resize);
-makeStars();loadGame();resetCloth();resize();requestAnimationFrame(frame);
+$('#leave').onclick=()=>{clearTimeout(menuTimer);say('GOOD CHOICE.',2000);menuTimer=setTimeout(()=>{if(mode==='menu')say('You are still here.\nUnderstandable.',3000)},10000)};
+function objectAt(sx,sy){sy+=viewY;const wx=sx+camera;let best=null,score=Infinity;for(const o of objects){const floor=groundAt(o.x);let yy=floor-30,rx=42,ry=42;if(o.hang){yy=floor-65;rx=55;ry=75}if(o.water){yy=floor;rx=65;ry=25}if(o.spatial){const t=o.spatial[Math.max(0,activeStep(o))];yy=floor-t.dy;rx=Math.max(55,t.w/2);ry=Math.max(45,t.h/2)}if(o.kind){yy=floor-55;rx=65;ry=72;if(['thread','pond','stone','stamp'].includes(o.kind)){yy=floor-17;rx=80;ry=40}}if(o.id==='dress'){yy=floor-48;rx=58;ry=58;if(story.dressFound)continue}if(o.id==='greg'){yy=floor-93;rx=44;ry=105}if(o.id==='home'){yy=floor-52;rx=66;ry=63}if(o.id==='puddle'){yy=floor-7;rx=70;ry=30}if(o.id==='choir'){yy=floor-34;rx=75;ry=44}if(o.id==='orb'){yy=floor-(story.orb?105:180);rx=40;ry=40}if(o.id==='bell'||o.id==='line'||o.id==='sign'||o.id==='end'){yy=floor-60;rx=o.id==='line'?80:50;ry=70}if(o.id==='bench'){yy=floor-30;rx=65;ry=45}if(o.id==='pebble'){rx=60;ry=35}if(o.id==='puddle'&&story.absorbed)continue;const d=Math.pow((wx-o.x)/rx,2)+Math.pow((sy-yy)/ry,2);if(d<1&&d<score){best=o;score=d}}return best}
+canvas.addEventListener('pointerdown',e=>{
+ if(mode!=='game'&&(mode!=='menu'||started))return;if(grab||pendingTap)return;audioReady();
+ let distance=46,index=-1;cloth.forEach((p,i)=>{const d=Math.hypot(e.clientX+camera-p.x,e.clientY+viewY-p.y);if(d<distance){distance=d;index=i}});
+ canvas.setPointerCapture(e.pointerId);
+ if(index>=0){fx('grab');grab={index,sx:e.clientX,sy:e.clientY,startX:e.clientX,startY:e.clientY,pointer:e.pointerId,moved:false}}
+ else if(mode==='game'){
+  const pid=e.pointerId,startX=e.clientX,startY=e.clientY;
+  const candidate={pointer:pid,x:startX,y:startY,object:objectAt(startX,startY),timer:null};
+  candidate.timer=setTimeout(()=>{if(pendingTap!==candidate||mode!=='game')return;screenHolds.set(pid,startX<W/2?-1:1);pendingTap=null},180);
+  pendingTap=candidate;
+ }
+});
+canvas.addEventListener('pointermove',e=>{
+ if(grab?.pointer===e.pointerId){grab.sx=e.clientX;grab.sy=e.clientY;if(Math.hypot(e.clientX-grab.startX,e.clientY-grab.startY)>8)grab.moved=true}
+ else if(pendingTap?.pointer===e.pointerId&&Math.hypot(e.clientX-pendingTap.x,e.clientY-pendingTap.y)>16){clearTimeout(pendingTap.timer);pendingTap=null}
+ else if(!grab&&e.pointerType==='mouse'){canvas.style.cursor=objectAt(e.clientX,e.clientY)?'pointer':'default'}
+});
+function finishPointer(e,cancelled=false){
+ screenHolds.delete(e.pointerId);
+ if(grab?.pointer===e.pointerId){
+  const wasTap=!grab.moved;if(grab.moved&&!cancelled){hangLocked=false;pose=null;story.pose=null;fx('drop')}grab=null;
+  if(wasTap&&!cancelled&&mode==='game')interact();
+ }
+ if(pendingTap?.pointer===e.pointerId){
+  const tap=pendingTap;clearTimeout(tap.timer);pendingTap=null;
+  if(!cancelled&&Math.hypot(e.clientX-tap.x,e.clientY-tap.y)<16)interact(tap.object?.id);
+ }
+}
+canvas.addEventListener('pointerup',e=>finishPointer(e));
+canvas.addEventListener('pointercancel',e=>finishPointer(e,true));
+canvas.addEventListener('lostpointercapture',e=>{screenHolds.delete(e.pointerId);if(grab?.pointer===e.pointerId)grab=null;if(pendingTap?.pointer===e.pointerId){clearTimeout(pendingTap.timer);pendingTap=null}});
+function releaseJoystick(pointer){
+ if(pointer!==undefined&&pointer!==joystick.pointer)return;
+ const captured=joystick.pointer;joystick.pointer=null;joystick.x=0;joystick.y=0;
+ $('#stick').style.transform='translate(0px,0px)';$('#joystick').classList.remove('pressed');
+ if(captured!==null&&$('#joystick').hasPointerCapture?.(captured))$('#joystick').releasePointerCapture(captured);
+}
+function updateJoystick(e){if(e.pointerId!==joystick.pointer)return;e.preventDefault();
+ const dx=e.clientX-joystick.cx,dy=e.clientY-joystick.cy,distance=Math.hypot(dx,dy),radius=32;
+ const travel=Math.min(radius,distance),scale=distance?travel/distance:0;
+ $('#stick').style.transform=`translate(${dx*scale}px,${dy*scale}px)`;
+ const strength=clamp((travel-5)/(radius-5),0,1),oldY=joystick.y;
+ joystick.x=distance?dx/distance*strength:0;joystick.y=distance?dy/distance*strength:0;
+ if(story.dressFound&&joystick.y<-.55&&oldY>=-.55){const held=hopRequested;bounce();hopRequested=held}
+}
+$('#joystick').addEventListener('pointerdown',e=>{e.preventDefault();if(mode!=='game'||joystick.pointer!==null)return;
+ audioReady();const rect=$('#joystick').getBoundingClientRect();joystick.cx=rect.left+rect.width/2;joystick.cy=rect.top+rect.height/2;joystick.pointer=e.pointerId;
+ $('#joystick').classList.add('pressed');$('#joystick').setPointerCapture(e.pointerId);updateJoystick(e);
+});
+$('#joystick').addEventListener('pointermove',updateJoystick);
+for(const type of ['pointerup','pointercancel','lostpointercapture'])$('#joystick').addEventListener(type,e=>releaseJoystick(e.pointerId));
+// Keep touch gestures in the game, without changing menu/settings keyboard access.
+for(const b of document.querySelectorAll('.touch-button')){
+ b.addEventListener('pointerdown',e=>{e.preventDefault();if(document.activeElement===b)b.blur()});
+ for(const type of ['contextmenu','selectstart','dragstart'])b.addEventListener(type,e=>e.preventDefault());
+ b.addEventListener('touchmove',e=>e.preventDefault(),{passive:false});
+}
+canvas.addEventListener('contextmenu',e=>e.preventDefault());
+canvas.addEventListener('selectstart',e=>e.preventDefault());
+document.addEventListener('selectstart',e=>e.preventDefault(),{capture:true});
+document.addEventListener('dragstart',e=>e.preventDefault(),{capture:true});
+document.addEventListener('contextmenu',e=>{if(mode==='game'||e.target.closest?.('#ui,canvas,button'))e.preventDefault()},{capture:true});
+addEventListener('keydown',e=>{if(e.key==='Escape'){if(mode==='tutorial'){closeGuide();return}if(mode==='game')showMenu();else if(mode==='settings')$('#back').click();return}if(mode!=='game'||e.target.closest('input,textarea,select,[contenteditable=true]')||(e.target.closest('button')&&!e.target.closest('.touch-button')&&!['arrowleft','arrowright','arrowup','a','d','w'].includes(e.key.toLowerCase())))return;if(e.key.toLowerCase()==='s'){e.preventDefault();keys.add('s');if(!e.repeat)squeezeMeg();return}if(['ArrowUp','w','W'].includes(e.key)){e.preventDefault();keys.add(e.key.toLowerCase());if(!e.repeat)bounce();return}if(e.key==='m'){openMap();return}const k=e.key.toLowerCase();if(['arrowleft','arrowright','a','d',' '].includes(k)){e.preventDefault();audioReady();keys.add(k);if(k===' '&&!e.repeat)interact()}});
+addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));addEventListener('blur',()=>{clearMovement();grab=null;pendingTap=null});document.addEventListener('visibilitychange',()=>{if(document.hidden){clearMovement();grab=null;pendingTap=null}});addEventListener('resize',resize);
+
+// Connected worlds: state and coordinates belong to a room, never the old eastward strip.
+let realm='town',puzzleHold=0,hopRequested=false;
+const townObjects=objects;
+const solved=id=>discoveries.has('puzzle:'+id);
+const portal=(id,x,name,to,arrival=200)=>({id,x,name,portal:to,arrival,reach:90});
+const challenge=(id,x,name,type,hint,reply,needs=[])=>({id,x,name,puzzle:type,hint,reply,needs,reach:100});
+const realms={
+ town:{name:'HOME & THE LONG ROAD',width:10700,color:'#173e6d',objects:townObjects},
+ hub:{name:'THE INSIDE OF BOX 4',width:1600,color:'#6733a0',objects:[portal('exit',140,'HOME ↓','town',485),portal('north',480,'NORTH · ATTIC ↑','attic'),portal('west',810,'WEST · DRAIN ←','drain'),portal('south',1150,'SOUTH · LOST PROPERTY ↓','lost'),portal('east',1430,'EAST · THE HEM →','hem')]},
+ attic:{name:'NORTH · THE UNFINISHED ATTIC',width:2000,objects:[portal('back',130,'BOX 4 ↓','hub',480),challenge('kite',600,'UNEMPLOYED KITE','lift','Lift a corner above the kite. Hold it there.','The kite remembers wind.'),challenge('air',1200,'AIR PERMIT','rest','Drape Meg on the shelf and let her settle.','Permission to be airborne. Granted.',['kite']),portal('loft',1770,'UP · BUTTON OBSERVATORY ↑','observatory')]},
+ observatory:{name:'UP · BUTTON OBSERVATORY',width:1700,objects:[portal('back',140,'ATTIC ↓','attic',1770),challenge('button',680,'THE WRONG MOON','lift','Lift Meg high enough to shade the button moon.','It was a button. It is embarrassed.',['air']),challenge('sky',1300,'SKY THREAD','rest','Rest beneath the button. The thread will find you.','A thread from the sky. Keep it.',['button'])]},
+ drain:{name:'WEST · THE DRAIN WITHOUT WATER',width:2200,objects:[portal('back',180,'BOX 4 →','hub',810),challenge('plug',700,'STUBBORN PLUG','cross','Drag left across the plug, then right across it.','The plug resigns.'),challenge('drip',1400,'ONE REMAINING DRIP','rest','Lie still beneath the drip. Cotton is qualified.','You have absorbed the last objection.',['plug']),portal('under',1970,'DOWN · PIPE ORGAN ↓','pipes')]},
+ pipes:{name:'DOWN · PIPE ORGAN',width:1800,objects:[portal('back',150,'DRAIN ↑','drain',1970),challenge('pipe',720,'SILENT PIPE','lift','Cover the top of the pipe with a lifted corner.','A very small note escapes.',['drip']),challenge('water',1450,'WATER THREAD','cross','Sweep left and right beneath the pipe.','A thread from the water. Somehow dry.',['pipe'])]},
+ lost:{name:'SOUTH · LOST PROPERTY',width:2000,objects:[portal('back',160,'BOX 4 ↑','hub',1150),challenge('label',660,'UNCLAIMED LABEL','rest','Lie still on the label. Become its owner.','LABEL: RAG. Accurate enough.'),challenge('drawer',1280,'DRAWER OF NO PARTICULARS','cross','Sweep both sides of the drawer to open it.','It contains somewhere else.',['label']),portal('inside',1780,'INSIDE · POCKET COUNTRY','pocket')]},
+ pocket:{name:'INSIDE · POCKET COUNTRY',width:1800,objects:[portal('back',160,'LOST PROPERTY ↑','lost',1780),challenge('lint',700,'NATIONAL LINT','lift','Lift the lint out of its official position.','The lint has accepted early retirement.',['drawer']),challenge('earth',1420,'POCKET THREAD','rest','Rest in the empty pocket.','A thread from the pocket. It knows your name.',['lint'])]},
+ hem:{name:'EAST · THE HEM BETWEEN WORLDS',width:1700,objects:[portal('back',150,'BOX 4 ←','hub',1430),challenge('seam',750,'THREE LOOSE ENDS','rest','Bring sky, water and pocket threads. Rest on the seam.','The seam unfolds. Your circle is waiting.',['sky','water','earth']),portal('dressway',1440,'THE DRESS →','town',10230)]},
+ bloom:{name:'ACT II · COLOUR HAS HAPPENED',width:2000,color:'#852f83',objects:[portal('old',150,'THE OLD WORLD ↓','hub'),challenge('firstlight',630,'A COLOUR WITH NO NAME','bounce','Bounce through the floating colour. ↑ / W / BOUNCE.','You have acquired the concept of pink.'),portal('garden',1080,'NORTH · UPSIDE-DOWN GARDEN ↑','garden'),portal('sea',1450,'WEST · THE PAPER SEA ←','sea'),portal('sun',1790,'SOUTH · LAUNDROMAT SUN ↓','sun')]},
+ garden:{name:'NORTH · UPSIDE-DOWN GARDEN',width:2300,color:'#155b54',objects:[portal('back',150,'COLOUR →','bloom',1080),challenge('seed',720,'A SEED FALLING UP','bounce','Bounce high through the seed.','The seed falls up. This is apparently growth.',['firstlight']),challenge('green',1480,'UNREASONABLE GREEN','float','Float over the green. Hold ↑ / W or hold BOUNCE.','Green has agreed to come home.',['seed']),portal('prism',2070,'EAST · PRISM STATION →','prism')]},
+ sea:{name:'WEST · THE PAPER SEA',width:2400,color:'#184ca0',float:true,objects:[portal('back',150,'COLOUR →','bloom',1450),challenge('boat',740,'BOAT MADE OF A RECEIPT','float','Float above the receipt. You are the sail.','The boat has deducted its own existence.',['firstlight']),challenge('blue',1570,'BLUE, AT LAST','bounce','Bounce through the blue tide.','Blue is coming too.',['boat']),portal('prism',2140,'NORTH · PRISM STATION ↑','prism')]},
+ sun:{name:'SOUTH · LAUNDROMAT SUN',width:2200,color:'#ad4920',objects:[portal('back',150,'COLOUR ↑','bloom',1790),challenge('spin',680,'SPIN CYCLE','cross','Roll across both sides of the machine.','The sun has finished its delicates.',['firstlight']),challenge('gold',1430,'ONE WARM YELLOW','bounce','Bounce into the warm yellow.','Yellow comes willingly.',['spin']),portal('prism',1960,'WEST · PRISM STATION ←','prism')]},
+ prism:{name:'PRISM STATION',width:2100,color:'#6244a6',objects:[portal('garden',150,'GARDEN ←','garden',2070),portal('sea',420,'PAPER SEA ↓','sea',2140),portal('sun',690,'SUN →','sun',1960),challenge('prism',1220,'UNSORT THE RAINBOW','float','Bring green, blue and yellow. Float over the prism.','The colours refuse to stand in line. Good.',['green','blue','gold']),portal('return',1870,'HOME, DIFFERENTLY →','homecoming')]},
+ homecoming:{name:'HOME, DIFFERENTLY',width:1600,color:'#483879',objects:[portal('back',160,'PRISM ←','prism',1870),challenge('homecolor',810,'THE DOOR REMEMBERS','rest','Rest at the door with the unsorted rainbow.','Rag Meg Circle Dress.\nShe found her circle.\nThe world found something else.',['prism']),portal('again',1400,'KEEP WANDERING · BOX 4','hub')]}
+};
+function movementAudio(){} // Movement is silent; a slow pad in musicBeat follows travel.
+function unlockColourBox(){if(!realms.hub.objects.some(o=>o.id==='colourdoor')){realms.hub.width=2000;realms.hub.objects.push(portal('colourdoor',1780,'BOX ∞ · COLOUR','bloom'))}}
+function initRealms(){if(story.dressFound)unlockColourBox();townObjects.find(o=>o.id==='box').portal='hub';townObjects.push(portal('shortcut',6450,'BOX 8 · CROSSROADS','hub'));if(story.dressFound)townObjects.push(portal('colourbox',10200,'BOX ∞ · COLOUR','bloom'));realm=realms[story.realm]?story.realm:(story.dressFound?'bloom':'town');if(!story.dressFound&&realms[realm].color&&realm!=='town'&&realm!=='hub')realm='town';objects=realms[realm].objects;WORLD=realms[realm].width;}
+function travel(to,arrival=200){hopRequested=false;viewY=0;if(to==='homecoming'&&!solved('prism')){say('The way home needs an unsorted rainbow.');return}if(to==='town'&&arrival>10000&&!solved('seam')&&!story.dressFound){say('The seam is still missing its threads.');return}realm=to;objects=realms[to].objects;WORLD=realms[to].width;pose=null;grab=null;pendingTap=null;puzzleHold=0;clearMovement();resetCloth(arrival);camera=clamp(arrival-W*.43,0,Math.max(0,WORLD-W));discoveries.add('world:'+to);$('#routes').classList.add('hidden');saveGame();resetStuck();quietMessage();tone(story.dressFound?523:220,.8,.025);updateHUD()}
+function takeDress(){if(story.dressFound)return;if(!solved('seam')){say('Your circle.\nThe seam is still closed.',6000);return}story.dressFound=true;story.ended=false;unlockColourBox();townObjects.push(portal('colourbox',10200,'BOX ∞ · COLOUR','bloom'));travel('bloom',300);$('#hop').classList.remove('hidden');say('HER CIRCLE DRESS.\nIt is just a circle.\nApparently it was holding all the colour.\nACT II — this is not the end.',10000);saveGame()}
+function inspectPuzzle(o){if(o.spatial){inspectSpatial(o);return}if(solved(o.id)){say(o.reply);return}const missing=o.needs.filter(n=>!solved(n));if(missing.length){say('Not ready yet.');return}if(o.puzzle==='rest'&&!story.dressFound){pose={type:'stone',x:o.x}}say(puzzleStatus(o))}
+function completePuzzle(o){celebration={x:o.x,y:groundAt(o.x)-70,until:time+2.4};discoveries.add('puzzle:'+o.id);puzzleHold=0;if(o.id==='homecolor')story.ended=true;tone(story.dressFound?659:330,.7,.035);say(o.reply,6500);saveGame();resetStuck()}
+function realmPhysics(){spatialPhysics();const cx=center(),cy=cloth.reduce((n,p)=>n+p.y,0)/cloth.length;for(const o of objects){if(!o.puzzle||o.campaign||o.spatial||solved(o.id)||o.needs.some(n=>!solved(n)))continue;const near=Math.abs(cx-o.x)<90;if(o.puzzle==='cross'){if(Math.abs(cx-o.x)<140){o.sides=o.sides||new Set();if(cx<o.x-45)o.sides.add('left');if(cx>o.x+45)o.sides.add('right');if(o.sides.size===2)completePuzzle(o)}continue}if(!near)continue;const floor=groundAt(o.x);let ok=o.puzzle==='rest'?(!direction()&&!grab&&Math.abs(cloth[0].y-cloth[0].oy)<1):o.puzzle==='lift'?cloth.some(p=>p.y<floor-115):o.puzzle==='bounce'?cy<floor-105:cy<floor-150;if(ok){o.hold=(o.hold||0)+1/60;if(o.hold>(o.puzzle==='bounce'?.12:o.puzzle==='rest'?2.2:1))completePuzzle(o)}else o.hold=0}}
+function bounce(){if(!story.dressFound||!dressBody)return;if(pose){pose=null;story.pose=null}if(dressBody.y>=groundAt(dressBody.x)-65){dressBody.vy=-13;hopRequested=true}}
+function dressPhysics(){
+ const b=dressBody;if(!b)return;
+ const dir=direction(),flying=keys.has('arrowup')||keys.has('w')||hopRequested||joystick.y<-.35;
+ if(pose&&!dir&&!grab&&!flying){dressHang();return}if(pose){pose=null;story.pose=null}
+ const oldX=b.x,oldY=b.y,ground=groundAt(b.x),slope=(groundAt(b.x+8)-groundAt(b.x-8))/16;
+ if(grab){const corner=cloth[grab.index];b.vx=clamp((grab.sx+camera-(corner.x-b.x)-b.x)*.3,-13,13);b.vy=clamp((grab.sy+viewY-(corner.y-b.y)-b.y)*.3,-13,13)}
+ else{b.vx=clamp(b.vx*.9+dir*.72+(b.y>ground-53?slope*.35:0),-8,8);b.vy=clamp(b.vy*.992+(flying?-.52:.34),solved('skyweave')?-13:-10,15)}
+ const docking=objects.find(o=>o.spatial&&!solved(o.id)&&o.needs.every(solved)&&activeStep(o)>=0);if(docking){const t=docking.spatial[activeStep(docking)];if(Math.abs(b.x-docking.x-t.dx)<35&&Math.abs(b.y-(groundAt(docking.x)-t.dy))<55)b.vy*=.68}
+ b.x=clamp(b.x+b.vx,45,WORLD-45);b.y+=b.vy;
+ if(b.x===45||b.x===WORLD-45)b.vx=0;
+ const landing=groundAt(b.x)-45;
+ if(b.y>=landing){b.y=landing;b.vy=b.vy>4?-b.vy*.48:0}
+ const dx=b.x-oldX;b.spin=dx/45;b.angle=(b.angle+b.spin)%(Math.PI*2);
+ b.clothSpin+=(b.spin*.96-b.clothSpin)*.24;
+ const cs=Math.cos(b.clothSpin),sn=Math.sin(b.clothSpin);
+ for(const p of cloth){const rx=p.x-oldX,ry=p.y-oldY,vx=clamp((p.x-p.ox)*.8,-5,5),vy=clamp((p.y-p.oy)*.8,-5,5),nx=rx*cs-ry*sn,ny=rx*sn+ry*cs;
+ p.x=b.x+nx+vx-dir*.18;p.y=b.y+ny+vy+.17;p.ox=b.x+nx;p.oy=b.y+ny;}
+ for(let k=0;k<7;k++){
+ for(const [ai,bi,rest] of seams){const a=cloth[ai],c=cloth[bi],sx=c.x-a.x,sy=c.y-a.y,len=Math.hypot(sx,sy)||1,f=(len-rest*(time<squeezeUntil?.5:1))/len*.38;a.x+=sx*f;a.y+=sy*f;c.x-=sx*f;c.y-=sy*f}
+ for(const p of cloth){const rx=p.x-b.x,ry=p.y-b.y,r=Math.hypot(rx,ry);if(r>40){p.x=b.x+rx/r*40;p.y=b.y+ry/r*40;p.ox+=(p.x-p.ox)*.4;p.oy+=(p.y-p.oy)*.4}}
+ }
+}
+function dressHang(){const b=dressBody,g=groundAt(pose.x),cy=g-(pose.type==='rack'?86:pose.type==='line'?62:pose.type==='bench'?80:45);b.x+=(pose.x-b.x)*.25;b.y+=(cy-b.y)*.25;b.vx=0;b.vy=0;b.spin=0;b.clothSpin=0;
+ for(let j=0;j<ROWS;j++)for(let i=0;i<COLS;i++){const p=cloth[j*COLS+i],u=i/(COLS-1),v=j/(ROWS-1);const tx=b.x+(u-.5)*32+Math.sin(time*1.5)*v*3,ty=b.y-36+v*68;p.x+=(tx-p.x)*.3;p.y+=(ty-p.y)*.3;p.ox=p.x;p.oy=p.y}
+}
+function drawRollingRim(){const b=dressBody;ctx.strokeStyle='#fff4e7';ctx.lineWidth=2;ellipse(b.x,b.y,45,45);
+ // One small stitched join travels around the otherwise plain circle.
+ ctx.save();ctx.translate(b.x,b.y);ctx.rotate(b.angle);ctx.strokeStyle='#f2b8c6';ctx.lineWidth=2.4;
+ for(const y of [-4,0,4])line(41,y,48,y);ctx.restore();
+}
+function drawRealmObject(o){drawDistinctObject(o)}
+function realmHUD(){progressHUD()}
+function openMap(){showJourneyMap()}
+$('#atlas').onclick=openMap;$('#hop').addEventListener('pointerdown',e=>{e.preventDefault();bounce();hopRequested=true;$('#hop').setPointerCapture(e.pointerId)});for(const name of ['pointerup','pointercancel','lostpointercapture'])$('#hop').addEventListener(name,()=>hopRequested=false);
+addEventListener('keyup',e=>{if(['ArrowUp','w','W'].includes(e.key))hopRequested=false});addEventListener('blur',()=>hopRequested=false);document.addEventListener('visibilitychange',()=>{if(document.hidden){hopRequested=false;saveGame()}});setInterval(()=>{if(mode==='game')saveGame()},10000);
+
+// Terrain, spatial puzzles and water all share the same world coordinates.
+function groundAt(x){const k=realms[realm]?.terrainPhase||1;const a=realm==='town'?19:realm==='highsky'?32:29;return floor+Math.sin(x/230+k*.7)*a+Math.sin(x/103+k)*a*.3}
+function drawTerrain(){ctx.beginPath();for(let x=Math.max(0,Math.floor((camera-80)/12)*12);x<=Math.min(WORLD,camera+W+80);x+=12){const y=groundAt(x);if(x===Math.max(0,Math.floor((camera-80)/12)*12))ctx.moveTo(x,y);else ctx.lineTo(x,y)}ctx.stroke();
+ if(celebration&&time<celebration.until){const t=2.4-(celebration.until-time);for(let i=0;i<14;i++){ctx.fillStyle=['#f2b8c6','#ffd86d','#7de9c4'][i%3];const a=i*2.4;ctx.globalAlpha=Math.max(0,1-t/2.4);ellipse(celebration.x+Math.cos(a)*t*42,celebration.y+Math.sin(a)*t*30-t*20,2,2,true)}ctx.globalAlpha=1}}
+const target=(dx,dy,w,h,shape='circle',color='#f2b8c6')=>({dx,dy,w,h,shape,color});
+function expandWorlds(){
+ realms.highsky={name:'THE SKY · ABOVE THE WEATHER',width:2200,color:'#354ea2',objects:[portal('descent',140,'RAIN LADDER · BACK DOWN','bloom',500),challenge('cloudfit',740,'THE CLOUD WITH A WINDOW','fit','Fly into the circle cut out of the cloud. Hold steady.','The cloud has accepted a tenant.'),challenge('skyweave',1520,'AURORA LOOM','fit','Trace the three coloured windows in order.','You have woven a little sky. Your dress can fly faster.',['cloudfit']),{id:'skyhook',x:1950,name:'SATELLITE PERCH',hang:true,reach:95,art:'satellite'}]};
+ scoreData.highsky=[134,[45,48,41,43],[12,16,19,14,7,12,9,4],2];
+ const configure=(room,id,steps,hint,water=false,rotate=false)=>{const o=realms[room].objects.find(o=>o.id===id);o.spatial=steps;o.hint=hint;o.needsWater=water;o.rotate=rotate};
+ configure('attic','kite',[target(0,105,72,110,'diamond')],'Lift Meg into the diamond kite. SQUEEZE folds her to fit.');
+ configure('attic','air',[target(0,34,120,58,'rectangle')],'Clean the attic puddle. SQUEEZE beside the fan to fill its water wheel, then fit on the shelf.',true);
+ configure('drain','plug',[target(0,26,60,52,'rectangle')],'Fold Meg with SQUEEZE and slide her inside the narrow drain slot.');
+ configure('lost','drawer',[target(0,42,72,74,'square')],'POKE turns the square lock. Match its white notch, then fold Meg into the drawer.',false,true);
+ configure('pocket','earth',[target(-25,35,95,60,'rectangle'),target(30,90,65,90,'diamond')],'Fit the low pocket first, then lift and fold into the diamond pocket.');
+ configure('bloom','firstlight',[target(0,115,116,116,'circle','#ff93c0')],'Bounce up and fit the whole circle dress inside the pink outline.');
+ configure('garden','seed',[target(0,135,124,124,'circle','#9cffac')],'SQUEEZE puddle water into the seed, then jump into its circular flower.',true);
+ configure('garden','green',[target(-50,110,124,124,'circle','#79ef98'),target(60,240,128,128,'circle','#79ef98')],'Fit the lower green window, then fly into the higher one.');
+ configure('sea','boat',[target(0,125,132,132,'circle','#86d9ff')],'SQUEEZE water into the dry dock. Fit your circle into the receipt sail.',true);
+ configure('sea','blue',[target(-70,115,124,124,'circle','#72caff'),target(60,225,124,124,'circle','#72caff')],'Pass through the blue windows from low to high.');
+ configure('sun','spin',[target(0,60,116,116,'circle','#ffd569')],'POKE rotates the laundry dial. Match the white notch, then roll into the drum.',false,true);
+ configure('sun','gold',[target(-60,125,122,122,'circle','#ffe278'),target(60,230,126,126,'circle','#ffe278')],'Fit the warm yellow circles in order: lower, then higher.');
+ configure('prism','prism',[target(-75,110,124,124,'circle','#79ef98'),target(50,225,124,124,'circle','#72caff'),target(-20,335,128,128,'circle','#ffe278')],'Fit GREEN low, BLUE right, then YELLOW high. Each completed window stays lit.');
+ configure('highsky','cloudfit',[target(0,145,130,130,'circle','#e7eeff')],'Fly into the cloud window. Fit the entire dress inside its outline.');
+ configure('highsky','skyweave',[target(-65,115,126,126,'circle','#ff93c0'),target(65,250,126,126,'circle','#7ce4d1'),target(0,390,134,134,'circle','#ffe278')],'Weave upward: pink left, mint right, then gold above.');
+ const waterNames={town:'SPILLED TEA',hub:'CARDBOARD LEAK',attic:'ROOF DRIP',observatory:'CONDENSED MOONLIGHT',drain:'DRAIN BACKWASH',pipes:'LEAKING C MAJOR',lost:'UNCLAIMED RAIN',pocket:'POCKET DEW',hem:'A WET LOOSE END',bloom:'PINK INK',garden:'MORNING DEW',sea:'A SMALL SEA',sun:'RINSE WATER',prism:'REFRACTED RAIN',homecoming:'THE LAST SPILL',highsky:'FALLEN CLOUD'};
+ let n=0;for(const [key,room] of Object.entries(realms)){room.terrainPhase=n+1;const first=room.objects.find(o=>o.puzzle);const px=key==='town'?1350:first?first.x-210:320;
+ room.objects.push({id:'spill-'+key,x:px,name:waterNames[key],water:true,reach:85,artIndex:n++});
+ for(const o of room.objects)if(o.portal){o.portalArt=Object.keys(portalArtNames).length;portalArtNames[key+':'+o.id]=portalNames[Object.keys(portalArtNames).length]||('ODD OPENING '+Object.keys(portalArtNames).length)}}
+ for(const [key,x,name,art] of [['bloom',850,'CURLING CANDY HOOK','candy'],['garden',1830,'BRANCH THAT OFFERS','branch'],['sea',1880,'FISHBONE MOORING','fishbone'],['sun',1740,'BENT PARASOL','parasol']])realms[key].objects.push({id:'hang-'+key,x,name,hang:true,reach:95,art});
+ realms.bloom.objects.push({id:'sky-sign',x:420,name:'SKY ↑ · HOLD UP',skySign:true,reach:100});
+ discoveries.add('world:town');story.water=clamp(Number(story.water)||0,0,3);
+}
+const portalArtNames={};
+const portalNames=['HOMESICK SUITCASE','ATTIC HATCH','DRAIN GRATE','LOST SOCK','UNZIPPED SEAM','FOLDED LADDER','LENSED DOOR','BUTTON TUNNEL','RUSTY ELBOW','PIPE MOUTH','ORGAN STOOL','COAT POCKET','DRAWER HANDLE','COIN PURSE','THIMBLE','NEEDLE EYE','ENVELOPE FLAP','COLOUR WHEEL','VINE ARCH','PAPER FERRY','SUN VENT','GREENHOUSE DOOR','FLOWER TRAM','POSTAGE SLOT','WAVE CURL','CLOTHESPIN','LAUNDRY CHUTE','TRIANGLE GATE','SQUARE GATE','ROUND GATE','PRISM EXIT','HOME KEY','RETURN POSTCARD','RAIN LADDER','ORIGINAL BOX 4','FOLDED CROSSROADS','INFINITE LIGHT','PRISMATIC DOORBELL'];
+function activeStep(o){return o.spatial?.findIndex((_,i)=>!discoveries.has('step:'+o.id+':'+i))??-1}
+function waterPhysics(){for(const o of objects){if(!o.water||time<(o.refillAt||0))continue;const contact=story.dressFound&&dressBody?Math.abs(dressBody.x-o.x)<60&&dressBody.y+45>groundAt(o.x)-15:cloth.filter(p=>Math.abs(p.x-o.x)<60&&p.y>groundAt(p.x)-14).length>5;
+ if(contact&&(story.water||0)<3){o.absorbing=(o.absorbing||0)+1/60;if(o.absorbing>.8){story.water=Math.min(3,(story.water||0)+1);story.wet=true;o.absorbing=0;o.refillAt=time+12;const first=!discoveries.has('clean:'+o.id);discoveries.add('clean:'+o.id);if(first)say('Puddle cleared.');saveGame()}}else o.absorbing=0}}
+function squeezeMeg(){if(mode!=='game')return;squeezeUntil=time+1.8;
+ const receiver=objects.find(o=>o.needsWater&&Math.abs(o.x-center())<130&&!discoveries.has('watered:'+o.id));
+ if((story.water||0)>0){story.water--;story.wet=story.water>0;if(receiver){discoveries.add('watered:'+receiver.id);celebration={x:receiver.x,y:groundAt(receiver.x)-70,until:time+2.4};say(receiver.id==='seed'?'The seed drinks. Its flower unfolds.':receiver.id==='boat'?'The dock fills. The paper boat rises.':'The wheel turns. The fan wakes up.')}else say('Water wrung out.')}else say('Folded.');saveGame()}
+$('#squeeze').addEventListener('pointerdown',e=>{e.preventDefault();squeezeMeg();$('#squeeze').setPointerCapture(e.pointerId);squeezePointer=e.pointerId});
+let squeezePointer=null;
+for(const type of ['pointerup','pointercancel','lostpointercapture'])$('#squeeze').addEventListener(type,e=>{if(e.pointerId===squeezePointer)squeezePointer=null});
+function spatialPhysics(){if(squeezePointer!==null||keys.has('s'))squeezeUntil=time+.2;const cx=center();for(const o of objects){if(!o.spatial||solved(o.id)||o.needs.some(n=>!solved(n)))continue;
+ if(o.needsWater&&!discoveries.has('watered:'+o.id))continue;if(o.rotate&&rotation(o)!==2)continue;
+ const index=activeStep(o);if(index<0){completePuzzle(o);continue}const t=o.spatial[index],tx=o.x+t.dx,ty=groundAt(o.x)-t.dy;
+ let fits;if(story.dressFound&&dressBody){fits=t.shape==='circle'?Math.hypot(dressBody.x-tx,dressBody.y-ty)+45<=t.w/2:Math.abs(dressBody.x-tx)+45<=t.w/2&&Math.abs(dressBody.y-ty)+45<=t.h/2}
+ else {fits=cloth.every(p=>{const dx=Math.abs(p.x-tx),dy=Math.abs(p.y-ty);return t.shape==='diamond'?dx/(t.w/2)+dy/(t.h/2)<=1:t.shape==='circle'?Math.hypot(dx,dy)<=t.w/2:dx<=t.w/2&&dy<=t.h/2})}
+ if(fits){o.hold=(o.hold||0)+1/60;if(o.hold>.1){discoveries.add('step:'+o.id+':'+index);o.hold=0;if(index===o.spatial.length-1)completePuzzle(o);else{tone(392+index*100,.2,.04);saveGame()}}}else o.hold=0;
+ }}
+function rotation(o){for(let i=0;i<4;i++)if(discoveries.has('rotation:'+o.id+':'+i))return i;return 0}
+function inspectSpatial(o){if(solved(o.id)){say(o.reply);return}if(o.needs.some(n=>!solved(n))){say('Still waiting for '+puzzleName(o.needs.find(n=>!solved(n))).toLowerCase()+'.');return}if(o.rotate){const next=(rotation(o)+1)%4;for(let i=0;i<4;i++)discoveries.delete('rotation:'+o.id+':'+i);discoveries.add('rotation:'+o.id+':'+next);saveGame();say(next===2?'Notches aligned.':'Turned. Still misaligned.');return}say(puzzleStatus(o))}
+function puzzleStatus(o){if(o.needsWater&&!discoveries.has('watered:'+o.id))return o.id==='seed'?'The seed is thirsty.':o.id==='boat'?'The dock is dry.':'The wheel is dry.';if(o.spatial)return o.spatial.length>1?'Window '+(activeStep(o)+1)+' is waiting.':'An outline. Meg-shaped, perhaps.';return o.puzzle==='lift'?'Just out of reach.':o.puzzle==='cross'?'It has two sides to the story.':'A place for Meg.'}
+function skyPhysics(){if(!story.dressFound||!dressBody)return;
+ if(realm!=='highsky'&&groundAt(dressBody.x)-dressBody.y>650){story.skyOrigin=realm;story.skyOriginX=dressBody.x;travel('highsky',300);say('Above the weather. At last.');return}
+ if(realm==='highsky'&&dressBody.y<floor-750){const shift=floor-750-dressBody.y;dressBody.y+=shift;dressBody.vy=0;for(const p of cloth){p.y+=shift;p.oy+=shift}}}
+function puzzleLocation(id){return Object.values(realms).find(r=>r.objects.some(o=>o.puzzle&&o.id===id))?.name||'MAP'}
+function puzzleName(id){return Object.values(realms).flatMap(r=>r.objects).find(o=>o.puzzle&&o.id===id)?.name||id}
+function nextTask(){const ready=objects.find(o=>o.puzzle&&!solved(o.id)&&o.needs.every(solved));if(ready)return ready;return objects.find(o=>o.puzzle&&!solved(o.id))}
+function progressHUD(){const local=objects.filter(o=>o.puzzle),done=local.filter(o=>solved(o.id)).length;
+ $('#area').textContent='YOU ARE HERE\n'+realms[realm].name;
+ $('#chapter').textContent=local.length?done+'/'+local.length+' here':'';
+ renderResources();$('#west').classList.toggle('hidden',camera<5);$('#east').classList.toggle('hidden',camera>=WORLD-W-5);$('#hop').textContent='FLY';}
+function showJourneyMap(){if(mode!=='game')return;clearMovement();hopRequested=false;grab=null;const panel=$('#routes');panel.replaceChildren();const h=document.createElement('h2');h.textContent='YOUR JOURNEY';panel.append(h);const summary=document.createElement('p');summary.className='map-summary';summary.textContent=realms[realm].name;panel.append(summary);
+ for(const [key,r] of Object.entries(realms)){if(!story.dressFound&&['bloom','garden','sea','sun','prism','homecoming','highsky'].includes(key))continue;const visited=key===realm||discoveries.has('world:'+key),tasks=r.objects.filter(o=>o.puzzle),done=tasks.filter(o=>solved(o.id)).length,b=document.createElement('button');b.textContent=(key===realm?'YOU ARE HERE · ':done===tasks.length&&tasks.length?'✓ ':visited?'↩ ':'○ ')+r.name+(tasks.length?' · '+done+'/'+tasks.length:'');b.disabled=!visited;b.className=key===realm?'current':'';b.onclick=()=>travel(key);panel.append(b)}
+ const exits=document.createElement('p');exits.textContent='EXITS HERE: '+objects.filter(o=>o.portal).map(o=>realms[o.portal].name).join(' · ');panel.append(exits);const close=document.createElement('button');close.textContent='BACK TO MEG';close.onclick=()=>panel.classList.add('hidden');panel.append(close);panel.classList.remove('hidden')}
+function shapePath(shape,x,y,w,h){ctx.beginPath();if(shape==='circle')ctx.ellipse(x,y,w/2,h/2,0,0,Math.PI*2);else if(shape==='diamond'){ctx.moveTo(x,y-h/2);ctx.lineTo(x+w/2,y);ctx.lineTo(x,y+h/2);ctx.lineTo(x-w/2,y);ctx.closePath()}else ctx.rect(x-w/2,y-h/2,w,h)}
+function drawDistinctObject(o){const a=o.x,g=groundAt(a);ctx.save();ctx.strokeStyle=story.dressFound?'#ffe8c7':'#ddd';ctx.lineWidth=1.6;
+ if(o.water){const dry=time<(o.refillAt||0);ctx.fillStyle=story.dressFound?['#82ceff','#f9a6cc','#abecdc'][o.artIndex%3]:'#8db5c9';ctx.globalAlpha=dry?.16:.55;ctx.beginPath();for(let i=0;i<=24;i++){const angle=i/24*Math.PI*2,r=1+Math.sin(angle*3+o.artIndex)*.18,x=a+Math.cos(angle)*51*r,y=g+Math.sin(angle)*6*r;i?ctx.lineTo(x,y):ctx.moveTo(x,y)}ctx.fill();ctx.globalAlpha=1;if(showObjectLabel(o))text(o.name,a,g+26,12,'#c9e5ef')}
+ else if(o.skySign){line(a,g,a,g-60);ctx.strokeRect(a-30,g-84,60,25);text('SKY ↑',a,g-67,12,'#fff');}
+ else if(o.hang){drawHanger(o,a,g);if(showObjectLabel(o))text(o.name,a,g+28,12,'#eee')}
+ else if(o.portal){drawUniquePortal(o,a,g);if(showObjectLabel(o))text(o.name,a,g+29,13,'#ddd')}
+ else if(o.puzzle){drawPuzzleArtwork(o,a,g);if(o.spatial){const active=activeStep(o);for(let i=0;i<o.spatial.length;i++){const t=o.spatial[i],x=a+t.dx,y=g-t.dy,finished=discoveries.has('step:'+o.id+':'+i)||solved(o.id);ctx.save();ctx.strokeStyle=story.dressFound?t.color:'#f2b8c6';ctx.globalAlpha=finished?.25:i===active?1:.25;ctx.lineWidth=i===active?2.2:1;shapePath(t.shape,x,y,t.w,t.h);ctx.stroke();if(finished){ctx.fillStyle=t.color;ctx.globalAlpha=.12;ctx.fill()}if(o.spatial.length>1)text(finished?'✓':String(i+1),x,y-t.h/2-10,13,'#eee');ctx.restore()}
+ if(o.rotate){ctx.save();ctx.translate(a,g-40);ctx.strokeStyle='#fff';line(-48,0,-58,0);ctx.rotate(rotation(o)*Math.PI/2);ctx.strokeStyle='#f2b8c6';line(37,0,48,0);ctx.restore()}}
+ if(o.needsWater&&!discoveries.has('watered:'+o.id)){drawWaterMark(a,g-14)}
+ if(showObjectLabel(o))text((solved(o.id)?'✓ ':'')+o.name,a,g+30,12,solved(o.id)?'#9ce6c1':'#eee');}
+ ctx.restore();}
+function drawHanger(o,a,g){line(a,g,a,g-128);const top=g-128;if(o.art==='branch'){line(a,top+22,a-30,top-2);line(a,top+45,a+35,top+12);line(a-20,top+6,a-29,top-16)}else if(o.art==='parasol'){ctx.beginPath();ctx.arc(a,top+20,42,Math.PI,0);ctx.stroke();line(a-42,top+20,a+42,top+20);line(a,top+20,a+17,top+34)}else if(o.art==='fishbone'){for(let i=0;i<4;i++){line(a,top+i*18,a-23,top+i*18-12);line(a,top+i*18,a+23,top+i*18-12)}}else if(o.art==='satellite'){ctx.strokeRect(a-45,top-5,28,30);ctx.strokeRect(a+17,top-5,28,30);line(a-17,top+10,a+17,top+10);ellipse(a,top+10,9,9)}else{ctx.beginPath();ctx.arc(a+12,top+5,12,Math.PI,Math.PI*2.7);ctx.stroke();for(let i=0;i<4;i++)line(a-5,top+30+i*15,a+5,top+23+i*15)}}
+function drawUniquePortal(o,a,g){const key=realm+':'+o.id;if(!Object.hasOwn(portalArtNames,key)){const i=Object.keys(portalArtNames).length;portalArtNames[key]=portalNames[i]||('OPENING '+(i+1))}const n=Object.keys(portalArtNames).indexOf(key);ctx.save();ctx.translate(a,g);const w=24+(n%5)*4,h=44+(n%7)*6;
+ // Room exits are individual objects rather than copies of the same box.
+ switch(n){
+ case 0:ctx.strokeRect(-30,-45,60,45);ctx.strokeRect(-12,-56,24,11);line(-19,-45,-19,0);line(19,-45,19,0);break;
+ case 1:ctx.beginPath();ctx.moveTo(-35,0);ctx.lineTo(-22,-70);ctx.lineTo(32,-57);ctx.lineTo(35,0);ctx.closePath();ctx.stroke();ellipse(20,-27,3,3);break;
+ case 2:ellipse(0,-25,40,25);for(let i=-24;i<=24;i+=12)line(i,-44,i,-6);break;
+ case 3:ctx.beginPath();ctx.moveTo(-16,-80);ctx.lineTo(18,-80);ctx.lineTo(18,-28);ctx.quadraticCurveTo(48,-25,43,-10);ctx.quadraticCurveTo(8,8,-15,-9);ctx.closePath();ctx.stroke();line(-15,-65,18,-65);break;
+ case 4:for(let i=0;i<9;i++){ctx.strokeRect(i%2?-2:-12,-90+i*10,13,6)}ellipse(8,-87,6,10);break;
+ case 5:line(-28,0,-9,-97);line(28,0,9,-97);for(let i=1;i<6;i++)line(-28+i*3,-i*16,28-i*3,-i*16);break;
+ case 6:ellipse(0,-52,35,50);ellipse(0,-52,19,34);line(-19,0,19,0);break;
+ case 7:ellipse(0,-42,40,40);for(const x of [-10,10])for(const y of [-52,-32])ellipse(x,y,5,5);break;
+ case 8:ctx.beginPath();ctx.moveTo(-34,0);ctx.lineTo(-34,-55);ctx.quadraticCurveTo(-34,-80,35,-80);ctx.lineTo(35,-53);ctx.lineTo(-6,-53);ctx.lineTo(-6,0);ctx.stroke();break;
+ case 9:ctx.beginPath();ctx.moveTo(-10,0);ctx.lineTo(-10,-45);ctx.lineTo(-35,-80);ctx.lineTo(35,-80);ctx.lineTo(10,-45);ctx.lineTo(10,0);ctx.stroke();break;
+ case 10:ellipse(0,-50,36,8);line(-24,-47,-31,0);line(24,-47,31,0);line(-28,-20,28,-20);break;
+ case 11:ctx.beginPath();ctx.moveTo(-34,-64);ctx.lineTo(34,-64);ctx.lineTo(30,-12);ctx.quadraticCurveTo(0,12,-30,-12);ctx.closePath();ctx.stroke();line(-32,-52,32,-52);break;
+ case 12:ctx.strokeRect(-40,-64,80,64);ctx.beginPath();ctx.arc(0,-38,18,Math.PI,0);ctx.stroke();break;
+ case 13:ctx.beginPath();ctx.moveTo(-22,-62);ctx.bezierCurveTo(-55,-15,-35,0,0,0);ctx.bezierCurveTo(35,0,55,-15,22,-62);ctx.closePath();ctx.stroke();ellipse(-5,-66,5,5);ellipse(5,-66,5,5);break;
+ case 14:ctx.beginPath();ctx.moveTo(-33,0);ctx.lineTo(-24,-65);ctx.quadraticCurveTo(0,-90,24,-65);ctx.lineTo(33,0);ctx.closePath();ctx.stroke();for(let i=0;i<12;i++)ellipse((i%4-1.5)*12,-18-Math.floor(i/4)*18,2,2);break;
+ case 15:ctx.beginPath();ctx.moveTo(0,0);ctx.quadraticCurveTo(-24,-105,0,-115);ctx.quadraticCurveTo(24,-105,0,0);ctx.stroke();ellipse(0,-89,6,18);break;
+ case 16:ctx.strokeRect(-43,-54,86,54);line(-43,-54,0,-18);line(43,-54,0,-18);line(-43,-54,0,-83);line(43,-54,0,-83);break;
+ case 17:ellipse(0,-42,41,41);for(let i=0;i<7;i++){const t=i*2*Math.PI/7;line(0,-42,Math.cos(t)*41,-42+Math.sin(t)*41)}break;
+ case 18:ctx.beginPath();ctx.moveTo(-35,0);ctx.bezierCurveTo(-60,-110,60,-110,35,0);ctx.stroke();for(let i=0;i<5;i++)ellipse(-35+i*17,-70-Math.sin(i)*15,9,5);break;
+ case 19:ctx.beginPath();ctx.moveTo(-48,-23);ctx.lineTo(48,-23);ctx.lineTo(24,0);ctx.lineTo(-24,0);ctx.closePath();ctx.stroke();line(0,-23,0,-88);line(0,-88,36,-30);break;
+ case 20:ctx.strokeRect(-38,-74,76,74);for(let i=0;i<5;i++)line(-27,-60+i*12,27,-66+i*12);break;
+ case 21:ctx.beginPath();ctx.moveTo(-38,0);ctx.lineTo(-38,-65);ctx.lineTo(0,-98);ctx.lineTo(38,-65);ctx.lineTo(38,0);ctx.stroke();line(0,0,0,-98);line(-38,-40,38,-40);break;
+ case 22:ellipse(-25,-8,8,8);ellipse(25,-8,8,8);ctx.strokeRect(-36,-51,72,32);line(0,-51,0,-90);for(let i=0;i<5;i++)ellipse(Math.cos(i*1.26)*12,-90+Math.sin(i*1.26)*12,8,8);break;
+ case 23:line(0,0,0,-90);ctx.strokeRect(-40,-90,80,37);line(-30,-73,30,-73);break;
+ case 24:ctx.beginPath();ctx.moveTo(-45,0);ctx.bezierCurveTo(-60,-115,90,-110,24,-32);ctx.bezierCurveTo(-2,-8,-30,-70,12,-67);ctx.stroke();break;
+ case 25:ctx.save();ctx.rotate(.15);ctx.strokeRect(-12,-90,24,90);ellipse(0,-45,7,7);line(-12,-22,12,-22);ctx.restore();break;
+ case 26:ctx.beginPath();ctx.moveTo(-44,-82);ctx.lineTo(44,-82);ctx.lineTo(17,-15);ctx.lineTo(17,0);ctx.lineTo(-17,0);ctx.lineTo(-17,-15);ctx.closePath();ctx.stroke();break;
+ case 27:shapePath('diamond',0,-55,78,110);ctx.stroke();shapePath('diamond',0,-55,44,76);ctx.stroke();break;
+ case 28:ctx.strokeRect(-40,-80,80,80);ctx.strokeRect(-25,-65,50,50);line(-40,0,-25,-15);line(40,0,25,-15);break;
+ case 29:ellipse(0,-47,45,45);ellipse(0,-47,30,30);for(let i=0;i<8;i++){const t=i*Math.PI/4;line(Math.cos(t)*30,-47+Math.sin(t)*30,Math.cos(t)*45,-47+Math.sin(t)*45)}break;
+ case 30:ctx.beginPath();ctx.moveTo(-35,0);ctx.lineTo(0,-90);ctx.lineTo(35,0);ctx.closePath();ctx.stroke();line(0,-90,12,-15);line(12,-15,35,0);break;
+ case 31:ellipse(0,-65,24,24);line(0,-41,0,0);line(0,-8,18,-8);line(0,-20,12,-20);break;
+ case 32:ctx.save();ctx.rotate(-.2);ctx.strokeRect(-43,-60,86,55);ctx.strokeRect(20,-52,15,18);for(let i=0;i<3;i++)line(-30,-42+i*9,9,-42+i*9);ctx.restore();break;
+ case 34:ctx.strokeRect(-30,-38,60,38);line(-30,-38,-48,-64);line(30,-38,51,-58);text('4',0,-13,16,'#fff');break;
+ case 35:ctx.beginPath();ctx.moveTo(-40,0);ctx.lineTo(-18,-50);ctx.lineTo(-35,-88);ctx.lineTo(35,-88);ctx.lineTo(18,-50);ctx.lineTo(40,0);ctx.closePath();ctx.stroke();line(-18,-50,18,-50);break;
+ case 36:ellipse(-17,-40,26,18);ellipse(17,-40,26,18);line(0,-65,0,-85);line(0,-15,0,0);break;
+ case 37:ctx.strokeRect(-17,-80,34,80);ellipse(0,-58,9,9);line(-8,-25,8,-25);break;
+ case 33:line(-18,0,-18,-130);line(18,0,18,-130);for(let i=0;i<7;i++)line(-18,-10-i*18,18,-10-i*18);break;
+ default:ctx.beginPath();for(let i=0;i<9;i++){const t=i/8*Math.PI*2,r=i%2?28:42;i?ctx.lineTo(Math.cos(t)*r,-45+Math.sin(t)*r):ctx.moveTo(Math.cos(t)*r,-45+Math.sin(t)*r)}ctx.stroke();ellipse(0,-45,12,12);
+ }
+ ctx.restore();}
+function drawPuzzleArtwork(o,a,g){const done=solved(o.id),watered=discoveries.has('watered:'+o.id);ctx.save();ctx.translate(a,g);ctx.strokeStyle=done?'#92cbb3':'#b7b7bc';ctx.lineWidth=1.4;
+ switch(o.id){
+ case 'kite':shapePath('diamond',0,-105,70,100);ctx.stroke();ctx.beginPath();ctx.moveTo(0,-55);ctx.bezierCurveTo(35,-35,-35,-20,10,-3);ctx.stroke();break;
+ case 'air':line(-67,-5,67,-5);line(-54,-5,-54,-35);line(54,-5,54,-35);ellipse(0,-80,24,24);ctx.save();ctx.translate(0,-80);ctx.rotate(watered?time*2:0);for(let i=0;i<4;i++){ctx.rotate(Math.PI/2);line(0,0,18,8)}ctx.restore();break;
+ case 'button':ellipse(0,-145,32,32);for(const x of [-8,8])for(const y of [-153,-137])ellipse(x,y,3,3);line(0,-113,0,-3);break;
+ case 'sky':ctx.beginPath();ctx.moveTo(-45,-25);ctx.bezierCurveTo(-50,-140,60,-65,5,-10);ctx.bezierCurveTo(25,-70,-20,-80,38,-130);ctx.stroke();break;
+ case 'plug':ctx.strokeRect(-53,-53,106,53);ctx.strokeRect(-30,-52,60,52);for(let i=0;i<4;i++)line(55+i*7,-30,60+i*7,-24);break;
+ case 'drip':line(-32,-110,25,-110);line(25,-110,25,-82);ctx.beginPath();ctx.moveTo(25,-66);ctx.quadraticCurveTo(6,-42,25,-39);ctx.quadraticCurveTo(43,-42,25,-66);ctx.stroke();break;
+ case 'pipe':for(let i=0;i<4;i++){ctx.strokeRect(-40+i*23,-65-i*23,15,65+i*23);ellipse(-32+i*23,-65-i*23,7,4)}break;
+ case 'water':ctx.beginPath();ctx.moveTo(-60,-12);for(let i=0;i<7;i++)ctx.quadraticCurveTo(-50+i*18,-50, -42+i*18,-12);ctx.stroke();break;
+ case 'label':ctx.beginPath();ctx.moveTo(-45,-8);ctx.lineTo(-45,-42);ctx.lineTo(25,-42);ctx.lineTo(44,-25);ctx.lineTo(25,-8);ctx.closePath();ctx.stroke();ellipse(27,-25,3,3);break;
+ case 'drawer':ctx.strokeRect(-50,-86,100,86);ctx.strokeRect(-36,-77,72,74);line(-11,-47,11,-47);break;
+ case 'lint':for(let i=0;i<8;i++){ctx.beginPath();ctx.arc(Math.sin(i*2)*23,-55+Math.cos(i*2)*20,17,0,5);ctx.stroke()}break;
+ case 'earth':ctx.beginPath();ctx.moveTo(-58,-68);ctx.lineTo(60,-68);ctx.lineTo(48,-8);ctx.quadraticCurveTo(0,14,-48,-8);ctx.closePath();ctx.stroke();break;
+ case 'seam':for(let i=0;i<9;i++){line(-60+i*15,-10,-54+i*15,-35);line(-60+i*15,-35,-54+i*15,-10)}break;
+ case 'firstlight':line(-18,0,-18,-33);line(18,0,18,-33);line(-18,-33,0,-56);line(18,-33,0,-56);ellipse(0,-65,8,8);break;
+ case 'seed':line(0,0,0,watered?-135:-36);ellipse(-18,-25,18,7);ellipse(18,-40,18,7);if(watered){for(let i=0;i<6;i++){const a=i*Math.PI/3;ellipse(Math.cos(a)*70,-135+Math.sin(a)*70,14,14)}}break;
+ case 'green':for(let i=0;i<3;i++){line(-92+i*88,0,-92+i*88,-110-i*40);ctx.beginPath();ctx.arc(-92+i*88,-110-i*40,25,Math.PI,Math.PI*2);ctx.stroke()}break;
+ case 'boat':ctx.beginPath();ctx.moveTo(-70,-15);ctx.lineTo(-43,watered?-52:-4);ctx.lineTo(48,watered?-52:-4);ctx.lineTo(70,-15);ctx.closePath();ctx.stroke();line(0,-20,0,-190);line(0,-190,100,-65);line(100,-65,0,-65);break;
+ case 'blue':ctx.beginPath();ctx.moveTo(-100,0);ctx.bezierCurveTo(-80,-75,60,-15,100,-70);ctx.bezierCurveTo(120,-20,50,-50,40,-10);ctx.stroke();break;
+ case 'spin':ctx.strokeRect(-72,-128,144,128);ellipse(0,-60,59,59);for(let i=0;i<3;i++)ellipse(-38+i*27,-116,3,3);break;
+ case 'gold':ellipse(0,-70,30,30);for(let i=0;i<10;i++){const t=i*Math.PI/5;line(Math.cos(t)*36,-70+Math.sin(t)*36,Math.cos(t)*48,-70+Math.sin(t)*48)}break;
+ case 'prism':ctx.beginPath();ctx.moveTo(-85,0);ctx.lineTo(0,-105);ctx.lineTo(85,0);ctx.closePath();ctx.stroke();for(let i=0;i<3;i++)line(10,-55,90,-35-i*18);break;
+ case 'homecolor':ctx.beginPath();ctx.moveTo(-62,0);ctx.lineTo(-62,-95);ctx.lineTo(0,-143);ctx.lineTo(62,-95);ctx.lineTo(62,0);ctx.stroke();ctx.strokeRect(-24,-78,48,78);break;
+ case 'cloudfit':for(let i=0;i<5;i++){ctx.beginPath();ctx.arc(-80+i*40,-165+Math.sin(i)*20,35,Math.PI,Math.PI*2);ctx.stroke()}line(-100,-130,-67,-130);line(67,-130,100,-130);break;
+ case 'skyweave':line(-100,0,-100,-410);line(100,0,100,-410);line(-100,-410,100,-410);for(let i=0;i<7;i++)line(-90+i*30,-410,-90+i*30,-350);break;
+ default:ctx.strokeRect(-23,-45,46,45);
+ }ctx.restore();}
+
+
+const TUTORIAL_KEY='rag-meg-tutorial-seen-v1';let tutorialSeen=false,guidePage=0,guideStartsGame=false,lastResourceKey='';
+try{tutorialSeen=localStorage.getItem(TUTORIAL_KEY)==='yes'}catch{}
+const guidePages=[
+ {title:'A little movement.',body:'<p><strong>Hold the left or right half of the screen</strong> and Meg will keep moving that way. The joystick still works too, and pushing it up lifts Meg.</p><p>You can also <strong>drag the cloth</strong> to place a corner precisely. Release to let her flop.</p><p>On a keyboard: <strong>← → or A / D</strong> moves.</p>'},
+ {title:'A little involvement.',body:'<p><strong>Tap anywhere</strong> to poke the nearest useful thing. There is no POKE button anymore. Tapping a hanger while moving stops Meg and leaves her hanging; tap it again or drag her free.</p><p><strong>SQUEEZE</strong> folds Meg smaller and wrings out water. Hold it to stay folded. Keyboard: <strong>S</strong>.</p><p>Puzzle targets and timing are now much more forgiving. Close is usually good enough.</p>'},
+ {title:'A little direction.',body:'<p><strong>Droplets</strong> show water carried. <strong>Thread spools</strong> fill as you find the three threads. After the dress, three colored diamonds track the colors.</p><p><strong>Fast travel:</strong> tap <strong>MAP</strong>, then tap any place you have already visited to travel there instantly. The map also shows your current location and completed rooms.</p><p>With the dress, push the joystick up or hold <strong>FLY</strong> to bounce and climb. Keyboard: <strong>↑ / W</strong>. Release to descend.</p><p>These controls are always in <strong>Menu → Settings</strong>.</p>'}
+];
+function openGuide(startGame=false){guideStartsGame=startGame;guidePage=0;mode='tutorial';clearMovement();hopRequested=false;grab=null;quietMessage();$('#menu').classList.add('hidden');$('#title').classList.add('hidden');$('#settings').classList.add('hidden');$('#guide').classList.remove('hidden');renderGuide();$('#guide-next').focus()}
+function renderGuide(){const page=guidePages[guidePage];$('#guide-step').textContent=(guideStartsGame?'TUTORIAL':'CONTROLS')+' · '+(guidePage+1)+' / '+guidePages.length;$('#guide-title').textContent=page.title;$('#guide-body').innerHTML=page.body;$('#guide-next').textContent=guidePage===guidePages.length-1?(guideStartsGame?'PLAY':'DONE'):'NEXT';$('#guide-skip').textContent=guideStartsGame?'SKIP':'BACK';$('#guide').scrollTop=0}
+function closeGuide(){const start=guideStartsGame;$('#guide').classList.add('hidden');if(start){tutorialSeen=true;try{localStorage.setItem(TUTORIAL_KEY,'yes')}catch{};begin()}else{mode='settings';$('#settings').classList.remove('hidden');$('#controls-help').focus()}}
+$('#guide-next').onclick=()=>{if(guidePage<guidePages.length-1){guidePage++;renderGuide()}else closeGuide()};$('#guide-skip').onclick=closeGuide;$('#controls-help').onclick=()=>openGuide(false);
+const dropIcon='<path d="M10 2C8 6 3 11 3 15a7 7 0 0 0 14 0C17 11 12 6 10 2Z"/>';
+const threadIcon='<path d="M4 3h12v3H4zM4 18h12v3H4zM6 6h8v12H6z"/><path d="m6 8 8 3m-8 1 8 3"/>';
+const colorIcon='<path d="m10 3 7 9-7 9-7-9Z"/>';
+function iconMarkup(kind,full,color=''){return '<svg viewBox="0 0 20 24" aria-hidden="true" class="'+(full?'full':'empty')+'"'+(color&&full?' style="color:'+color+'"':'')+'>'+kind+'</svg>'}
+function renderResources(){const water=clamp(story.water||0,0,3),threads=['sky','water','earth'].map(solved),colors=['green','blue','gold'].map(solved),key=[water,...threads,...colors,story.dressFound].join(':');if(key===lastResourceKey)return;lastResourceKey=key;
+ $('#water-icons').innerHTML=[0,1,2].map(i=>iconMarkup(dropIcon,i<water)).join('');$('#water-icons').setAttribute('aria-label',water+' of 3 water drops');
+ $('#thread-icons').innerHTML=threads.map(full=>iconMarkup(threadIcon,full)).join('');$('#thread-icons').setAttribute('aria-label',threads.filter(Boolean).length+' of 3 threads found');
+ $('#color-icons').classList.toggle('hidden',!story.dressFound);$('#color-icons').innerHTML=colors.map((full,i)=>iconMarkup(colorIcon,full,['#79ef98','#72caff','#ffe278'][i])).join('');$('#color-icons').setAttribute('aria-label',colors.filter(Boolean).length+' of 3 colors found');}
+function showObjectLabel(o){return focus?.id===o.id&&performance.now()>=messageUntil}
+function drawWaterMark(x,y){ctx.save();ctx.translate(x,y);ctx.strokeStyle='#a8dfff';ctx.lineWidth=1.3;ctx.beginPath();ctx.moveTo(0,-10);ctx.bezierCurveTo(-3,-5,-7,0,-7,4);ctx.bezierCurveTo(-7,13,7,13,7,4);ctx.bezierCurveTo(7,0,3,-5,0,-10);ctx.stroke();ctx.restore()}
+
+// Acts III–IX. All durable progress lives in the existing save, including each puzzle stage.
+const actNames={3:'THE HOUSE HAS OTHER PLANS',4:'THE MUNICIPAL LAUNDRY',5:'THE ORCHARD OF BORROWED COLOR',6:'THE WEATHER UPSTAIRS',7:'THE MUSEUM OF ALMOST FITTING',8:'YESTERDAY, SLIGHTLY DAMP',9:'THE UNFINISHED CIRCLE'};
+const actNumerals={3:'III',4:'IV',5:'V',6:'VI',7:'VII',8:'VIII',9:'IX'};
+const pigments={pink:{hex:'#f2b8c6',hue:344,mark:'○'},blue:{hex:'#80caff',hue:205,mark:'≋'},yellow:{hex:'#ffe17a',hue:47,mark:'✳'},red:{hex:'#ff8b8b',hue:0,mark:'╱'},green:{hex:'#87e4af',hue:145,mark:'+'},orange:{hex:'#ffb579',hue:27,mark:'◇'},purple:{hex:'#c4a1ff',hue:265,mark:'⋮'}};
+let campaignClock=0,echoHistory=[],echoActors=[],echoRecord=null,endingVisible=false;
+const foldNames=['LOOSE','FLAT','TALL'];
+const campaignRoomSpecs=[
+ ['insidehouse',3,'THE CEILING PARLOR','#382e52','homecolor',[
+  ['politehinge','POLITE HINGE','The floor has reconsidered.',[{turn:1,dy:80},{turn:2,dy:160}]],
+  ['bathtubbridge','BATH BRIDGE','The bath is now infrastructure.',[{water:2,dy:45},{dry:0,turn:3,dy:220}]]]],
+ ['housepantry',3,'THE SIDEWAYS PANTRY','#493553','bathtubbridge',[
+  ['cupboardtide','CUPBOARD TIDE','The preserves are preserved.',[{turn:1,water:1,dy:100},{turn:3,dy:245}]],
+  ['tablemanners','TABLE MANNERS','The table has turned.',[{water:2,turn:2,dy:65},{dry:0,turn:0,dy:190}]]]],
+ ['househook',3,'THE HOOK ON THE OTHER SIDE','#3a465f','tablemanners',[
+  ['hingedlanding','HINGED LANDING','A landing with prospects.',[{turn:3,dy:110},{turn:1,water:1,dy:220}]],
+  ['ownhook','YOUR OWN COAT HOOK','Your hook. The house has another address.\nFolds remembered.',[{hang:true,dy:86},{dry:0,turn:2,dy:260}]]]],
+ ['laundryintake',4,'INCORRECTLY SORTED','#32445f','ownhook',[
+  ['napkinappeal','NAPKIN APPEAL','Classification: not a napkin.',[{fold:1,dy:75},{fold:2,dy:165}]],
+  ['receiptpress','RECEIPT PRESS','Your appeal has been ironed.',[{fold:1,water:1,dy:90},{fold:0,dry:0,dy:255}]]]],
+ ['laundryline',4,'THE UNATTENDED DELICATES','#344b55','receiptpress',[
+  ['pegferry','PEG FERRY','A transfer between departments.',[{hang:true,fold:2,dy:86},{fold:1,dy:240,moving:45}]],
+  ['dryeraffidavit','DRYER AFFIDAVIT','Air has witnessed your signature.',[{dry:0,fold:0,dy:320},{fold:1,dy:130}]]]],
+ ['laundryappeal',4,'RINSE AND RECONSIDER','#3b456b','dryeraffidavit',[
+  ['washverdict','WASH VERDICT','You have been cleared of being table linen.',[{water:2,fold:1,dy:65},{dry:0,fold:0,dy:300},{fold:2,dy:160}]],
+  ['firstdye','THE BLUE EXCEPTION','Blue suits a rag.\nDye fountains now remember blue.',[{hang:true,dy:86},{fold:1,dry:0,dy:210}]]]],
+ ['orchardroots',5,'THE PALE ORCHARD','#425349','firstdye',[
+  ['borrowedbranch','BORROWED BRANCH','The orchard lends you a color.',[{ink:'blue',dy:110},{ink:'yellow',dy:240}]],
+  ['redherringfruit','HERRING FRUIT','It was fruit after all.',[{ink:'red',fold:1,dy:145},{ink:'yellow',water:1,dy:275}]]]],
+ ['orchardmix',5,'THE CHROMATIC IRRIGATION','#354f5d','redherringfruit',[
+  ['greenlease','GREEN LEASE','Blue and yellow have signed a lease.',[{ink:'green',dy:160},{ink:'green',dry:0,dy:320}]],
+  ['orangepermit','ORANGE PERMIT','Red and yellow are sharing expenses.',[{ink:'orange',fold:2,dy:190},{ink:'orange',water:1,dy:100}]]]],
+ ['orchardcrown',5,'THE COLOR THAT OWES YOU','#554265','orangepermit',[
+  ['purpledebt','PURPLE DEBT','Blue and red cancel the debt.',[{ink:'purple',fold:1,dy:240},{ink:'purple',dy:340}]],
+  ['palettekeeper','PALETTE KEEPER','The colors may stay.\nEvery fountain remembers your palette.',[{ink:'green',water:1,dy:100},{ink:'orange',dry:0,dy:260},{ink:'purple',fold:2,dy:380}]]]],
+ ['weatherbasement',6,'THE SKY HAS A BASEMENT','#304565','palettekeeper',[
+  ['rainballast','RAIN BALLAST','Rain is a form of luggage.',[{water:3,fold:1,dy:60},{dry:0,fold:0,dy:460}]],
+  ['updraftaddress','UPDRAFT ADDRESS','The wind knows where you live.',[{dry:0,fold:0,dy:530},{fold:2,dy:200}]]]],
+ ['weatheroffice',6,'OFFICE WITHOUT A ROOF','#385675','updraftaddress',[
+  ['cloudledger','CLOUD LEDGER','The forecast balances.',[{ink:'blue',water:2,dy:140},{dry:0,ink:'yellow',dy:500}]],
+  ['rainrelease','DOWNWARD CORRESPONDENCE','Your rain has reached the appropriate office.',[{pour:true,dy:240},{fold:1,dy:350},{dry:0,dy:610}]]]],
+ ['weatherstorm',6,'THE STORM STAIRCASE','#423a6b','rainrelease',[
+  ['windorgan','WIND ORGAN','A useful sort of weather.',[{turn:1,ink:'green',dy:250},{turn:3,dry:0,dy:580}]],
+  ['stormhem','THE HEM OF THE STORM','You have hemmed the weather.\nGliding and spring landings remembered.',[{water:2,dy:100},{dry:0,fold:0,dy:680},{fold:1,dy:300}]]]],
+ ['museumfoyer',7,'EXHIBIT: INCORRECT RAG','#55424c','stormhem',[
+  ['portraitslot','PORTRAIT OF A SLOT','A flattering aperture.',[{fold:2,ink:'purple',dy:150},{fold:1,ink:'orange',dy:270}]],
+  ['negativeplinth','NEGATIVE PLINTH','Your absence fits beautifully.',[{fold:1,turn:1,dy:200},{fold:2,turn:3,dy:380}]]]],
+ ['museummirrors',7,'THE ANGLE OF ALMOST','#41465f','negativeplinth',[
+  ['mirrorinvoice','MIRROR INVOICE','You owe yourself nothing.',[{fold:2,turn:2,ink:'blue',dy:240},{fold:1,turn:0,ink:'green',dy:370}]],
+  ['suspendedstudy','SUSPENDED STUDY','A study in hanging about.',[{hang:true,fold:2,dy:86},{fold:1,dy:300,moving:60},{fold:2,ink:'red',dy:430}]]]],
+ ['museumexit',7,'THE EXHIBITION THAT FITS','#58446b','suspendedstudy',[
+  ['threeframes','THREE UNRELATED FRAMES','The curator is quietly furious.',[{fold:1,ink:'green',water:1,dy:130},{fold:2,ink:'purple',dry:0,dy:290},{fold:0,ink:'orange',dy:460}]],
+  ['exhibitmeg','MEG, ACTUAL SIZE','The exhibit has left the building.\nYour next visitor is yesterday.',[{hang:true,dy:86},{fold:1,turn:2,dy:220},{fold:2,turn:1,dy:400}]]]],
+ ['yesterdayfoyer',8,'A MINUTE LEFT BEHIND','#343e59','exhibitmeg',[
+  ['firstreflection','THE PREVIOUS TENANT','You have company. It is cotton.',[{echo:1,dy:160}]],
+  ['lateplatform','LATE PLATFORM','Yesterday holds the door.',[{echo:1,fold:1,dy:260},{echo:1,ink:'blue',dy:360}]]]],
+ ['yesterdaycanal',8,'THE DELAYED CANAL','#344f60','lateplatform',[
+  ['borrowedminute','BORROWED MINUTE','This minute has been used before.',[{echo:1,echoInk:'red',ink:'yellow',dy:240},{echo:1,water:1,dy:370}]],
+  ['repeatbridge','REPEAT BRIDGE','The bridge remembers your weight.',[{echo:1,turn:2,fold:1,dy:280},{echo:1,dry:0,dy:440}]]]],
+ ['yesterdayround',8,'A ROUND FOR THREE RAGS','#4a3c68','repeatbridge',[
+  ['threevoices','THREE VOICES, NO MOUTHS','A small chorus of fabric.',[{echo:2,dy:230},{echo:2,fold:2,dy:380}]],
+  ['portableyesterday','PORTABLE YESTERDAY','Yesterday agrees to travel.\nReflection points now work beyond this place.',[{echo:2,ink:'purple',turn:1,dy:290},{echo:2,dry:0,fold:1,dy:470}]]]],
+ ['circlewater',9,'THE WATER ARC','#2d5564','portableyesterday',[
+  ['reservoirgap','RESERVOIR GAP','The water arc holds.',[{pour:true,ink:'blue',dy:220},{water:2,fold:1,dy:130},{dry:0,dy:540}]],
+  ['waterarc','WATER, RETURNED','One arc restored.',[{echo:1,ink:'green',turn:2,dy:300},{fold:2,dry:0,dy:460}]]]],
+ ['circlecolor',9,'THE COLOR ARC','#5e4164','portableyesterday',[
+  ['spectrumgap','SPECTRUM GAP','The colors have met in the middle.',[{ink:'orange',fold:1,turn:3,dy:200},{ink:'purple',fold:2,dy:360},{ink:'green',dy:500}]],
+  ['colorarc','COLOR, RETURNED','Another arc restored.',[{echo:1,echoInk:'blue',ink:'yellow',dy:260},{ink:'red',water:1,dy:410}]]]],
+ ['circleair',9,'THE AIR ARC','#3f4d6b','portableyesterday',[
+  ['weatherGap','WEATHER GAP','Air has a way through.',[{dry:0,fold:0,dy:650},{fold:1,turn:1,dy:320},{hang:true,dy:86}]],
+  ['airarc','AIR, RETURNED','The circle is nearly somewhere.',[{echo:2,dy:280},{echo:2,ink:'purple',dry:0,dy:510}]]]],
+ ['circlefinish',9,'THE LAST LOOSE END','#40374f','arcs',[
+  ['circuitballast','THE FIRST STITCH','The circuit takes your weight.',[{turn:1,water:2,fold:1,dy:130},{dry:0,dy:330}]],
+  ['circuitrain','THE SECOND STITCH','The circuit catches your rain.',[{pour:true,ink:'green',dy:240},{fold:1,turn:3,dy:400}]],
+  ['circuityesterday','THE THIRD STITCH','Even yesterday has somewhere to go.',[{echo:2,fold:2,dry:0,dy:360},{echo:2,ink:'orange',dy:470}]],
+  ['fullcircuit','THE FULL CIRCUIT','Every loose end has somewhere to go.',[{ink:'purple',fold:0,dy:630},{fold:1,turn:2,dy:260}]],
+  ['adequatehook','AN ORDINARY COAT HOOK','Meg is home.\nThe hook is adequate.',[{hang:true,dy:86}]]]]
+];
+const actHelp={
+ 3:'Roll onto a small quarter-turn plate, or POKE it, to rotate that room’s shelves and openings. Match the quarter-turn marks above an outline. Droplets mean water you must carry; a crossed droplet means dry. POKE a water pump to take a drop, or absorb a spill; SQUEEZE to empty yourself. Fit the full dress in each numbered outline. A hook symbol means POKE the nearby hanger and rest there.',
+ 4:'FOLD (F) cycles loose, flat, and tall cloth inside the circle. The circle stays round. Match the cloth silhouette inside each inspection frame. POKE moving hangers to ride them; move or fly to release. Dry, loose cloth catches dryer air. Your completed frames remain complete.',
+ 5:'POKE a dye fountain to cycle colors. Each color has a pattern too. For green, carry blue water to a mixing basin and SQUEEZE, then bring yellow water and SQUEEZE. POKE the basin to dip into the result. Red + yellow = orange; blue + red = purple. Mixing deposits need water. SQUEEZE a third primary dye into a basin to rinse it clean. Discovered mixtures join the fountain palette. Matching colored shelves support Meg; other colors let her pass through.',
+ 6:'Water adds weight and slows flight. Dry, loose cloth catches rising wind; flat cloth glides after the storm is completed. FOLD tall to drop precisely. A downward droplet over a bowl means SQUEEZE water from above the bowl (within its dashed column). Land with FLY held after the storm to spring upward. Quarter-turn plates redirect the wind.',
+ 7:'The inner silhouette measures the cloth, not the circle. Use FOLD to match flat or tall, and turn the marked room plates to match orientation. Moving frames pause briefly near Meg. For hanging frames, POKE the hanger, then release toward the next opening. Combine color, water, fold and angle; each successful frame is saved.',
+ 8:'At a reflection point, tap ECHO (E) to start a recording of up to six seconds. Move onto the outlined echo pad and stay there, then tap ECHO again. A translucent copy loops that movement and holds its final pose briefly. Reach the numbered opening while your echo occupies the pad. Later rooms allow two echoes: record each pad in turn. A patterned pad needs that echo’s recorded color. Hold neither movement nor FLY to keep a recording still. POKE the reflection point to clear echoes and retry.',
+ 9:'The three arcs can be repaired in any order. Their completed stages stay saved; MAP can take you between visited arcs. Restore water, color, and air, then enter the last loose end. All learned mechanics work here. Reflection points support two recordings. The final coat hook becomes available only after the full circuit is complete.'
+};
+function campaignDone(id){return id==='arcs'?['waterarc','colorarc','airarc'].every(solved):solved(id)}
+function campaignAct(){return realms[realm]?.act|| (['bloom','garden','sea','sun','prism','homecoming','highsky'].includes(realm)?2:1)}
+function campaignFold(){return time<squeezeUntil?1:(story.fold||0)}
+function campaignColor(){return pigments[story.ink]||pigments.pink}
+function campaignStage(o){return o.steps.findIndex((_,i)=>!discoveries.has('stage:'+o.id+':'+i))}
+function campaignTurn(o){return Number(story.turns?.[o.id])||0}
+function campaignInstall(){
+ const old=realms.homecoming.objects.find(o=>o.id==='homecolor');old.reply='She found her circle.\nThe house has an inside-out side.';
+ realms.homecoming.objects.push(portal('insideout',1150,'THE INSIDE-OUT DOOR →','insidehouse',180));
+ for(let ri=0;ri<campaignRoomSpecs.length;ri++){
+  const [key,act,title,color,gate,items]=campaignRoomSpecs[ri];
+  const r=realms[key]={name:'ACT '+actNumerals[act]+' · '+title,act,gate,color,width:items.length*1000+450,terrainPhase:17+ri,objects:[],wind:act===6||act===4||act===9};
+  const previous=ri?campaignRoomSpecs[ri-1][0]:'homecoming';
+  r.objects.push(portal(key+'-back',140,'← RETURN',act===9?'circlehub':previous,2100));
+  items.forEach(([id,name,reply,steps],si)=>{
+   const o={id,name,reply,steps,x:750+si*1000,reach:110,puzzle:'campaign',campaign:true,needs:si?[items[si-1][0]]:[],art:ri*2+si};
+   r.objects.push(o);
+   r.objects.push({id:id+'-pump',x:o.x-340,name:name+' · RESERVOIR',reach:75,device:'pump',station:id,art:ri});
+   r.objects.push({id:id+'-spill',x:o.x-470,name:title+' · SPILL '+(si+1),reach:70,water:true,artIndex:ri+si});
+   if(steps.some(s=>s.turn!==undefined))r.objects.push({id:id+'-rotor',x:o.x-185,name:'QUARTER-TURN PLATE',reach:78,device:'rotor',station:id,weight:act===3?Math.max(0,...steps.map(s=>s.water||0)):0});
+   if(steps.some(s=>s.hang))r.objects.push({id:id+'-hanger',x:o.x,name:name+' · HANGER',reach:100,device:'hanger',station:id,hang:true,art:'branch',moving:act===4||act===7,baseX:o.x});
+   if(act>=5)r.objects.push({id:id+'-dye',x:o.x+210,name:name+' · DYE',reach:72,device:'dye',station:id,art:ri*2+si});
+   if(act===5)r.objects.push({id:id+'-basin',x:o.x+350,name:name+' · BASIN',reach:75,device:'basin',station:id,art:ri*2+si});
+   if(steps.some(s=>s.echo))r.objects.push({id:id+'-mirror',x:o.x-90,name:'REFLECTION POINT',reach:85,device:'mirror',station:id});
+  });
+  let next=campaignRoomSpecs[ri+1]?.[0];
+  if(key==='yesterdayround')next='circlehub';if(act===9)next='circlehub';
+  if(key!=='circlefinish')r.objects.push({...portal(key+'-next',2280,act===9?'CIRCLE CENTER →':'ONWARD →',next,180),needs:[items[1][0]]});
+  scoreData[key]=[90+(ri*7)%57,[36+ri%12,41+ri%9,32+ri%12,39+ri%8],[0,3+ri%3,7,12,9,5+ri%4,14,7],ri%4];
+ }
+ realms.circlehub={name:'ACT IX · THE UNFINISHED CIRCLE',act:9,gate:'portableyesterday',color:'#3a3e5a',width:1800,terrainPhase:51,objects:[portal('roundback',140,'YESTERDAY ←','yesterdayround',2280),portal('waterpath',480,'WATER ARC ↓','circlewater'),portal('colorpath',830,'COLOR ARC →','circlecolor'),portal('airpath',1180,'AIR ARC ↑','circleair'),{...portal('lastpath',1580,'THE LAST LOOSE END →','circlefinish'),needs:['waterarc','colorarc','airarc']}]};
+ scoreData.circlehub=[104,[40,45,37,42],[0,7,12,16,14,9,5,12],3];
+ // Preserve older completed saves without treating Act II as the ending.
+ story.ended=solved('adequatehook');story.ink=pigments[story.ink]?story.ink:'pink';story.fold=clamp(Number(story.fold)||0,0,2);
+ story.turns=story.turns||{};story.basins=story.basins||{};
+ guidePages.push({title:'Beyond the circle dress.',body:'<p>The journey now has <strong>nine acts</strong>. Finish the door in Home, Differently to open Act III.</p><p>New abilities appear as you earn them. Read their controls in <strong>Settings → ROOM NOTES</strong>, which follows your current act and puzzle.</p><p>The map saves completed stages and shows your act. Only the ending after Act IX is the final ending.</p>'});
+ $('#fold-meg').onclick=cycleCampaignFold;$('#echo-meg').onclick=recordCampaignEcho;
+ $('#room-notes').onclick=showCampaignNotes;$('#ending-wander').onclick=()=>{$('#ending').classList.add('hidden');endingVisible=false;mode='game';$('#touch').classList.add('game-on');$('#pause').classList.remove('hidden');$('#atlas').classList.remove('hidden');clearMovement();saveGame()};
+ $('#ending-map').onclick=()=>{$('#ending-wander').click();openMap()};
+}
+function cycleCampaignFold(){if(mode!=='game'||!solved('ownhook'))return;story.fold=((story.fold||0)+1)%3;squeezeUntil=0;say('Fold: '+foldNames[story.fold].toLowerCase()+'.');saveGame()}
+function campaignPalette(){const a=['pink','blue'];if(campaignAct()>=5||solved('firstdye'))a.push('yellow','red');for(const c of ['green','orange','purple'])if(discoveries.has('dye:'+c))a.push(c);return a}
+function mixResult(a){const k=[...new Set(a)].sort().join(',');return {'blue,yellow':'green','red,yellow':'orange','blue,red':'purple'}[k]||null}
+function stationById(id){return objects.find(o=>o.id===id)}
+function rotateCampaign(o){const lever=objects.find(v=>v.device==='rotor'&&v.station===o.id);if(lever?.weight>(story.water||0)){say('The plate needs '+lever.weight+' drops of weight.');return}story.turns=story.turns||{};story.turns[o.id]=(campaignTurn(o)+1)%4;tone(180+campaignTurn(o)*55,.2,.025);say('The room turns.');saveGame()}
+function campaignInteract(o){
+ if(o.device==='pump'){story.water=Math.min(3,(story.water||0)+1);story.wet=true;say(story.water===3?'Full.':'A little more water.');saveGame();return true}
+ if(o.device==='rotor'){rotateCampaign(stationById(o.station));return true}
+ if(o.device==='hanger'){setPose('rack',o.x,o.name.toLowerCase());if(pose)pose.device=o.id;return true}
+ if(o.device==='dye'){const p=campaignPalette();story.ink=p[(p.indexOf(story.ink)+1)%p.length];say(story.ink[0].toUpperCase()+story.ink.slice(1)+'.');saveGame();return true}
+ if(o.device==='basin'){const color=mixResult(story.basins?.[o.id]||[]);if(color){story.ink=color;discoveries.add('dye:'+color);say('Borrowed '+color+'.');saveGame()}else say((story.basins?.[o.id]||[]).length?'One color is waiting.':'An empty mixing basin.');return true}
+ if(o.device==='mirror'){echoActors=[];echoRecord=null;echoHistory=[];say('Yesterday cleared.');return true}
+ if(o.campaign){if(!solved(o.id)&&o.needs.every(solved)&&o.steps[campaignStage(o)]?.hang){const h=stationById(o.id+'-hanger');if(h){setPose('rack',h.x,h.name.toLowerCase());if(pose)pose.device=h.id;return true}}if(solved(o.id)){say(o.reply);return true}const missing=o.needs.find(n=>!solved(n));if(missing){say('Waiting for '+puzzleName(missing).toLowerCase()+'.');return true}const i=campaignStage(o),s=o.steps[i];say('Frame '+(i+1)+' of '+o.steps.length+'. '+campaignConditionText(s));return true}
+ return false;
+}
+function campaignConditionText(s){const parts=[];if(s.ink)parts.push(s.ink);if(s.fold!==undefined)parts.push(foldNames[s.fold].toLowerCase()+' cloth');if(s.water)parts.push(s.water+' drops');if(s.dry===0)parts.push('dry');if(s.turn!==undefined)parts.push(s.turn+' quarter-turns');if(s.hang)parts.push('hanging');if(s.echo)parts.push(s.echo+' echo'+(s.echo>1?'es':'')+(s.echoInk?' in '+s.echoInk:''));if(s.pour)parts.push('water delivered from above');return parts.length?parts.join(' · '):'A place for the circle.'}
+function campaignTarget(o,s){const turn=campaignTurn(o),moving=s.moving?Math.sin(campaignClock*.65+o.art)*s.moving:0;return {x:o.x+moving+(s.turn!==undefined?Math.sin(turn*Math.PI/2)*95:0),y:groundAt(o.x)-(s.dy||130),r:s.fold!==undefined?65:66};}
+function campaignPads(o,s){return Array.from({length:s.echo||0},(_,i)=>({x:o.x+(i?-260:-140),y:groundAt(o.x+(i?-260:-140))-45,ink:i?null:s.echoInk}));}
+function echoPosition(e){if(!e.frames.length)return null;const phase=(campaignClock-e.start)%(e.frames.length/30+2),f=e.frames[Math.min(e.frames.length-1,Math.floor(phase*30))];return {...f,y:groundAt(f.x)-f.alt}}
+function campaignEchoesFit(o,s){return campaignPads(o,s).every(p=>echoActors.some(e=>{const f=echoPosition(e);return f&&e.station===o.id&&Math.abs(f.x-p.x)<55&&Math.abs(f.y-p.y)<65&&(!p.ink||f.ink===p.ink)}))}
+function recordCampaignEcho(){
+ if(mode!=='game'||campaignAct()<8||!dressBody)return;
+ if(echoRecord){finishCampaignEcho();return}
+ const station=objects.filter(o=>o.campaign&&o.steps.some(s=>s.echo)).sort((a,b)=>Math.abs(a.x-dressBody.x)-Math.abs(b.x-dressBody.x))[0];
+ if(!station||Math.abs(station.x-dressBody.x)>410){say('A reflection point is needed.');return}
+ echoRecord={station:station.id,frames:[],start:campaignClock};say('Recording yesterday…');
+}
+function finishCampaignEcho(){if(!echoRecord)return;const cap=realm==='yesterdayround'||campaignAct()===9?2:1;if(echoRecord.frames.length<2){echoRecord=null;say('A moment too short.');return}echoActors=echoActors.filter(e=>e.station===echoRecord.station);if(echoActors.length>=cap)echoActors.shift();echoActors.push({...echoRecord,start:campaignClock});echoRecord=null;say('Yesterday is repeating.');}
+function campaignSqueeze(){
+ if(!realms[realm]?.act)return false;
+ const basin=objects.find(o=>o.device==='basin'&&Math.abs(o.x-center())<90);
+ if(basin&&(story.water||0)>0){squeezeUntil=time+1.8;story.water--;story.wet=story.water>0;story.basins=story.basins||{};const a=story.basins[basin.id]||[];if(!['blue','yellow','red'].includes(story.ink)){story.basins[basin.id]=[];say('Basin rinsed.')}else if(a.length>=2&&!a.includes(story.ink)){story.basins[basin.id]=[];say('Basin rinsed.')}else{story.basins[basin.id]=[...new Set([...a,story.ink])];say(mixResult(story.basins[basin.id])?'The colors have mixed.':'A color settles.')}saveGame();return true}
+ const o=objects.find(o=>o.campaign&&!solved(o.id)&&o.steps[campaignStage(o)]?.pour&&Math.abs(o.x-center())<90&&dressBody&&groundAt(o.x)-dressBody.y>160);
+ if(o&&(story.water||0)>0){story.water--;story.wet=story.water>0;discoveries.add('poured:'+o.id);squeezeUntil=time+1.8;say('The bowl catches your rain.');saveGame();return true}return false;
+}
+function campaignClothFits(f){if(!dressBody||f===0)return true;const w=f===1?72:38,h=f===1?34:80;return cloth.every(p=>Math.abs(p.x-dressBody.x)<=w/2&&Math.abs(p.y-dressBody.y)<=h/2)}
+function campaignConditions(o,s){return (!s.water||(story.water||0)>=s.water)&&(s.dry!==0||!(story.water||0))&&(s.fold===undefined||(campaignFold()===s.fold&&campaignClothFits(s.fold)))&&(!s.ink||story.ink===s.ink)&&(s.turn===undefined||campaignTurn(o)===s.turn)&&(!s.hang||pose?.device===o.id+'-hanger')&&(!s.echo||campaignEchoesFit(o,s))&&(!s.pour||discoveries.has('poured:'+o.id));}
+function campaignPhysics(){
+ if(!realms[realm]?.act||!dressBody)return;campaignClock+=1/60;
+ if(echoRecord&&Math.floor(campaignClock*30)!==Math.floor((campaignClock-1/60)*30)){echoRecord.frames.push({x:dressBody.x,alt:groundAt(dressBody.x)-dressBody.y,ink:story.ink,fold:campaignFold(),angle:dressBody.angle});if(echoRecord.frames.length>=180)finishCampaignEcho()}
+ for(const o of objects){
+  if(o.device==='hanger'&&o.moving){o.x=o.baseX+Math.sin(campaignClock*.55)*(o.moving===true?28:Number(o.moving||28));if(pose?.device===o.id)pose.x=o.x}
+  if(o.device==='rotor'){const contact=Math.abs(dressBody.x-o.x)<35&&dressBody.y>groundAt(o.x)-60;if(contact&&!o.wasOn&&Math.abs(dressBody.vx)>.3)rotateCampaign(stationById(o.station));o.wasOn=contact}
+  if(!o.campaign||solved(o.id)||o.needs.some(n=>!solved(n)))continue;
+  const i=campaignStage(o);if(i<0){completePuzzle(o);continue}const s=o.steps[i],t=campaignTarget(o,s);
+  const hanger=stationById(o.id+'-hanger');const inside=s.hang?pose?.device===o.id+'-hanger'&&hanger&&Math.abs(dressBody.x-hanger.x)<25&&Math.abs(dressBody.y-(groundAt(hanger.x)-86))<28:Math.hypot(dressBody.x-t.x,dressBody.y-t.y)<t.r-45;
+  if(inside&&campaignConditions(o,s)){o.hold=(o.hold||0)+1/60;if(o.hold>.32){discoveries.add('stage:'+o.id+':'+i);o.hold=0;if(i===o.steps.length-1)completePuzzle(o);else{tone(440+i*88,.3,.03);say('Frame '+(i+1)+' settled.');saveGame()}}}else o.hold=0;
+ }
+}
+function campaignPlatforms(){const result=[];for(const o of objects){if(!o.campaign)continue;const q=campaignTurn(o),g=groundAt(o.x);for(let i=0;i<2;i++){const theta=q*Math.PI/2+i*Math.PI;const x=o.x+Math.cos(theta)*150,y=g-190+Math.sin(theta)*130;result.push({x,y,w:110,ink:campaignAct()>=5?['blue','yellow','red','green','orange','purple'][(o.art+i)%6]:null})}}return result}
+function campaignDressForces(){const b=dressBody;if(!b||!realms[realm]?.act)return;const room=realms[realm],fly=keys.has('arrowup')||keys.has('w')||hopRequested||joystick.y<-.35;const water=story.water||0,fold=campaignFold();
+ const active=objects.find(o=>o.campaign&&!solved(o.id)&&o.needs.every(solved));if(active&&!grab){const st=active.steps[campaignStage(active)];if(st&&!st.hang){const t=campaignTarget(active,st);if(Math.abs(b.x-t.x)<35&&Math.abs(b.y-t.y)<60){b.vy*=.65;if(!direction())b.vx*=.7}}}
+ b.vy+=water*.085;if(fold===2)b.vy+=.06;
+ if(room.wind&&fold===0&&!water){const near=objects.find(o=>o.campaign&&Math.abs(o.x-b.x)<210);if(near){b.vy-=.24;const q=campaignTurn(near);b.vx+=Math.sin(q*Math.PI/2)*.09}}
+ if(solved('stormhem')&&fold===1&&!fly&&b.vy>2.3)b.vy=2.3;
+ if(solved('stormhem')&&fly&&b.y>=groundAt(b.x)-47)b.vy=-15;
+}
+function campaignClothShape(){if(!dressBody||!solved('ownhook'))return;const f=campaignFold();if(!f)return;const b=dressBody,w=f===1?58:23,h=f===1?19:66;for(let j=0;j<ROWS;j++)for(let i=0;i<COLS;i++){const p=cloth[j*COLS+i],x=b.x+(i/(COLS-1)-.5)*w,y=b.y+(j/(ROWS-1)-.5)*h;p.x+=(x-p.x)*.5;p.y+=(y-p.y)*.5;p.ox+=(p.x-p.ox)*.35;p.oy+=(p.y-p.oy)*.35}}
+function campaignDrawMark(ink,x,y,size=14){const p=pigments[ink]||pigments.pink;text(p.mark,x,y,size,p.hex)}
+function campaignDrawObject(o){
+ const g=groundAt(o.x),a=o.x;ctx.save();ctx.strokeStyle='#e1d8e9';ctx.lineWidth=1.6;
+ if(o.campaign){
+  const i=campaignStage(o),done=solved(o.id),s=o.steps[Math.max(0,i)],t=campaignTarget(o,s);
+  ctx.strokeStyle=done?'#90d5ae':'#d9c9df';
+  // Every station has a distinct silhouette, built from its act's material vocabulary.
+  ctx.save();ctx.translate(a,g);const n=o.art;
+  if(o.steps.some(s=>s.turn!==undefined)){ctx.save();ctx.translate(0,-190);ctx.rotate(campaignTurn(o)*Math.PI/2);ctx.strokeStyle='#d7c4ef26';ctx.strokeRect(-230,-190,460,380);ctx.strokeRect(-210,-175,70,35);line(170,120,170,175);line(170,120,205,120);ctx.restore()}
+  if(campaignAct()===3){ctx.strokeRect(-60,-80-(n%3)*12,120,80+(n%3)*12);line(-60,-80-(n%3)*12,n%2?25:-25,-125);line(n%2?25:-25,-125,60,-80-(n%3)*12);ctx.strokeRect(-20,-50,40,50)}
+  else if(campaignAct()===4){ctx.strokeRect(-57,-120,114,120);ellipse(0,-59,35+n%8,35+n%8);for(let k=0;k<n%4+1;k++)ellipse(-36+k*18,-104,3,3);line(-35,-18,35,-18)}
+  else if(campaignAct()===5){line(0,0,0,-120);for(let k=0;k<3+n%3;k++){const side=k%2?1:-1;line(0,-30-k*16,side*(35+k*3),-50-k*17);ellipse(side*(35+k*3),-54-k*17,8+k,10)} }
+  else if(campaignAct()===6){line(-55,0,-55,-70);line(55,0,55,-70);for(let k=0;k<3+n%4;k++){ctx.beginPath();ctx.arc(-45+k*22,-80-Math.sin(k+n)*18,18,Math.PI,0);ctx.stroke()}for(let k=0;k<n%4+2;k++)line(-30+k*17,-48,-38+k*17,-26)}
+  else if(campaignAct()===7){ctx.strokeRect(-60,-125,120,105);ctx.strokeRect(-51,-116,102,87);shapePath(['diamond','circle','rectangle'][n%3],0,-73,30+n%5*6,46);ctx.stroke();line(-40,-20,-50,0);line(40,-20,50,0)}
+  else if(campaignAct()===8){ctx.beginPath();ctx.ellipse(0,-70,45+n%3*6,66,0,0,Math.PI*2);ctx.stroke();for(let k=0;k<3;k++)line(-28+k*18,-105,-42+k*18,-70);line(-30,0,30,0)}
+  else {ctx.beginPath();ctx.arc(0,-66,54+n%3*5,.3+n%4*.2,Math.PI*1.8);ctx.stroke();for(let k=0;k<3+n%4;k++){const an=k*1.2;line(Math.cos(an)*61,-66+Math.sin(an)*61,Math.cos(an)*68,-66+Math.sin(an)*68)}}
+  ctx.restore();
+  if(!done){
+   const ready=o.needs.every(solved);ctx.globalAlpha=ready?1:.28;ctx.strokeStyle=s.ink?pigments[s.ink].hex:'#eee6f7';ctx.lineWidth=2;ctx.setLineDash(s.echo?[5,4]:[]);ellipse(t.x,t.y,t.r,t.r);ctx.setLineDash([]);
+   if(s.fold!==undefined){const f=s.fold;shapePath(f===0?'diamond':'rectangle',t.x,t.y,f===1?62:f===2?28:55,f===1?24:f===2?70:55);ctx.stroke()}
+   if(s.ink)campaignDrawMark(s.ink,t.x,t.y+7,20);
+   text((i+1)+'/'+o.steps.length,t.x,t.y-t.r-12,13,'#f3edf5');
+   let mx=t.x-28;const my=t.y+t.r+18;
+   if(s.water||s.dry===0){for(let k=0;k<(s.water||1);k++)drawWaterMark(mx+k*15,my);if(s.dry===0)line(mx-9,my+8,mx+9,my-9);mx+=48}
+   if(s.turn!==undefined){for(let k=0;k<4;k++){ctx.strokeStyle=k<s.turn?'#ffe09d':'#716674';line(mx+k*6,my-5,mx+k*6,my+4)}}
+   if(s.hang)text('⌁',t.x,my,22,'#ffe09d');
+   if(s.pour){ctx.setLineDash([3,7]);line(a-55,g-170,a-55,g-360);line(a+55,g-170,a+55,g-360);ctx.setLineDash([]);ctx.beginPath();ctx.arc(a,g-25,35,0,Math.PI);ctx.stroke();drawWaterMark(a,g-50)}
+   for(const p of campaignPads(o,s)){ctx.strokeStyle=p.ink?pigments[p.ink].hex:'#b7dbff';ctx.setLineDash([4,5]);ellipse(p.x,p.y,48,48);ctx.setLineDash([]);if(p.ink)campaignDrawMark(p.ink,p.x,p.y+5,20)}
+   if(o.hold){ctx.strokeStyle='#91e7ba';ctx.lineWidth=4;ctx.beginPath();ctx.arc(t.x,t.y,t.r+5,-Math.PI/2,-Math.PI/2+Math.PI*2*Math.min(1,o.hold/.32));ctx.stroke()}ctx.globalAlpha=1;
+  }
+  if(showObjectLabel(o))text((done?'✓ ':'')+o.name,a,g+29,12,done?'#9ce6c1':'#eee');
+ }else if(o.device==='rotor'){ctx.save();ctx.translate(a,g-20);ctx.rotate(campaignTurn(stationById(o.station))*Math.PI/2);ctx.strokeRect(-21,-21,42,42);line(0,-21,0,-32);ctx.restore();for(let k=0;k<(o.weight||0);k++)drawWaterMark(a-8+k*15,g-65)}
+ else if(o.device==='pump'){line(a,g,a,g-70);line(a,g-70,a+28,g-70);line(a+28,g-70,a+28,g-50);line(a-20,g-42,a+15,g-42);ellipse(a-12,g-85,9+(o.art%4),9);drawWaterMark(a+28,g-38)}
+ else if(o.device==='dye'){ctx.strokeRect(a-25-(o.art%3)*3,g-47-(o.art%4)*5,50+(o.art%3)*6,47+(o.art%4)*5);for(let i=0;i<3;i++){ctx.strokeStyle=pigments[['blue','yellow','red'][i]].hex;line(a-18+i*18,g-48,a-18+i*18,g-78)}campaignDrawMark(story.ink,a,g-17,20)}
+ else if(o.device==='basin'){ctx.beginPath();ctx.ellipse(a,g-14,36+(o.art%4)*4,13+(o.art%3)*2,0,0,Math.PI);ctx.stroke();const cs=story.basins?.[o.id]||[];cs.forEach((c,i)=>campaignDrawMark(c,a-12+i*24,g-16));const mix=mixResult(cs);if(mix)campaignDrawMark(mix,a,g-44,20)}
+ else if(o.device==='mirror'){ctx.strokeRect(a-20,g-92,40,80);line(a-14,g-72,a+8,g-86);line(a-10,g-53,a+13,g-74);ellipse(a,g-5,26,5)}
+ else if(o.device==='hanger'){drawHanger(o,a,g)}
+ if(o.device&&showObjectLabel(o))text(o.name,a,g+28,12,'#eee');ctx.restore();
+}
+function drawCampaignWorld(){if(!realms[realm]?.act)return;ctx.save();ctx.translate(-camera,-viewY);
+ for(const p of campaignPlatforms()){ctx.strokeStyle=p.ink?pigments[p.ink].hex:'#c7b2d1';ctx.globalAlpha=p.ink&&story.ink!==p.ink?.25:.75;ctx.lineWidth=3;line(p.x-p.w/2,p.y,p.x+p.w/2,p.y);if(p.ink)campaignDrawMark(p.ink,p.x,p.y+20,14)}ctx.globalAlpha=1;
+ if(realms[realm].wind){ctx.strokeStyle='#ffffff25';for(const o of objects.filter(o=>o.campaign)){for(let k=0;k<6;k++){const y=groundAt(o.x)-((campaignClock*60+k*110)%720);const x=o.x-80+Math.sin(k+campaignClock*.4)*70;line(x,y,x+8,y-25)}}}
+ for(const e of echoActors){const f=echoPosition(e);if(!f)continue;ctx.globalAlpha=.3;ctx.strokeStyle=(pigments[f.ink]||pigments.pink).hex;ctx.lineWidth=2;ellipse(f.x,f.y,45,45);ctx.fillStyle=ctx.strokeStyle;ctx.fillRect(f.x-24,f.y-12,48,24)}
+ if(echoRecord&&dressBody){ctx.globalAlpha=1;ctx.strokeStyle='#ff9eaf';ctx.lineWidth=3;ctx.beginPath();ctx.arc(dressBody.x,dressBody.y,51,-Math.PI/2,-Math.PI/2+Math.PI*2*echoRecord.frames.length/180);ctx.stroke()}
+ ctx.restore();}
+function showCampaignNotes(){
+ const act=campaignAct(),next=objects.find(o=>o.campaign&&!solved(o.id)&&o.needs.every(solved));const notes=actHelp[act]||'Use MAP to return instantly to any visited room. Fit Meg into numbered outlines. Collect three threads, then rest on Three Loose Ends in the Hem Between Worlds to open the seam. After the dress, complete the three color paths and return home.';
+ $('#settings').classList.add('hidden');$('#guide').classList.remove('hidden');mode='tutorial';clearMovement();guideStartsGame=false;
+ $('#guide-step').textContent='ROOM NOTES · ACT '+(actNumerals[act]||act);$('#guide-title').textContent=realms[realm].name;
+ $('#guide').scrollTop=0;$('#guide-body').textContent=notes+(next?' Next: '+next.name+'. '+campaignConditionText(next.steps[campaignStage(next)])+'.':'');$('#guide-body').style.lineHeight='1.7';
+ $('#guide-next').textContent='BACK';$('#guide-skip').textContent='BACK';guidePage=guidePages.length-1;
+}
+function showCampaignEnding(){endingVisible=true;mode='ending';clearMovement();hopRequested=false;grab=null;quietMessage();$('#ending').classList.remove('hidden');$('#ending-wander').focus();$('#touch').classList.remove('game-on');$('#pause').classList.add('hidden');$('#atlas').classList.add('hidden')}
+// Integrate with the original engine; preserve its existing movement, music, and first two acts.
+const originalObjectAt=objectAt;objectAt=function(sx,sy){const x=sx+camera,y=sy+viewY;for(const o of objects){if(o.campaign&&!solved(o.id)){const st=o.steps[campaignStage(o)];if(st){const t=campaignTarget(o,st);if(Math.hypot(x-t.x,y-t.y)<t.r)return o}}}return originalObjectAt(sx,sy)};
+const originalInteract=interact;interact=function(id){if(mode!=='game')return;const o=objects.find(a=>a.id===id)||nearby();if(o&&Math.abs(center()-o.x)<=o.reach+25){if(o.portal&&o.needs?.some(n=>!campaignDone(n))){say('Still waiting for '+puzzleName(o.needs.find(n=>!campaignDone(n))).toLowerCase()+'.');return}if(campaignInteract(o))return}originalInteract(id)};
+const originalTravel=travel;travel=function(to,arrival=200){const r=realms[to];if(!r)return;if(r.act&&(!story.dressFound||!campaignDone(r.gate))){say(to==='circlefinish'?'Three arcs are still unfinished.':'This door is waiting for '+puzzleName(r.gate).toLowerCase()+'.');return}const oldRealm=realm;originalTravel(to,clamp(arrival,70,r.width-70));if(realm!==to)return;echoActors=[];echoRecord=null;echoHistory=[];for(const o of objects){o.hold=0;o.wasOn=false}if(r.act&&!discoveries.has('intro:'+r.act)){discoveries.add('intro:'+r.act);say('ACT '+actNumerals[r.act]+'\n'+actNames[r.act]+'\n'+({3:'You are home. The house disagrees.',4:'You have been sorted incorrectly.',5:'These colors are on loan.',6:'The sky has a basement.',7:'Please become the correct shape.',8:'Someone has already been here. It was you, shortly.',9:'There is one loose end. It is architectural.'}[r.act]),12000);saveGame()}if(oldRealm!==realm)campaignControls()};
+const originalCompletePuzzle=completePuzzle;completePuzzle=function(o){originalCompletePuzzle(o);if(o.id==='homecolor')story.ended=false;if(o.id==='firstdye'){story.ink='blue';discoveries.add('dye:blue')}if(o.id==='adequatehook'){story.ended=true;saveGame();showCampaignEnding()}else saveGame();campaignControls()};
+const originalRealmPhysics=realmPhysics;realmPhysics=function(){originalRealmPhysics();campaignPhysics()};
+const originalSqueeze=squeezeMeg;squeezeMeg=function(){if(mode!=='game')return;if(!campaignSqueeze())originalSqueeze()};
+const originalDressPhysics=dressPhysics;dressPhysics=function(){const oldY=dressBody?.y;campaignDressForces();originalDressPhysics();if(realms[realm]?.act&&dressBody){const b=dressBody;if(b.vy>=0&&!grab&&!pose)for(const p of campaignPlatforms()){if(p.ink&&p.ink!==story.ink)continue;if(Math.abs(b.x-p.x)<p.w/2+20&&oldY+45<=p.y+5&&b.y+45>=p.y){const dy=p.y-45-b.y;b.y+=dy;b.vy=0;for(const v of cloth){v.y+=dy;v.oy+=dy}break}}const top=floor-1000;if(b.y<top){const dy=top-b.y;b.y=top;b.vy=0;for(const p of cloth){p.y+=dy;p.oy+=dy}}}campaignClothShape()};
+const originalSkyPhysics=skyPhysics;skyPhysics=function(){if(!realms[realm]?.act)originalSkyPhysics()};
+const originalDrawDistinct=drawDistinctObject;drawDistinctObject=function(o){if(o.campaign||o.device)campaignDrawObject(o);else originalDrawDistinct(o)};
+const originalDrawWorld=drawWorld;drawWorld=function(){originalDrawWorld();drawCampaignWorld()};
+const originalDrawCloth=drawCloth;drawCloth=function(){originalDrawCloth();if(dressBody&&story.ink&&story.ink!=='pink'){ctx.save();ctx.translate(-camera,-viewY);ctx.globalAlpha=.8;campaignDrawMark(story.ink,dressBody.x,dressBody.y+5,14);ctx.restore()}};
+const originalProgressHUD=progressHUD;progressHUD=function(){originalProgressHUD();campaignControls()};
+function campaignControls(){const active=mode==='game';$('#fold-meg').classList.toggle('hidden',!active||!solved('ownhook'));$('#fold-meg').textContent=['FOLD ◇','FOLD ▱','FOLD ▯'][story.fold||0];$('#echo-meg').classList.toggle('hidden',!active||campaignAct()<8);$('#echo-meg').textContent=echoRecord?'STOP ●':'ECHO ◌';if(realms[realm]?.act)$('#chapter').textContent+=' · ACT '+actNumerals[campaignAct()]+' / IX';}
+showJourneyMap=function(){if(mode!=='game')return;clearMovement();hopRequested=false;grab=null;const panel=$('#routes');panel.replaceChildren();const h=document.createElement('h2');h.textContent='YOUR JOURNEY';panel.append(h);const summary=document.createElement('p');summary.textContent='ACT '+(actNumerals[campaignAct()]||campaignAct())+' / IX · '+(story.ended?'COMPLETE':'IN PROGRESS');panel.append(summary);
+ for(let act=1;act<=9;act++){const group=document.createElement('details');group.open=act===campaignAct();const title=document.createElement('summary');title.textContent='ACT '+(actNumerals[act]||act)+' · '+(actNames[act]||(act===1?'THE MISSING DRESS':'COLOR HAS HAPPENED'));group.append(title);let visitedAny=false;
+ for(const [key,r] of Object.entries(realms)){const roomAct=r.act||(['bloom','garden','sea','sun','prism','homecoming','highsky'].includes(key)?2:1);if(roomAct!==act)continue;const visited=key===realm||discoveries.has('world:'+key),tasks=r.objects.filter(o=>o.puzzle),done=tasks.filter(o=>solved(o.id)).length;visitedAny ||=visited;const b=document.createElement('button');b.textContent=(key===realm?'YOU ARE HERE · ':done===tasks.length&&tasks.length?'✓ ':visited?'↩ ':'○ ')+r.name+(tasks.length?' · '+done+'/'+tasks.length:'');b.disabled=!visited;b.className=key===realm?'current':'';b.onclick=()=>travel(key);group.append(b)}if(act>2&&!visitedAny)title.textContent+=' · NOT VISITED';panel.append(group)}
+ const close=document.createElement('button');close.textContent='BACK TO MEG';close.onclick=()=>panel.classList.add('hidden');panel.append(close);panel.classList.remove('hidden')};
+const originalForget=forgetJourney;forgetJourney=function(){echoActors=[];echoRecord=null;echoHistory=[];campaignClock=0;endingVisible=false;$('#ending').classList.add('hidden');originalForget();story.ink='pink';story.fold=0;story.turns={};story.basins={};for(const r of Object.values(realms))for(const o of r.objects){delete o.wasOn;if(o.baseX)o.x=o.baseX}saveGame();campaignControls()};$('#forget').onclick=forgetJourney;
+addEventListener('keydown',e=>{if(mode!=='game'||e.repeat||e.target.closest('input,textarea,select,[contenteditable=true]'))return;if(e.key.toLowerCase()==='f'){e.preventDefault();cycleCampaignFold()}if(e.key.toLowerCase()==='e'){e.preventDefault();recordCampaignEcho()}});
+
+function makeGameForgiving(){
+ for(const r of Object.values(realms)){
+  for(const o of r.objects){
+   o.reach=(Number(o.reach)||80)+85;
+   if(o.spatial)for(const t of o.spatial){t.w=Math.round(t.w*1.45);t.h=Math.round(t.h*1.45);t.dy=Math.max(45,Math.round(t.dy*.86))}
+   if(o.device==='hanger'&&o.moving===true)o.moving=28;
+  }
+ }
+}
+campaignTarget=function(o,s){const turn=campaignTurn(o),moving=s.moving?Math.sin(campaignClock*.5+o.art)*Number(s.moving)*.35:0;return {x:o.x+moving+(s.turn!==undefined?Math.sin(turn*Math.PI/2)*62:0),y:groundAt(o.x)-Math.max(60,(s.dy||130)*.86),r:s.fold!==undefined?112:118}};
+campaignEchoesFit=function(o,s){
+ if(!s.echo)return true;
+ const actors=echoActors.filter(e=>e.station===o.id);if(!actors.length)return false;
+ return campaignPads(o,s).some(p=>actors.some(e=>{const f=echoPosition(e);return f&&Math.abs(f.x-p.x)<120&&Math.abs(f.y-p.y)<120&&(!p.ink||f.ink===p.ink)}));
+};
+campaignConditions=function(o,s){
+ const enoughWater=!s.water||(story.water||0)>=Math.max(1,s.water-1);
+ return enoughWater&&(s.dry!==0||!(story.water||0))&&(s.fold===undefined||campaignFold()===s.fold)&&(!s.ink||story.ink===s.ink)&&(s.turn===undefined||campaignTurn(o)===s.turn)&&(!s.hang||pose?.device===o.id+'-hanger')&&(!s.echo||campaignEchoesFit(o,s))&&(!s.pour||discoveries.has('poured:'+o.id));
+};
+spatialPhysics=function(){
+ if(squeezePointer!==null||keys.has('s'))squeezeUntil=time+.2;
+ for(const o of objects){
+  if(!o.spatial||solved(o.id)||o.needs.some(n=>!solved(n)))continue;
+  if(o.needsWater&&!discoveries.has('watered:'+o.id))continue;if(o.rotate&&rotation(o)!==2)continue;
+  const index=activeStep(o);if(index<0){completePuzzle(o);continue}
+  const t=o.spatial[index],tx=o.x+t.dx,ty=groundAt(o.x)-t.dy,margin=38;let fits;
+  if(story.dressFound&&dressBody)fits=t.shape==='circle'?Math.hypot(dressBody.x-tx,dressBody.y-ty)+20<=t.w/2+margin:Math.abs(dressBody.x-tx)+20<=t.w/2+margin&&Math.abs(dressBody.y-ty)+20<=t.h/2+margin;
+  else fits=cloth.every(p=>{const dx=Math.abs(p.x-tx),dy=Math.abs(p.y-ty);return t.shape==='diamond'?dx/(t.w/2+margin)+dy/(t.h/2+margin)<=1.18:t.shape==='circle'?Math.hypot(dx,dy)<=t.w/2+margin:dx<=t.w/2+margin&&dy<=t.h/2+margin});
+  if(fits){o.hold=(o.hold||0)+1/60;if(o.hold>.04){discoveries.add('step:'+o.id+':'+index);o.hold=0;if(index===o.spatial.length-1)completePuzzle(o);else{tone(392+index*100,.2,.04);saveGame();resetStuck()}}}else o.hold=0;
+ }
+};
+realmPhysics=function(){
+ spatialPhysics();const cx=center(),cy=cloth.reduce((n,p)=>n+p.y,0)/cloth.length;
+ for(const o of objects){
+  if(!o.puzzle||o.campaign||o.spatial||solved(o.id)||o.needs.some(n=>!solved(n)))continue;
+  const near=Math.abs(cx-o.x)<155;
+  if(o.puzzle==='cross'){if(Math.abs(cx-o.x)<190){o.sides=o.sides||new Set();if(cx<o.x-20)o.sides.add('left');if(cx>o.x+20)o.sides.add('right');if(o.sides.size===2)completePuzzle(o)}continue}
+  if(!near)continue;const g=groundAt(o.x);
+  const ok=o.puzzle==='rest'?(!grab&&Math.abs(direction())<.1):o.puzzle==='lift'?cloth.some(p=>p.y<g-72):o.puzzle==='bounce'?cy<g-72:cy<g-108;
+  if(ok){o.hold=(o.hold||0)+1/60;const need=o.puzzle==='bounce'?.08:o.puzzle==='rest'?.55:.32;if(o.hold>need)completePuzzle(o)}else o.hold=0;
+ }
+ campaignPhysics();
+};
+bounce=function(){if(!story.dressFound||!dressBody)return;if(pose){hangLocked=false;pose=null;story.pose=null}if(dressBody.y>=groundAt(dressBody.x)-78){dressBody.vy=-15;hopRequested=true}};
+document.addEventListener('gesturestart',e=>e.preventDefault(),{capture:true,passive:false});
+makeStars();loadGame();expandWorlds();campaignInstall();makeGameForgiving();initRealms();resetCloth(Number.isFinite(story.position)?clamp(story.position,60,WORLD-60):300);resize();requestAnimationFrame(frame);
 </script>
 </body>
 </html>
