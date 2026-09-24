@@ -985,8 +985,40 @@ function showCampaignNotes(){
 }
 function showCampaignEnding(){endingVisible=true;mode='ending';clearMovement();hopRequested=false;grab=null;quietMessage();$('#ending').classList.remove('hidden');$('#ending-wander').focus();$('#touch').classList.remove('game-on');$('#pause').classList.add('hidden');$('#atlas').classList.add('hidden')}
 // Integrate with the original engine; preserve its existing movement, music, and first two acts.
-const originalObjectAt=objectAt;objectAt=function(sx,sy){const x=sx+camera,y=sy+viewY;for(const o of objects){if(o.campaign&&!solved(o.id)){const st=o.steps[campaignStage(o)];if(st){const t=campaignTarget(o,st);if(Math.hypot(x-t.x,y-t.y)<t.r)return o}}}return originalObjectAt(sx,sy)};
-const originalInteract=interact;interact=function(id){if(mode!=='game')return;const o=objects.find(a=>a.id===id)||nearby();if(o&&Math.abs(center()-o.x)<=o.reach+25){if(o.portal&&o.needs?.some(n=>!campaignDone(n))){say('Still waiting for '+puzzleName(o.needs.find(n=>!campaignDone(n))).toLowerCase()+'.');return}if(campaignInteract(o))return}originalInteract(id)};
+const originalObjectAt=objectAt;objectAt=function(sx,sy){
+ const x=sx+camera,y=sy+viewY;
+ let best=null,bestScore=Infinity;
+ for(const o of objects){
+  if(!(o.campaign||o.device))continue;
+  const g=groundAt(o.x);
+  let hit=false,score=Infinity;
+  if(o.campaign){
+   const i=campaignStage(o),st=i>=0?o.steps[i]:null;
+   if(st){const t=campaignTarget(o,st),d=Math.hypot(x-t.x,y-t.y);if(d<t.r+38){hit=true;score=d}}
+   const dx=Math.abs(x-o.x),dy=Math.abs(y-(g-105));
+   if(dx<155&&dy<185){hit=true;score=Math.min(score,Math.hypot(dx,dy))}
+  }else{
+   const dx=Math.abs(x-o.x),dy=Math.abs(y-(g-55));
+   if(dx<105&&dy<120){hit=true;score=Math.hypot(dx,dy)}
+  }
+  if(hit&&score<bestScore){best=o;bestScore=score}
+ }
+ return best||originalObjectAt(sx,sy)
+};
+const originalInteract=interact;interact=function(id){
+ if(mode!=='game')return;
+ let o=objects.find(a=>a.id===id);
+ if(!o){
+  const campaignNearby=objects.filter(a=>a.campaign||a.device).sort((a,b)=>Math.abs(center()-a.x)-Math.abs(center()-b.x))[0];
+  o=campaignNearby&&Math.abs(center()-campaignNearby.x)<=260?campaignNearby:nearby();
+ }
+ const reach=(o?.campaign||o?.device)?260:(o?.reach||0)+25;
+ if(o&&Math.abs(center()-o.x)<=reach){
+  if(o.portal&&o.needs?.some(n=>!campaignDone(n))){say('Still waiting for '+puzzleName(o.needs.find(n=>!campaignDone(n))).toLowerCase()+'.');return}
+  if(campaignInteract(o))return
+ }
+ originalInteract(id)
+};
 const originalTravel=travel;travel=function(to,arrival=200){const r=realms[to];if(!r)return;if(r.act&&(!story.dressFound||!campaignDone(r.gate))){say(to==='circlefinish'?'Three arcs are still unfinished.':'This door is waiting for '+puzzleName(r.gate).toLowerCase()+'.');return}const oldRealm=realm;originalTravel(to,clamp(arrival,70,r.width-70));if(realm!==to)return;echoActors=[];echoRecord=null;echoHistory=[];for(const o of objects){o.hold=0;o.wasOn=false}if(r.act&&!discoveries.has('intro:'+r.act)){discoveries.add('intro:'+r.act);say('ACT '+actNumerals[r.act]+'\n'+actNames[r.act]+'\n'+({3:'You are home. The house disagrees.',4:'You have been sorted incorrectly.',5:'These colors are on loan.',6:'The sky has a basement.',7:'Please become the correct shape.',8:'Someone has already been here. It was you, shortly.',9:'There is one loose end. It is architectural.'}[r.act]),12000);saveGame()}if(oldRealm!==realm)campaignControls()};
 const originalCompletePuzzle=completePuzzle;completePuzzle=function(o){originalCompletePuzzle(o);if(o.id==='homecolor')story.ended=false;if(o.id==='firstdye'){story.ink='blue';discoveries.add('dye:blue')}if(o.id==='adequatehook'){story.ended=true;saveGame();showCampaignEnding()}else saveGame();campaignControls()};
 const originalRealmPhysics=realmPhysics;realmPhysics=function(){originalRealmPhysics();campaignPhysics()};
