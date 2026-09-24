@@ -889,7 +889,7 @@ function campaignInteract(o){
  return false;
 }
 function campaignConditionText(s){const parts=[];if(s.ink)parts.push(s.ink);if(s.fold!==undefined)parts.push(foldNames[s.fold].toLowerCase()+' cloth');if(s.water)parts.push(s.water+' drops');if(s.dry===0)parts.push('dry');if(s.turn!==undefined)parts.push(s.turn+' quarter-turns');if(s.hang)parts.push('hanging');if(s.echo)parts.push(s.echo+' echo'+(s.echo>1?'es':'')+(s.echoInk?' in '+s.echoInk:''));if(s.pour)parts.push('water delivered from above');return parts.length?parts.join(' · '):'A place for the circle.'}
-function campaignTarget(o,s){const turn=campaignTurn(o),moving=s.moving?Math.sin(campaignClock*.65+o.art)*s.moving:0;return {x:o.x+moving+(s.turn!==undefined?Math.sin(turn*Math.PI/2)*95:0),y:groundAt(o.x)-(s.dy||130),r:s.fold!==undefined?65:66};}
+function campaignTarget(o,s){const turn=campaignTurn(o),moving=s.moving?Math.sin(campaignClock*.65+o.art)*s.moving:0;return {x:o.x+moving+(s.turn!==undefined?Math.sin(turn*Math.PI/2)*95:0),y:groundAt(o.x)-(s.dy||130),r:o.id==='politehinge'?120:(s.fold!==undefined?65:66)};}
 function campaignPads(o,s){return Array.from({length:s.echo||0},(_,i)=>({x:o.x+(i?-260:-140),y:groundAt(o.x+(i?-260:-140))-45,ink:i?null:s.echoInk}));}
 function echoPosition(e){if(!e.frames.length)return null;const phase=(campaignClock-e.start)%(e.frames.length/30+2),f=e.frames[Math.min(e.frames.length-1,Math.floor(phase*30))];return {...f,y:groundAt(f.x)-f.alt}}
 function campaignEchoesFit(o,s){return campaignPads(o,s).every(p=>echoActors.some(e=>{const f=echoPosition(e);return f&&e.station===o.id&&Math.abs(f.x-p.x)<55&&Math.abs(f.y-p.y)<65&&(!p.ink||f.ink===p.ink)}))}
@@ -918,8 +918,8 @@ function campaignPhysics(){
   if(o.device==='rotor'){const contact=Math.abs(dressBody.x-o.x)<35&&dressBody.y>groundAt(o.x)-60;if(contact&&!o.wasOn&&Math.abs(dressBody.vx)>.3)rotateCampaign(stationById(o.station));o.wasOn=contact}
   if(!o.campaign||solved(o.id)||o.needs.some(n=>!solved(n)))continue;
   const i=campaignStage(o);if(i<0){completePuzzle(o);continue}const s=o.steps[i],t=campaignTarget(o,s);
-  const hanger=stationById(o.id+'-hanger');const inside=s.hang?pose?.device===o.id+'-hanger'&&hanger&&Math.abs(dressBody.x-hanger.x)<25&&Math.abs(dressBody.y-(groundAt(hanger.x)-86))<28:Math.hypot(dressBody.x-t.x,dressBody.y-t.y)<t.r-45;
-  if(inside&&campaignConditions(o,s)){o.hold=(o.hold||0)+1/60;if(o.hold>.32){discoveries.add('stage:'+o.id+':'+i);o.hold=0;if(i===o.steps.length-1)completePuzzle(o);else{tone(440+i*88,.3,.03);say('Frame '+(i+1)+' settled.');saveGame()}}}else o.hold=0;
+  const hanger=stationById(o.id+'-hanger');const targetTolerance=o.id==='politehinge'?105:t.r-45;const inside=s.hang?pose?.device===o.id+'-hanger'&&hanger&&Math.abs(dressBody.x-hanger.x)<25&&Math.abs(dressBody.y-(groundAt(hanger.x)-86))<28:Math.hypot(dressBody.x-t.x,dressBody.y-t.y)<targetTolerance;
+  if(inside&&campaignConditions(o,s)){o.hold=(o.hold||0)+1/60;if(o.hold>(o.id==='politehinge'?.08:.32)){discoveries.add('stage:'+o.id+':'+i);o.hold=0;if(i===o.steps.length-1)completePuzzle(o);else{tone(440+i*88,.3,.03);say('Frame '+(i+1)+' settled.');saveGame()}}}else o.hold=0;
  }
 }
 function campaignPlatforms(){const result=[];for(const o of objects){if(!o.campaign)continue;const q=campaignTurn(o),g=groundAt(o.x);for(let i=0;i<2;i++){const theta=q*Math.PI/2+i*Math.PI;const x=o.x+Math.cos(theta)*150,y=g-190+Math.sin(theta)*130;result.push({x,y,w:110,ink:campaignAct()>=5?['blue','yellow','red','green','orange','purple'][(o.art+i)%6]:null})}}return result}
