@@ -32,7 +32,7 @@
 #task{left:20px;right:136px;max-width:500px;line-height:1.5}
 #area{white-space:pre-line;color:#eee;font-size:13px;font-weight:normal;letter-spacing:.035em;margin-bottom:5px}
 #chapter{font-size:13px;color:#ccc;margin-bottom:8px}
-#resources{display:flex;align-items:center;flex-wrap:wrap;gap:12px}
+#star-count{color:#ffe69a;font-size:13px;white-space:nowrap;font-variant-numeric:tabular-nums}#resources{display:flex;align-items:center;flex-wrap:wrap;gap:12px}
 .resource-group{display:inline-flex;gap:4px;align-items:center}.resource-group svg{width:18px;height:22px;display:block;color:#8d8d98;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
 #water-icons svg.full{color:#9ddcff;fill:#9ddcff}#thread-icons svg.full{color:#f2b8c6;fill:#f2b8c6}#thread-icons svg.full path+path{stroke:#704c5b}#color-icons svg.full{fill:currentColor}
 #msg{top:clamp(170px,25vh,430px);bottom:auto;left:50%;transform:translateX(-50%);width:min(86%,620px);max-width:620px;margin-left:0;padding:12px 16px;font-size:16px;line-height:1.5;letter-spacing:0;background:#080b13f5;border:1px solid #ffffff18;box-shadow:none;white-space:pre-line}
@@ -69,7 +69,7 @@ button,a,[role="button"]{-webkit-user-drag:none!important;user-drag:none!importa
 <div id="menu"><button class="item" id="begin">BEGIN</button><button class="item" id="save-slots">SAVE SLOTS</button><button class="item" id="open-settings">SETTINGS</button><button class="item" id="leave">LEAVE</button></div>
 <div id="slots" class="hidden" role="dialog" aria-label="Save slots"><h2>FOUR JOURNEYS</h2><div id="slot-list"></div><p id="slot-note">Each slot keeps its own progress. Switching slots reloads the game into that journey.</p><button id="slots-back">BACK</button></div>
 <div id="settings" class="hidden" role="dialog" aria-label="Settings"><button id="controls-help">CONTROLS &amp; TUTORIAL</button><button id="room-notes">ROOM NOTES</button><button id="sound">SOUND — on</button><button id="music-toggle">MUSIC — on</button><label class="audio-level">music <input id="music-level" type="range" min="0" max="100" value="38" aria-label="Music volume"></label><label class="audio-level">effects <input id="effects-level" type="range" min="0" max="100" value="65" aria-label="Sound effects volume"></label><button id="motion">STARS — moving</button><p>MATERIAL — damp cotton.<br>No further qualifications.</p><button id="forget">FORGET THIS JOURNEY</button><button id="back">BACK</button></div>
-<div id="task" class="hidden"><span id="area"></span><span id="chapter"></span><div id="resources"><span id="water-icons" class="resource-group" role="img"></span><span id="thread-icons" class="resource-group" role="img"></span><span id="color-icons" class="resource-group hidden" role="img"></span></div><span id="objective" hidden></span></div>
+<div id="task" class="hidden"><span id="area"></span><span id="chapter"></span><div id="resources"><span id="star-count" role="status" aria-label="0 stars collected">★ 0</span><span id="water-icons" class="resource-group" role="img"></span><span id="thread-icons" class="resource-group" role="img"></span><span id="color-icons" class="resource-group hidden" role="img"></span></div><span id="objective" hidden></span></div>
 <button id="pause" class="hidden" aria-label="Return to title menu">MENU</button>
 <button id="atlas" class="hidden">MAP</button><div id="routes" class="hidden"></div><div id="msg" role="status" aria-live="polite"></div>
 <section id="ending" class="hidden" role="dialog" aria-modal="true" aria-labelledby="ending-title"><p class="ending-small">RAG MEG · CIRCLE DRESS</p><h2 id="ending-title">THE END</h2><p>ALL NINE ACTS COMPLETE</p><div class="ending-circle" aria-hidden="true"><span></span></div><p>Meg is home.<br>The hook is adequate.</p><p class="ending-small">An ALPHABETVOID game<br>Made with AJ and Eoin<br>Starring one kitchen rag<br>And one circle</p><button id="ending-wander">KEEP WANDERING</button><button id="ending-map">YOUR JOURNEY</button></section><div id="hint" hidden></div>
@@ -398,7 +398,7 @@ function drawLandmark(o){const a=o.x,g=groundAt(o.x),seen=discoveries.has(o.id);
 function drawCloth(){ctx.save();ctx.translate(-camera,-viewY);if(story.dressFound&&dressBody){ctx.save();ctx.beginPath();ctx.arc(dressBody.x,dressBody.y,43,0,Math.PI*2);ctx.clip()}for(let j=0;j<ROWS-1;j++)for(let i=0;i<COLS-1;i++){const a=cloth[j*COLS+i],b=cloth[j*COLS+i+1],c=cloth[(j+1)*COLS+i+1],d=cloth[(j+1)*COLS+i];let shade=clamp((story.wet?59:76)+(b.y-a.y)*.8-(d.x-a.x)*.4,story.wet?39:52,84);ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.lineTo(c.x,c.y);ctx.lineTo(d.x,d.y);ctx.closePath();ctx.fillStyle=`hsl(${campaignColor().hue} 45% ${shade}%)`;ctx.fill();ctx.strokeStyle=`hsl(${campaignColor().hue} 32% ${shade-9}%)`;ctx.lineWidth=.5;ctx.stroke();for(let n=1;n<=2;n++){const f=n/3;ctx.strokeStyle='rgba(255,225,233,.28)';ctx.lineWidth=.45;line(a.x+(d.x-a.x)*f,a.y+(d.y-a.y)*f,b.x+(c.x-b.x)*f,b.y+(c.y-b.y)*f)}}ctx.strokeStyle=story.wet?'#c88d9d':'#f5c5d1';ctx.lineWidth=1.3;for(let i=0;i<COLS-1;i++){const a=cloth[i],b=cloth[i+1],c=cloth[(ROWS-1)*COLS+i],d=cloth[(ROWS-1)*COLS+i+1];line(a.x,a.y,b.x,b.y);line(c.x,c.y,d.x,d.y)}for(let j=0;j<ROWS-1;j++)for(const i of [0,COLS-1]){const a=cloth[j*COLS+i],b=cloth[(j+1)*COLS+i];line(a.x,a.y,b.x,b.y)}if(story.dressFound&&dressBody){ctx.restore();drawRollingRim()}ctx.restore()}
 function background(){ctx.fillStyle=story.dressFound?(realms[realm]?.color||'#19356b'):'#000';ctx.fillRect(0,0,W,H);if(story.dressFound){const glow=ctx.createLinearGradient(0,0,W,H);glow.addColorStop(0,'#ff6a7a38');glow.addColorStop(1,'#40f7c838');ctx.fillStyle=glow;ctx.fillRect(0,0,W,H)}ctx.fillStyle='#fff';for(const s of stars){const sx=s.x-camera*.25;if(sx<0||sx>W)continue;ctx.globalAlpha=reduced?.55:.36+.25*(.5+.5*Math.sin(time*.4+s.phase));ellipse(sx,s.y*H,s.r,s.r,true)}ctx.globalAlpha=1;ctx.lineCap='round';ctx.lineJoin='round'}
 function updateHUD(){if(mode==='game')progressHUD()}
-function frame(now){let dt=Math.min((now-lastTime)/1000||0,.05);lastTime=now;time+=dt;accumulator+=dt;while(accumulator>=1/60){if(mode==='game'||(!started&&mode==='menu')){if(grab&&mode==='game'){const margin=Math.min(75,W*.2);const scroll=grab.sx>W-margin?(grab.sx-(W-margin))/margin:grab.sx<margin?-(margin-grab.sx)/margin:0;camera=clamp(camera+scroll*5.8,0,Math.max(0,WORLD-W))}clothStep();if(mode==='game'){viewY+=((story.dressFound&&dressBody?Math.min(0,dressBody.y-H*.42):0)-viewY)*.12;physicalDiscoveries();if(!grab){const target=clamp(center()-W*.43,0,Math.max(0,WORLD-W));camera+=(target-camera)*.09}focus=nearby()}}accumulator-=1/60}movementAudio();background();if(mode==='game'){drawWorld();drawCloth();updateHUD();maybeHint(now)}else if(!started){drawCloth()}else{ctx.save();ctx.globalAlpha=.32;drawWorld();drawCloth();ctx.restore()}requestAnimationFrame(frame)}
+function frame(now){let dt=Math.min((now-lastTime)/1000||0,.05);lastTime=now;time+=dt;accumulator+=dt;while(accumulator>=1/60){if(mode==='game'||(!started&&mode==='menu')){if(grab&&mode==='game'){const margin=Math.min(75,W*.2);const scroll=grab.sx>W-margin?(grab.sx-(W-margin))/margin:grab.sx<margin?-(margin-grab.sx)/margin:0;camera=clamp(camera+scroll*5.8,0,Math.max(0,WORLD-W))}clothStep();if(mode==='game'){viewY+=((story.dressFound&&dressBody?Math.min(0,dressBody.y-H*.42):0)-viewY)*.12;physicalDiscoveries();collectTrailStars();if(!grab){const target=clamp(center()-W*.43,0,Math.max(0,WORLD-W));camera+=(target-camera)*.09}focus=nearby()}}accumulator-=1/60}movementAudio();background();if(mode==='game'){drawWorld();drawCloth();updateHUD();maybeHint(now)}else if(!started){drawCloth()}else{ctx.save();ctx.globalAlpha=.32;drawWorld();drawCloth();ctx.restore()}requestAnimationFrame(frame)}
 function showMenu(){$('#slots').classList.add('hidden');$('#guide').classList.add('hidden');hopRequested=false;saveGame();$('#atlas').classList.add('hidden');$('#hop').classList.add('hidden');$('#routes').classList.add('hidden');mode='menu';grab=null;pendingTap=null;clearMovement();quietMessage();$('#menu').classList.remove('hidden');$('#title').classList.remove('hidden');$('#begin').textContent=started?'RESUME':'BEGIN';$('#task').classList.add('hidden');$('#pause').classList.add('hidden');$('#touch').classList.remove('game-on');$('#west').classList.add('hidden');$('#east').classList.add('hidden');$('#hint').textContent=started?'the town will wait':'you may pick up the rag'}
 function begin(){if(!tutorialSeen){openGuide(true);return}const first=!started&&!story.quests&&!story.dressFound;started=true;mode='game';$('#atlas').classList.remove('hidden');$('#hop').classList.toggle('hidden',!story.dressFound);document.activeElement?.blur();clearTimeout(menuTimer);clearMovement();$('#menu').classList.add('hidden');$('#title').classList.add('hidden');$('#settings').classList.add('hidden');$('#task').classList.remove('hidden');$('#pause').classList.remove('hidden');$('#touch').classList.add('game-on');audioReady();if(first)say('Your circle dress is missing.\nIt is a circle. It is very important.',6500);else quietMessage();focus=nearby();resetStuck();updateHUD()}
 function slotSummary(slot){
@@ -730,7 +730,7 @@ try{tutorialSeen=localStorage.getItem(TUTORIAL_KEY)==='yes'}catch{}
 const guidePages=[
  {title:'A little movement.',body:'<p><strong>Hold the left or right half of the screen</strong> and Meg will keep moving that way. The joystick still works too, and pushing it up lifts Meg.</p><p>You can also <strong>drag the cloth</strong> to place a corner precisely. Release to let her flop.</p><p>On a keyboard: <strong>← → or A / D</strong> moves.</p>'},
  {title:'A little involvement.',body:'<p><strong>Tap anywhere</strong> to poke the nearest useful thing. There is no POKE button anymore. Tapping a hanger while moving stops Meg and leaves her hanging; tap it again or drag her free.</p><p><strong>SQUEEZE</strong> folds Meg smaller and wrings out water. Hold it to stay folded. Keyboard: <strong>S</strong>.</p><p>Puzzle targets and timing are now much more forgiving. Close is usually good enough.</p>'},
- {title:'A little direction.',body:'<p><strong>Droplets</strong> show water carried. <strong>Thread spools</strong> fill as you find the three threads. After the dress, three colored diamonds track the colors.</p><p><strong>Fast travel:</strong> tap <strong>MAP</strong>, then tap any place you have already visited to travel there instantly. The map also shows your current location and completed rooms.</p><p>With the dress, push the joystick up or hold <strong>FLY</strong> to bounce and climb. Keyboard: <strong>↑ / W</strong>. Release to descend.</p><p>These controls are always in <strong>Menu → Settings</strong>.</p>'}
+ {title:'A little direction.',body:'<p>Follow the little gold stars. Touch them to collect them; <strong>★</strong> counts your total for this save slot.</p><p><strong>Droplets</strong> show water carried. <strong>Thread spools</strong> fill as you find the three threads. After the dress, three colored diamonds track the colors.</p><p><strong>Fast travel:</strong> tap <strong>MAP</strong>, then tap any place you have already visited to travel there instantly. The map also shows your current location and completed rooms.</p><p>With the dress, push the joystick up or hold <strong>FLY</strong> to bounce and climb. Keyboard: <strong>↑ / W</strong>. Release to descend.</p><p>These controls are always in <strong>Menu → Settings</strong>.</p>'}
 ];
 function openGuide(startGame=false){guideStartsGame=startGame;guidePage=0;mode='tutorial';clearMovement();hopRequested=false;grab=null;quietMessage();$('#menu').classList.add('hidden');$('#title').classList.add('hidden');$('#settings').classList.add('hidden');$('#guide').classList.remove('hidden');renderGuide();$('#guide-next').focus()}
 function renderGuide(){const page=guidePages[guidePage];$('#guide-step').textContent=(guideStartsGame?'TUTORIAL':'CONTROLS')+' · '+(guidePage+1)+' / '+guidePages.length;$('#guide-title').textContent=page.title;$('#guide-body').innerHTML=page.body;$('#guide-next').textContent=guidePage===guidePages.length-1?(guideStartsGame?'PLAY':'DONE'):'NEXT';$('#guide-skip').textContent=guideStartsGame?'SKIP':'BACK';$('#guide').scrollTop=0}
@@ -740,7 +740,7 @@ const dropIcon='<path d="M10 2C8 6 3 11 3 15a7 7 0 0 0 14 0C17 11 12 6 10 2Z"/>'
 const threadIcon='<path d="M4 3h12v3H4zM4 18h12v3H4zM6 6h8v12H6z"/><path d="m6 8 8 3m-8 1 8 3"/>';
 const colorIcon='<path d="m10 3 7 9-7 9-7-9Z"/>';
 function iconMarkup(kind,full,color=''){return '<svg viewBox="0 0 20 24" aria-hidden="true" class="'+(full?'full':'empty')+'"'+(color&&full?' style="color:'+color+'"':'')+'>'+kind+'</svg>'}
-function renderResources(){const water=clamp(story.water||0,0,3),threads=['sky','water','earth'].map(solved),colors=['green','blue','gold'].map(solved),key=[water,...threads,...colors,story.dressFound].join(':');if(key===lastResourceKey)return;lastResourceKey=key;
+function renderResources(){renderStarCount();const water=clamp(story.water||0,0,3),threads=['sky','water','earth'].map(solved),colors=['green','blue','gold'].map(solved),key=[water,...threads,...colors,story.dressFound].join(':');if(key===lastResourceKey)return;lastResourceKey=key;
  $('#water-icons').innerHTML=[0,1,2].map(i=>iconMarkup(dropIcon,i<water)).join('');$('#water-icons').setAttribute('aria-label',water+' of 3 water drops');
  $('#thread-icons').innerHTML=threads.map(full=>iconMarkup(threadIcon,full)).join('');$('#thread-icons').setAttribute('aria-label',threads.filter(Boolean).length+' of 3 threads found');
  $('#color-icons').classList.toggle('hidden',!story.dressFound);$('#color-icons').innerHTML=colors.map((full,i)=>iconMarkup(colorIcon,full,['#79ef98','#72caff','#ffe278'][i])).join('');$('#color-icons').setAttribute('aria-label',colors.filter(Boolean).length+' of 3 colors found');}
@@ -1048,7 +1048,7 @@ const originalSqueeze=squeezeMeg;squeezeMeg=function(){if(mode!=='game')return;i
 const originalDressPhysics=dressPhysics;dressPhysics=function(){const oldY=dressBody?.y;campaignDressForces();originalDressPhysics();if(realms[realm]?.act&&dressBody){const b=dressBody;if(b.vy>=0&&!grab&&!pose)for(const p of campaignPlatforms()){if(p.ink&&p.ink!==story.ink)continue;if(Math.abs(b.x-p.x)<p.w/2+20&&oldY+45<=p.y+5&&b.y+45>=p.y){const dy=p.y-45-b.y;b.y+=dy;b.vy=0;for(const v of cloth){v.y+=dy;v.oy+=dy}break}}const top=floor-1000;if(b.y<top){const dy=top-b.y;b.y=top;b.vy=0;for(const p of cloth){p.y+=dy;p.oy+=dy}}}campaignClothShape()};
 const originalSkyPhysics=skyPhysics;skyPhysics=function(){if(!realms[realm]?.act)originalSkyPhysics()};
 const originalDrawDistinct=drawDistinctObject;drawDistinctObject=function(o){if(o.campaign||o.device)campaignDrawObject(o);else originalDrawDistinct(o)};
-const originalDrawWorld=drawWorld;drawWorld=function(){originalDrawWorld();drawCampaignWorld()};
+const originalDrawWorld=drawWorld;drawWorld=function(){originalDrawWorld();drawCampaignWorld();drawTrailStars()};
 const originalDrawCloth=drawCloth;drawCloth=function(){originalDrawCloth();if(dressBody&&story.ink&&story.ink!=='pink'){ctx.save();ctx.translate(-camera,-viewY);ctx.globalAlpha=.8;campaignDrawMark(story.ink,dressBody.x,dressBody.y+5,14);ctx.restore()}};
 const originalProgressHUD=progressHUD;progressHUD=function(){originalProgressHUD();campaignControls()};
 function campaignControls(){const active=mode==='game';$('#fold-meg').classList.toggle('hidden',!active||!solved('ownhook'));$('#fold-meg').textContent=['FOLD ◇','FOLD ▱','FOLD ▯'][story.fold||0];$('#echo-meg').classList.toggle('hidden',!active||campaignAct()<8);$('#echo-meg').textContent=echoRecord?'STOP ●':'ECHO ◌';if(realms[realm]?.act)$('#chapter').textContent+=' · ACT '+actNumerals[campaignAct()]+' / IX';}
@@ -1128,7 +1128,75 @@ realmPhysics=function(){
 };
 bounce=function(){if(!story.dressFound||!dressBody)return;if(pose){hangLocked=false;pose=null;story.pose=null}if(dressBody.y>=groundAt(dressBody.x)-78){dressBody.vy=-15;hopRequested=true}};
 document.addEventListener('gesturestart',e=>e.preventDefault(),{capture:true,passive:false});
+// Collectible trails are separate from the decorative sky stars. Stable IDs live in
+// discoveries, so old saves start at zero and every existing slot/reset path works.
+const trailCache=new Map();
+let starBursts=[],lastStarDiscoverySize=-1,trailStarTotal=0,lastStarChime=-1;
+function trailStars(room=realm){
+ const width=realms[room].width,key=room+':'+width;
+ if(trailCache.has(key))return trailCache.get(key);
+ const trail=[];
+ for(let group=0,start=410;start<width-120;group++,start+=650){
+  for(let i=0;i<5&&start+i*80<width-120;i++){
+   trail.push({id:'star:v1:'+room+':'+group+':'+i,x:start+i*80,lift:30+Math.sin(i*Math.PI/4)*12});
+  }
+ }
+ trailCache.set(key,trail);return trail;
+}
+function collectedStarCount(){
+ if(lastStarDiscoverySize!==discoveries.size){
+  trailStarTotal=0;for(const id of discoveries)if(typeof id==='string'&&id.startsWith('star:v1:'))trailStarTotal++;
+  lastStarDiscoverySize=discoveries.size;
+ }
+ return trailStarTotal;
+}
+function renderStarCount(){
+ const n=collectedStarCount(),el=$('#star-count'),label='★ '+n;
+ if(el.textContent!==label){el.textContent=label;el.setAttribute('aria-label',n+' stars collected');}
+}
+function starTouchesCloth(x,y){
+ if(story.dressFound&&dressBody&&Math.hypot(dressBody.x-x,dressBody.y-y)<59)return true;
+ return cloth.some(p=>{
+  const dx=p.x-p.ox,dy=p.y-p.oy,len=dx*dx+dy*dy;
+  const t=len?clamp(((x-p.ox)*dx+(y-p.oy)*dy)/len,0,1):0;
+  return Math.hypot(p.ox+dx*t-x,p.oy+dy*t-y)<23;
+ });
+}
+function collectTrailStars(){
+ if(mode!=='game'||!cloth.length)return;
+ const minX=Math.min(...cloth.map(p=>Math.min(p.x,p.ox)))-60,maxX=Math.max(...cloth.map(p=>Math.max(p.x,p.ox)))+60;
+ let gained=0;
+ for(const star of trailStars()){
+  if(star.x<minX||star.x>maxX||discoveries.has(star.id))continue;
+  const y=groundAt(star.x)-star.lift;
+  if(!starTouchesCloth(star.x,y))continue;
+  discoveries.add(star.id);gained++;
+  starBursts.push({x:star.x,y,room:realm,until:time+.55});
+ }
+ if(gained){
+  starBursts=starBursts.slice(-30);renderStarCount();saveGame();
+  if(time-lastStarChime>.07){tone([659,784,880,1047,1175][(collectedStarCount()-1)%5],.09,.025);lastStarChime=time;}
+ }
+}
+function starShape(x,y,r){
+ ctx.beginPath();for(let i=0;i<10;i++){const angle=-Math.PI/2+i*Math.PI/5,rad=i%2?r*.45:r;const sx=x+Math.cos(angle)*rad,sy=y+Math.sin(angle)*rad;i?ctx.lineTo(sx,sy):ctx.moveTo(sx,sy);}ctx.closePath();ctx.fill();
+}
+function drawTrailStars(){
+ ctx.save();ctx.translate(-camera,-viewY);ctx.fillStyle='#ffe69a';ctx.strokeStyle='#fff4c7';
+ for(const star of trailStars()){
+  if(discoveries.has(star.id)||star.x<camera-20||star.x>camera+W+20)continue;
+  const y=groundAt(star.x)-star.lift+(reduced?0:Math.sin(time*2.5+star.x*.02)*2);
+  starShape(star.x,y,8);ctx.lineWidth=.7;ctx.stroke();
+ }
+ starBursts=starBursts.filter(b=>b.until>time);
+ for(const b of starBursts){if(b.room!==realm)continue;const t=(b.until-time)/.55;ctx.globalAlpha=t;
+  for(let i=0;i<5;i++){const angle=i*Math.PI*2/5,dist=(1-t)*24;starShape(b.x+Math.cos(angle)*dist,b.y+Math.sin(angle)*dist-(1-t)*10,2+t*2);}
+ }
+ ctx.restore();
+}
+
 makeStars();loadGame();expandWorlds();campaignInstall();makeGameForgiving();initRealms();resetCloth(Number.isFinite(story.position)?clamp(story.position,60,WORLD-60):300);resize();requestAnimationFrame(frame);
 </script>
 </body>
 </html>
+
