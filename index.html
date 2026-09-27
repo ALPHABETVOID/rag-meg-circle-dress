@@ -32,7 +32,7 @@
 #task{left:20px;right:136px;max-width:500px;line-height:1.5}
 #area{white-space:pre-line;color:#eee;font-size:13px;font-weight:normal;letter-spacing:.035em;margin-bottom:5px}
 #chapter{font-size:13px;color:#ccc;margin-bottom:8px}
-#star-count{color:#ffe69a;font-size:13px;white-space:nowrap;font-variant-numeric:tabular-nums}#resources{display:flex;align-items:center;flex-wrap:wrap;gap:12px}
+#star-count{color:#ffe69a;font-size:13px;white-space:nowrap;font-variant-numeric:tabular-nums}#star-count small{display:block;color:#cdbb83;font-size:10px}#resources{display:flex;align-items:center;flex-wrap:wrap;gap:12px}
 .resource-group{display:inline-flex;gap:4px;align-items:center}.resource-group svg{width:18px;height:22px;display:block;color:#8d8d98;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
 #water-icons svg.full{color:#9ddcff;fill:#9ddcff}#thread-icons svg.full{color:#f2b8c6;fill:#f2b8c6}#thread-icons svg.full path+path{stroke:#704c5b}#color-icons svg.full{fill:currentColor}
 #msg{top:clamp(170px,25vh,430px);bottom:auto;left:50%;transform:translateX(-50%);width:min(86%,620px);max-width:620px;margin-left:0;padding:12px 16px;font-size:16px;line-height:1.5;letter-spacing:0;background:#080b13f5;border:1px solid #ffffff18;box-shadow:none;white-space:pre-line}
@@ -74,7 +74,7 @@ button,a,[role="button"]{-webkit-user-drag:none!important;user-drag:none!importa
 <div id="menu"><button class="item" id="begin">BEGIN</button><button class="item" id="save-slots">SAVE SLOTS</button><button class="item" id="open-settings">SETTINGS</button><button class="item" id="leave">LEAVE</button><a class="menu-site" href="https://entervoidstar.com" target="_blank" rel="noopener noreferrer">entervoidstar.com ↗</a></div><button id="quick-sound" aria-pressed="true">SOUND ON</button><div id="room-complete" class="hidden" role="status" aria-live="polite"><strong>OBJECTIVES COMPLETE</strong><small id="room-complete-name"></small></div>
 <div id="slots" class="hidden" role="dialog" aria-label="Save slots"><h2>FOUR JOURNEYS</h2><div id="slot-list"></div><p id="slot-note">Each slot keeps its own progress. Switching slots reloads the game into that journey.</p><button id="slots-back">BACK</button></div>
 <div id="settings" class="hidden" role="dialog" aria-label="Settings"><button id="controls-help">CONTROLS &amp; TUTORIAL</button><button id="room-notes">ROOM NOTES</button><button id="sound">SOUND — on</button><button id="music-toggle">MUSIC — on</button><label class="audio-level">music <input id="music-level" type="range" min="0" max="100" value="38" aria-label="Music volume"></label><label class="audio-level">effects <input id="effects-level" type="range" min="0" max="100" value="65" aria-label="Sound effects volume"></label><button id="motion">STARS — moving</button><p>MATERIAL — damp cotton.<br>No further qualifications.</p><button id="forget">FORGET THIS JOURNEY</button><button id="back">BACK</button></div>
-<div id="task" class="hidden"><span id="area"></span><span id="chapter"></span><div id="resources"><span id="star-count" role="status" aria-label="0 stars collected">★ 0</span><span id="water-icons" class="resource-group" role="img"></span><span id="thread-icons" class="resource-group" role="img"></span><span id="color-icons" class="resource-group hidden" role="img"></span></div><span id="objective" hidden></span></div>
+<div id="task" class="hidden"><span id="area"></span><span id="chapter"></span><div id="resources"><span id="star-count" role="status" aria-label="0 of 780 stars collected">★ 0 / 780<small>HERE 0 / 20</small></span><span id="water-icons" class="resource-group" role="img"></span><span id="thread-icons" class="resource-group" role="img"></span><span id="color-icons" class="resource-group hidden" role="img"></span></div><span id="objective" hidden></span></div>
 <button id="pause" class="hidden" aria-label="Return to title menu">MENU</button>
 <button id="atlas" class="hidden">MAP</button><div id="routes" class="hidden"></div><div id="msg" role="status" aria-live="polite"></div>
 <section id="ending" class="hidden" role="dialog" aria-modal="true" aria-labelledby="ending-title"><p class="ending-small">RAG MEG · CIRCLE DRESS</p><h2 id="ending-title">THE END</h2><p>ALL NINE ACTS COMPLETE</p><div class="ending-circle" aria-hidden="true"><span></span></div><p>Meg is home.<br>The hook is adequate.</p><p class="ending-small">An ALPHABETVOID game<br>Made with AJ and Eoin<br>Starring one kitchen rag<br>And one circle</p><button id="ending-wander">KEEP WANDERING</button><button id="ending-map">YOUR JOURNEY</button></section><div id="hint" hidden></div>
@@ -736,7 +736,7 @@ try{tutorialSeen=localStorage.getItem(TUTORIAL_KEY)==='yes'}catch{}
 const guidePages=[
  {title:'A little movement.',body:'<p><strong>Hold the left or right half of the screen</strong> and Meg will keep moving that way. The joystick still works too, and pushing it up lifts Meg.</p><p>You can also <strong>drag the cloth</strong> to place a corner precisely. Release to let her flop.</p><p>On a keyboard: <strong>← → or A / D</strong> moves; <strong>↑ / W</strong> lifts Meg. After earning the attic air permit, hold up to fly freely, release to drift down, or press <strong>↓</strong> to descend faster. Fans also lift her.</p>'},
  {title:'A little involvement.',body:'<p><strong>Tap anywhere</strong> to poke the nearest useful thing. There is no POKE button anymore. Tapping a hanger while moving stops Meg and leaves her hanging; tap it again or drag her free.</p><p><strong>SQUEEZE</strong> folds Meg smaller and wrings out water. Hold it to stay folded. Keyboard: <strong>S</strong>.</p><p>Puzzle targets and timing are now much more forgiving. Close is usually good enough.</p>'},
- {title:'A little direction.',body:'<p>Follow the little gold stars. Touch them to collect them; <strong>★</strong> counts your total for this save slot.</p><p><strong>Droplets</strong> show water carried. <strong>Thread spools</strong> fill as you find the three threads. After the dress, three colored diamonds track the colors.</p><p><strong>Fast travel:</strong> tap <strong>MAP</strong>, then tap any place you have already visited to travel there instantly. The map also shows your current location and completed rooms.</p><p>With the attic air permit or the dress, push the joystick up or hold <strong>FLY</strong> to climb. Keyboard: <strong>↑ / W</strong>. Release to descend.</p><p>These controls are always in <strong>Menu → Settings</strong>.</p>'}
+ {title:'A little direction.',body:'<p>Follow the little gold stars. Touch them to collect them. There are <strong>20 in each of 39 areas</strong>: 780 across the journey. The ★ display shows your total and this room’s count for the current save slot.</p><p><strong>Droplets</strong> show water carried. <strong>Thread spools</strong> fill as you find the three threads. After the dress, three colored diamonds track the colors.</p><p><strong>Fast travel:</strong> tap <strong>MAP</strong>, then tap any place you have already visited to travel there instantly. The map also shows your current location and completed rooms.</p><p>With the attic air permit or the dress, push the joystick up or hold <strong>FLY</strong> to climb. Keyboard: <strong>↑ / W</strong>. Release to descend.</p><p>These controls are always in <strong>Menu → Settings</strong>.</p>'}
 ];
 function openGuide(startGame=false){guideStartsGame=startGame;guidePage=0;mode='tutorial';clearMovement();hopRequested=false;grab=null;quietMessage();$('#menu').classList.add('hidden');$('#title').classList.add('hidden');$('#settings').classList.add('hidden');$('#guide').classList.remove('hidden');renderGuide();$('#guide-next').focus()}
 function renderGuide(){const page=guidePages[guidePage];$('#guide-step').textContent=(guideStartsGame?'TUTORIAL':'CONTROLS')+' · '+(guidePage+1)+' / '+guidePages.length;$('#guide-title').textContent=page.title;$('#guide-body').innerHTML=page.body;$('#guide-next').textContent=guidePage===guidePages.length-1?(guideStartsGame?'PLAY':'DONE'):'NEXT';$('#guide-skip').textContent=guideStartsGame?'SKIP':'BACK';$('#guide').scrollTop=0}
@@ -1135,30 +1135,52 @@ realmPhysics=function(){
 bounce=function(){if(!story.dressFound||!dressBody)return;if(pose){hangLocked=false;pose=null;story.pose=null}if(dressBody.y>=groundAt(dressBody.x)-78){dressBody.vy=-15;hopRequested=true}};
 document.addEventListener('gesturestart',e=>e.preventDefault(),{capture:true,passive:false});
 // Collectible trails are separate from the decorative sky stars. Stable IDs live in
-// discoveries, so old saves start at zero and every existing slot/reset path works.
+// discoveries, and each of the 39 areas has exactly 20 collectible stars.
 const trailCache=new Map();
+const STARS_PER_ROOM=20,STAR_VERSION='star:v2:';
 let starBursts=[],lastStarDiscoverySize=-1,trailStarTotal=0,lastStarChime=-1;
 function trailStars(room=realm){
  const width=realms[room].width,key=room+':'+width;
  if(trailCache.has(key))return trailCache.get(key);
  const trail=[];
- for(let group=0,start=410;start<width-120;group++,start+=650){
-  for(let i=0;i<5&&start+i*80<width-120;i++){
-   trail.push({id:'star:v1:'+room+':'+group+':'+i,x:start+i*80,lift:30+Math.sin(i*Math.PI/4)*12});
-  }
+ const start=room==='town'?300:180,end=width-180;
+ for(let i=0;i<STARS_PER_ROOM;i++){
+  trail.push({id:STAR_VERSION+room+':'+i,x:start+(end-start)*i/(STARS_PER_ROOM-1),lift:30+Math.sin(i*Math.PI/4)*12});
  }
  trailCache.set(key,trail);return trail;
 }
+function migrateTrailStars(){
+ // Convert each older room’s collected stars once; keep up to that room’s 20.
+ const oldByRoom=new Map();
+ for(const id of discoveries){
+  if(typeof id!=='string'||!id.startsWith('star:v1:'))continue;
+  const parts=id.split(':'),room=parts[2];
+  if(realms[room])oldByRoom.set(room,(oldByRoom.get(room)||0)+1);
+ }
+ if(!oldByRoom.size)return;
+ for(const [room,count] of oldByRoom){
+  let remaining=Math.min(count,STARS_PER_ROOM);
+  for(const star of trailStars(room)){
+   if(!remaining)break;
+   if(!discoveries.has(star.id)){discoveries.add(star.id);remaining--;}
+  }
+ }
+ for(const id of [...discoveries])if(typeof id==='string'&&id.startsWith('star:v1:'))discoveries.delete(id);
+ saveGame();
+}
 function collectedStarCount(){
  if(lastStarDiscoverySize!==discoveries.size){
-  trailStarTotal=0;for(const id of discoveries)if(typeof id==='string'&&id.startsWith('star:v1:'))trailStarTotal++;
+  trailStarTotal=0;for(const id of discoveries)if(typeof id==='string'&&id.startsWith(STAR_VERSION))trailStarTotal++;
   lastStarDiscoverySize=discoveries.size;
  }
  return trailStarTotal;
 }
 function renderStarCount(){
- const n=collectedStarCount(),el=$('#star-count'),label='★ '+n;
- if(el.textContent!==label){el.textContent=label;el.setAttribute('aria-label',n+' stars collected');}
+ const n=collectedStarCount(),here=trailStars().filter(star=>discoveries.has(star.id)).length,total=Object.keys(realms).length*STARS_PER_ROOM;
+ const el=$('#star-count'),label='★ '+n+' / '+total,roomLabel='HERE '+here+' / '+STARS_PER_ROOM;
+ if(el.firstChild.textContent!==label)el.firstChild.textContent=label;
+ if(el.lastElementChild.textContent!==roomLabel)el.lastElementChild.textContent=roomLabel;
+ el.setAttribute('aria-label',n+' of '+total+' stars collected; '+here+' of '+STARS_PER_ROOM+' in this area');
 }
 function starTouchesCloth(x,y){
  if(story.dressFound&&dressBody&&Math.hypot(dressBody.x-x,dressBody.y-y)<59)return true;
@@ -1181,6 +1203,7 @@ function collectTrailStars(){
  }
  if(gained){
   starBursts=starBursts.slice(-30);renderStarCount();saveGame();
+  if(trailStars().every(star=>discoveries.has(star.id)))say('ALL 20 STARS FOUND HERE',2300);
   if(time-lastStarChime>.07){tone([659,784,880,1047,1175][(collectedStarCount()-1)%5],.09,.025);lastStarChime=time;}
  }
 }
@@ -1206,8 +1229,8 @@ function canFloat(){return story.dressFound||solved('air')}
 function fanLift(x,y){let force=0;for(const o of objects){if(o.device!=='breeze')continue;const altitude=groundAt(o.x)-y;if(Math.abs(x-o.x)<92&&altitude<340&&altitude>-20)force=Math.max(force,1-altitude/440)}return Math.max(0,force)}
 function installBreezeFans(){
  realms.attic.objects.find(o=>o.id==='air').reply='PERMISSION TO BE AIRBORNE — GRANTED.\nHold ↑ / W (or FLY / joystick up) to rise.\n← → steers; release to drift down. ↓ descends faster.\nFans lift you too. Your permit works everywhere.';
- const rooms=['attic','observatory','drain','pipes','lost','pocket','hem','garden','sea','sun','highsky',...campaignRoomSpecs.filter(s=>[4,6].includes(s[1])).map(s=>s[0])];
- for(const key of rooms){const r=realms[key];if(!r)continue;const positions=key==='attic'?[850,1450]:[Math.round(r.width*.43),Math.round(r.width*.77)];positions.forEach((x,i)=>r.objects.push({id:'breeze-'+key+'-'+i,device:'breeze',x,name:i?'VERY SMALL UPDRAFT':'PUBLIC AIR FAN',reach:100}));}
+ const rooms=['attic','highsky','weatherbasement','weatherstorm'];
+ for(const key of rooms){const r=realms[key];if(!r)continue;const x=key==='attic'?850:Math.round(r.width*.43);r.objects.push({id:'breeze-'+key+'-0',device:'breeze',x,name:'PUBLIC AIR FAN',reach:100});}
 }
 function drawBreezeFan(o){const x=o.x,g=groundAt(x);ctx.save();ctx.strokeStyle='#bce6ec';ctx.lineWidth=1.2;ctx.strokeRect(x-25,g-19,50,16);for(let i=-16;i<=16;i+=8)line(x+i,g-18,x+i,g-5);for(let i=0;i<5;i++){const y=g-30-((reduced?i*55:time*42+i*55)%290),xx=x+(i-2)*27;ctx.globalAlpha=.2+.35*(1-(g-y)/340);ctx.beginPath();ctx.moveTo(xx,y+22);ctx.quadraticCurveTo(xx+10,y+10,xx,y);ctx.stroke();line(xx,y,xx-4,y+6);line(xx,y,xx+5,y+6)}ctx.restore()}
 function roomObjectiveStatus(){
@@ -1230,8 +1253,7 @@ function syncSoundButtons(){
 function toggleGameSound(){soundOn=!soundOn;try{localStorage.setItem('rag-meg-sound-v1',soundOn?'on':'off')}catch{};syncSoundButtons();if(soundOn)audioReady();applyAudioLevels();if(soundOn)fx('click')}
 try{soundOn=localStorage.getItem('rag-meg-sound-v1')!=='off'}catch{};syncSoundButtons();
 
-makeStars();loadGame();expandWorlds();campaignInstall();installBreezeFans();makeGameForgiving();initRealms();resetCloth(Number.isFinite(story.position)?clamp(story.position,60,WORLD-60):300);resize();requestAnimationFrame(frame);
+makeStars();loadGame();expandWorlds();campaignInstall();installBreezeFans();makeGameForgiving();initRealms();resetCloth(Number.isFinite(story.position)?clamp(story.position,60,WORLD-60):300);resize();migrateTrailStars();requestAnimationFrame(frame);
 </script>
 </body>
 </html>
-
