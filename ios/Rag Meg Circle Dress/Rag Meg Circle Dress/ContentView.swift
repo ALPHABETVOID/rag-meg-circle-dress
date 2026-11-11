@@ -3,7 +3,10 @@ import WebKit
 
 struct ContentView: View {
     var body: some View {
-        Group {
+        ZStack {
+            Color.black
+                .ignoresSafeArea()
+
             if let gameURL = Bundle.main.url(forResource: "index", withExtension: "html") {
                 WebView(url: gameURL)
                     .webViewBackForwardNavigationGestures(.disabled)
@@ -20,7 +23,6 @@ struct ContentView: View {
                 .foregroundStyle(.white)
             }
         }
-        .background(.black)
         .ignoresSafeArea(edges: [.horizontal, .bottom])
     }
 }

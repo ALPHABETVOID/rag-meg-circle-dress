@@ -203,9 +203,16 @@ function quietMessage(){clearTimeout(messageTimer);$('#msg').style.opacity=0;mes
 let masterBus,musicBus,effectsBus,scoreBus,duckBus,echo,noiseBuffer,musicTimer=null,nextBeat=0,musicStep=0;
 let musicEnabled=true,musicVolume=.38,effectsVolume=.65,lastRustle=0,lastLanding=0;
 let STEP=60/118/4,activeScoreKey='';const LOOP_STEPS=256;
+function startAudioClock(){
+ if(!audioContext||audioContext.state!=='running')return;
+ nextBeat=audioContext.currentTime+.08;
+ if(musicTimer===null)musicTimer=setInterval(scheduleMusic,30);
+ scheduleMusic();
+}
 function audioReady(){
  if(!soundOn)return;
  try{
+  if(audioContext?.state==='closed')audioContext=null;
   if(!audioContext){
    audioContext=new(window.AudioContext||window.webkitAudioContext)();
    masterBus=audioContext.createGain();masterBus.gain.value=.72;
@@ -218,10 +225,9 @@ function audioReady(){
    const feedback=audioContext.createGain(),wet=audioContext.createGain(),filter=audioContext.createBiquadFilter();feedback.gain.value=.24;wet.gain.value=.19;filter.type='lowpass';filter.frequency.value=2400;echo.connect(filter);filter.connect(feedback);feedback.connect(echo);filter.connect(wet);wet.connect(musicBus);
    noiseBuffer=audioContext.createBuffer(1,audioContext.sampleRate,audioContext.sampleRate);
    const n=noiseBuffer.getChannelData(0);let seed=913;for(let i=0;i<n.length;i++){seed=(Math.imul(seed,1664525)+1013904223)>>>0;n[i]=seed/2147483648-1}
-   nextBeat=audioContext.currentTime+.08;
   }
-  if(audioContext.state==='suspended'||audioContext.state==='interrupted')audioContext.resume().catch(()=>{});
-  if(musicTimer===null){musicTimer=setInterval(scheduleMusic,30);scheduleMusic()}
+  if(audioContext.state==='running')startAudioClock();
+  else audioContext.resume().then(startAudioClock).catch(()=>{});
  }catch{}
 }
 function voice(freq,at,length,volume,type='sine',bus=effectsBus,cutoff=0,endFreq=0,attack=.008){
@@ -307,7 +313,10 @@ function applyAudioLevels(){if(!audioContext)return;const at=audioContext.curren
 document.addEventListener('pointerdown',()=>audioReady(),{capture:true});
 document.addEventListener('keydown',e=>{if(['Enter',' ','ArrowLeft','ArrowRight','a','d'].includes(e.key))audioReady()},{capture:true});
 document.addEventListener('click',e=>{if(e.target.closest('button')&&e.target.id!=='sound')fx('click')});
-document.addEventListener('visibilitychange',()=>{if(!audioContext)return;if(document.hidden){clearInterval(musicTimer);musicTimer=null;audioContext.suspend().catch(()=>{})}else if(soundOn)audioReady()});
+function recoverAudio(){if(!document.hidden&&soundOn)audioReady()}
+document.addEventListener('visibilitychange',()=>{if(!audioContext)return;if(document.hidden){clearInterval(musicTimer);musicTimer=null;audioContext.suspend().catch(()=>{})}else recoverAudio()});
+addEventListener('pageshow',recoverAudio);
+addEventListener('focus',recoverAudio);
 function makeStars(){let seed=91;const rand=()=>((seed=Math.imul(seed,1664525)+1013904223|0)>>>0)/4294967296;stars=Array.from({length:330},()=>({x:rand()*WORLD,y:rand()*.62,r:rand()<.09?1.15:.55,phase:rand()*7}))}
 function resetCloth(cx=300){dressBody=story.dressFound?{x:cx,y:groundAt(cx)-45,vx:0,vy:0,angle:0,spin:0,clothSpin:0}:null;cloth.length=0;seams.length=0;for(let j=0;j<ROWS;j++)for(let i=0;i<COLS;i++){const px=cx+(i-6)*(story.dressFound?5:8),py=story.dressFound?groundAt(cx)-48+(j-3)*5:groundAt(cx)-40+j*5;cloth.push({x:px,y:py,ox:px,oy:py,row:j});if(i)seams.push([j*COLS+i-1,j*COLS+i,8]);if(j)seams.push([(j-1)*COLS+i,j*COLS+i,5]);if(i&&j)seams.push([(j-1)*COLS+i-1,j*COLS+i,Math.hypot(8,5)]);if(i<COLS-1&&j)seams.push([(j-1)*COLS+i+1,j*COLS+i,Math.hypot(8,5)])}}
 function resize(){const oldFloor=floor;W=innerWidth;H=innerHeight;floor=H*.72;const dpr=Math.min(devicePixelRatio||1,3);canvas.width=Math.round(W*dpr);canvas.height=Math.round(H*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);for(const p of cloth){p.y+=floor-oldFloor;p.oy+=floor-oldFloor}camera=clamp(camera,0,Math.max(0,WORLD-W));if(dressBody)dressBody.y+=floor-oldFloor;if(!started){camera=clamp(center()-W*.5,0,Math.max(0,WORLD-W))}grab=null;pendingTap=null;clearMovement()}
