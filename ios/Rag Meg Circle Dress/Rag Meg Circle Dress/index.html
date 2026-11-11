@@ -703,19 +703,9 @@ function drawLegacyPortal(o,a,g){const key=realm+':'+o.id;if(!Object.hasOwn(port
  }
  ctx.restore();}
 function drawUniquePortal(o,a,g){
- const key=realm+':'+o.id;if(!Object.hasOwn(portalArtNames,key)){const i=Object.keys(portalArtNames).length;portalArtNames[key]=portalNames[i]||('DOOR '+(i+1))}
- const n=Object.keys(portalArtNames).indexOf(key),width=68+(n%3)*4,height=104+(n%4)*5,hingeLeft=n%2===0;
- ctx.save();ctx.translate(a,g);ctx.lineWidth=2;
- // Every plane-changing exit uses the same readable door vocabulary: frame, panel, hinges and handle.
- ctx.strokeRect(-width/2,-height,width,height);
- ctx.strokeRect(-width/2+7,-height+7,width-14,height-7);
- ctx.strokeRect(-width/2+14,-height+16,width-28,30);
- ctx.strokeRect(-width/2+14,-height+55,width-28,height-68);
- const handleX=hingeLeft?width/2-16:-width/2+16;
- ellipse(handleX,-height*.46,3.5,3.5);
- const hingeX=hingeLeft?-width/2:width/2;
- line(hingeX,-height+20,hingeX,-height+34);line(hingeX,-27,hingeX,-13);
- ctx.beginPath();ctx.moveTo(-width/2-8,0);ctx.lineTo(width/2+8,0);ctx.stroke();
+ ctx.save();ctx.translate(a,g);ctx.lineWidth=1.6;
+ ctx.beginPath();ctx.moveTo(-35,0);ctx.lineTo(-22,-70);ctx.lineTo(32,-57);ctx.lineTo(35,0);ctx.closePath();ctx.stroke();
+ ellipse(20,-27,3,3);
  ctx.restore();
 }
 function drawPuzzleArtwork(o,a,g){const done=solved(o.id),watered=discoveries.has('watered:'+o.id);ctx.save();ctx.translate(a,g);ctx.strokeStyle=done?'#92cbb3':'#b7b7bc';ctx.lineWidth=1.4;
