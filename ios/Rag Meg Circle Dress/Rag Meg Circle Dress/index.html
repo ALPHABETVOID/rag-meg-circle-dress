@@ -319,8 +319,11 @@ function applyAudioLevels(){if(!audioContext)return;const at=audioContext.curren
 document.addEventListener('pointerdown',()=>audioReady(),{capture:true});
 document.addEventListener('keydown',e=>{if(['Enter',' ','ArrowLeft','ArrowRight','a','d'].includes(e.key))audioReady()},{capture:true});
 document.addEventListener('click',e=>{if(e.target.closest('button')&&e.target.id!=='sound')fx('click')});
-function recoverAudio(){if(!document.hidden&&soundOn)audioReady()}
-document.addEventListener('visibilitychange',()=>{if(!audioContext)return;if(document.hidden){clearInterval(musicTimer);musicTimer=null;audioContext.suspend().catch(()=>{})}else recoverAudio()});
+async function appDidEnterBackground(){clearInterval(musicTimer);musicTimer=null;const retiredContext=audioContext;audioContext=null;masterBus=musicBus=effectsBus=scoreBus=duckBus=echo=noiseBuffer=null;activeScoreKey='';if(retiredContext&&retiredContext.state!=='closed'){try{await retiredContext.close()}catch{}}}
+async function resumeAudio(){if(!soundOn)return;audioReady();if(audioContext&&audioContext.state!=='running'){try{await audioContext.resume()}catch{}}if(audioContext?.state==='running'){startAudioClock();applyAudioLevels()}}
+async function appDidBecomeActive(){const shouldRestart=soundOn;await appDidEnterBackground();if(!shouldRestart)return;toggleGameSound();toggleGameSound();await resumeAudio()}
+function recoverAudio(){if(!document.hidden&&soundOn)resumeAudio()}
+document.addEventListener('visibilitychange',()=>{if(document.hidden)appDidEnterBackground();else recoverAudio()});
 addEventListener('pageshow',recoverAudio);
 addEventListener('focus',recoverAudio);
 function makeStars(){let seed=91;const rand=()=>((seed=Math.imul(seed,1664525)+1013904223|0)>>>0)/4294967296;stars=Array.from({length:330},()=>({x:rand()*WORLD,y:rand()*.62,r:rand()<.09?1.15:.55,phase:rand()*7}))}

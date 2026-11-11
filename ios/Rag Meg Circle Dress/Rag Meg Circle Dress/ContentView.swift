@@ -26,6 +26,8 @@ struct ContentView: View {
 private struct GameWebView: View {
     let url: URL
 
+    @Environment(\.scenePhase) private var scenePhase
+
     @State private var page = WebPage(
         navigationDecider: ExternalLinkNavigationDecider()
     )
@@ -44,6 +46,35 @@ private struct GameWebView: View {
                     // The fallback remains visible if the bundled page cannot load.
                 }
             }
+            .onChange(of: scenePhase, initial: true) { _, newPhase in
+                Task {
+                    await updateAudio(for: newPhase)
+                }
+            }
+    }
+
+    @MainActor
+    private func updateAudio(for phase: ScenePhase) async {
+        switch phase {
+        case .active:
+            do {
+                await page.setAllMediaPlaybackSuspended(false)
+                try await page.callJavaScript(
+                    "if (window.appDidBecomeActive) { await window.appDidBecomeActive(); }"
+                )
+            } catch {
+                // The page may still be loading; its own focus handler remains a fallback.
+            }
+        case .background:
+            _ = try? await page.callJavaScript(
+                "if (window.appDidEnterBackground) { await window.appDidEnterBackground(); }"
+            )
+            await page.setAllMediaPlaybackSuspended(true)
+        case .inactive:
+            break
+        @unknown default:
+            break
+        }
     }
 }
 
