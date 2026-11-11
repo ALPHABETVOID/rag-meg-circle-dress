@@ -1050,6 +1050,14 @@ function showCampaignEnding(){endingVisible=true;mode='ending';clearMovement();h
 // Integrate with the original engine; preserve its existing movement, music, and first two acts.
 const originalObjectAt=objectAt;objectAt=function(sx,sy){
  const x=sx+camera,y=sy+viewY;
+ // Portals are drawn as tall doors. Resolve their full visible rectangle before
+ // the campaign device hit areas, which are deliberately generous for touch.
+ const hitPortal=objects.find(o=>{
+  if(!o.portal)return false;
+  const g=groundAt(o.x);
+  return Math.abs(x-o.x)<=50&&y>=g-90&&y<=g+12
+ });
+ if(hitPortal)return hitPortal;
  let best=null,bestScore=Infinity;
  for(const o of objects){
   if(!(o.campaign||o.device))continue;
@@ -1072,8 +1080,13 @@ const originalInteract=interact;interact=function(id){
  if(mode!=='game')return;
  let o=objects.find(a=>a.id===id);
  if(!o){
-  const campaignNearby=objects.filter(a=>a.campaign||a.device).sort((a,b)=>Math.abs(center()-a.x)-Math.abs(center()-b.x))[0];
-  o=campaignNearby&&Math.abs(center()-campaignNearby.x)<=260?campaignNearby:nearby();
+  // Respect the normal proximity result first so portals can win. This path is
+  // used by keyboard interaction and by tapping Meg instead of the object.
+  o=nearby();
+  if(!o){
+   const campaignNearby=objects.filter(a=>a.campaign||a.device).sort((a,b)=>Math.abs(center()-a.x)-Math.abs(center()-b.x))[0];
+   o=campaignNearby&&Math.abs(center()-campaignNearby.x)<=260?campaignNearby:null;
+  }
  }
  const reach=(o?.campaign||o?.device)?260:(o?.reach||0)+25;
  if(o&&Math.abs(center()-o.x)<=reach){
