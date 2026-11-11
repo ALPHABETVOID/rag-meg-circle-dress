@@ -1302,6 +1302,7 @@ let completionUntil=0,completionRoom='';
 function roomCompleteSound(){if(!soundOn||!audioContext)return;const at=audioContext.currentTime+.02;[523.25,659.25,783.99,1046.5].forEach((n,i)=>voice(n,at+i*.14,.35,.07,'sine'));}
 function renderRoomCompletion(status){
  const panel=$('#room-complete');
+ panel.style.top=Math.ceil($('#msg').getBoundingClientRect().bottom+20)+'px';
  if(status.total&&status.done===status.total&&!discoveries.has('room-complete:v1:'+realm)){
   discoveries.add('room-complete:v1:'+realm);completionRoom=realm;completionUntil=time+4;
   $('#room-complete-name').textContent=realms[realm].name;roomCompleteSound();saveGame();
