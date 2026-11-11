@@ -61,6 +61,11 @@ button,a,[role="button"]{-webkit-user-drag:none!important;user-drag:none!importa
 #slots-back{margin-top:16px;text-align:center}
 #slot-note{font-size:11px;color:#aaa;line-height:1.5;margin:12px 0 0}
 #quick-sound{position:absolute;right:12px;top:max(60px,calc(env(safe-area-inset-top) + 52px));z-index:7;pointer-events:auto;background:#000c;border:1px solid #555;min-height:38px;padding:7px 10px;font-size:11px}
+#forget-confirmation{position:absolute;inset:0;z-index:40;display:grid;place-items:center;padding:24px;background:#000c;pointer-events:auto;text-align:center}
+#forget-confirmation>div{width:min(92%,430px);background:#0a0a0f;border:1px solid #777;padding:24px}
+#forget-confirmation h2{margin:0 0 16px;font-size:22px;font-weight:normal}
+#forget-confirmation p{margin:0;color:#ccc;font-size:14px;line-height:1.6}
+.forget-actions{display:flex;justify-content:center;gap:12px;margin-top:24px}.forget-actions button{min-height:48px;padding:10px 18px;background:#17121c;border:1px solid #777}.forget-actions #forget-reset{border-color:var(--pink);color:var(--pink)}
 .menu-site{display:inline-block;color:#bbb;font-size:12px;padding:14px;text-underline-offset:4px}
 #room-complete{position:absolute;top:34%;left:50%;transform:translateX(-50%);width:min(88%,460px);padding:18px;background:#101b20ed;border:1px solid #a7dfce;text-align:center;z-index:6;pointer-events:none;box-shadow:0 0 30px #0009}
 #room-complete strong{display:block;font-size:clamp(17px,4vw,24px);color:#d3ffe8;letter-spacing:.08em}#room-complete small{display:block;margin-top:9px;color:#ddd;font-size:11px;line-height:1.5}
@@ -78,7 +83,8 @@ button,a,[role="button"]{-webkit-user-drag:none!important;user-drag:none!importa
 <button id="pause" class="hidden" aria-label="Return to title menu">MENU</button>
 <button id="atlas" class="hidden">MAP</button><div id="routes" class="hidden"></div><div id="msg" role="status" aria-live="polite"></div>
 <section id="ending" class="hidden" role="dialog" aria-modal="true" aria-labelledby="ending-title"><p class="ending-small">RAG MEG · CIRCLE DRESS</p><h2 id="ending-title">THE END</h2><p>ALL NINE ACTS COMPLETE</p><div class="ending-circle" aria-hidden="true"><span></span></div><p>Meg is home.<br>The hook is adequate.</p><p class="ending-small">An ALPHABETVOID game<br>Made with AJ and Eoin<br>Starring one kitchen rag<br>And one circle</p><button id="ending-wander">KEEP WANDERING</button><button id="ending-map">YOUR JOURNEY</button></section><div id="hint" hidden></div>
-<section id="guide" class="hidden" role="dialog" aria-modal="true" aria-labelledby="guide-title"><span id="guide-step"></span><h2 id="guide-title"></h2><div id="guide-body"></div><div class="guide-actions"><button id="guide-skip">SKIP</button><button id="guide-next">NEXT</button></div></section><div id="west" class="edge hidden" aria-hidden="true">‹</div><div id="east" class="edge hidden" aria-hidden="true">›</div>
+<section id="guide" class="hidden" role="dialog" aria-modal="true" aria-labelledby="guide-title"><span id="guide-step"></span><h2 id="guide-title"></h2><div id="guide-body"></div><div class="guide-actions"><button id="guide-skip">SKIP</button><button id="guide-next">NEXT</button></div></section>
+<section id="forget-confirmation" class="hidden" role="alertdialog" aria-modal="true" aria-labelledby="forget-title" aria-describedby="forget-description"><div><h2 id="forget-title">are you sure?</h2><p id="forget-description">this will reset your current save slot back to the beginning of the game. this can't be undone.</p><div class="forget-actions"><button id="forget-cancel">never mind</button><button id="forget-reset">yes, reset</button></div></div></section><div id="west" class="edge hidden" aria-hidden="true">‹</div><div id="east" class="edge hidden" aria-hidden="true">›</div>
 <div id="touch"><button id="joystick" class="touch-button" tabindex="-1" draggable="false" aria-label="Movement joystick: drag left or right to move, up to lift or bounce"><span id="stick" aria-hidden="true"></span></button><button id="squeeze" class="touch-button" tabindex="-1" draggable="false" aria-label="Squeeze water or fold Meg">SQUEEZE</button><button id="hop" class="touch-button hidden" tabindex="-1" draggable="false" aria-label="Bounce or float">BOUNCE</button><button id="fold-meg" class="touch-button hidden" tabindex="-1" draggable="false" aria-label="Change remembered fold">FOLD ◇</button><button id="echo-meg" class="touch-button hidden" tabindex="-1" draggable="false" aria-label="Record or stop a cloth echo">ECHO ◌</button></div>
 </div>
 <script>
@@ -445,7 +451,20 @@ function forgetJourney(){
  say('Journey forgotten.\nMeg is back where she started.',2600);
  $('#begin').focus();
 }
-$('#forget').onclick=forgetJourney;
+function closeForgetConfirmation(){
+ $('#forget-confirmation').classList.add('hidden');
+ $('#forget').focus();
+}
+function showForgetConfirmation(){
+ $('#forget-confirmation').classList.remove('hidden');
+ $('#forget-cancel').focus();
+}
+$('#forget').onclick=showForgetConfirmation;
+$('#forget-cancel').onclick=closeForgetConfirmation;
+$('#forget-reset').onclick=()=>{
+ $('#forget-confirmation').classList.add('hidden');
+ forgetJourney();
+};
 $('#back').onclick=()=>{$('#settings').classList.add('hidden');showMenu();$('#open-settings').focus()};
 $('#sound').onclick=toggleGameSound;$('#quick-sound').onclick=toggleGameSound;
 $('#music-toggle').onclick=()=>{musicEnabled=!musicEnabled;$('#music-toggle').textContent=musicEnabled?'MUSIC — on':'MUSIC — off';applyAudioLevels()};
@@ -1098,7 +1117,7 @@ showJourneyMap=function(){
  }
  const close=document.createElement('button');close.textContent='BACK TO MEG';close.onclick=()=>panel.classList.add('hidden');panel.append(close);panel.classList.remove('hidden')
 };
-const originalForget=forgetJourney;forgetJourney=function(){echoActors=[];echoRecord=null;echoHistory=[];campaignClock=0;endingVisible=false;$('#ending').classList.add('hidden');originalForget();story.ink='pink';story.fold=0;story.turns={};story.basins={};for(const r of Object.values(realms))for(const o of r.objects){delete o.wasOn;if(o.baseX)o.x=o.baseX}saveGame();campaignControls()};$('#forget').onclick=forgetJourney;
+const originalForget=forgetJourney;forgetJourney=function(){echoActors=[];echoRecord=null;echoHistory=[];campaignClock=0;endingVisible=false;$('#ending').classList.add('hidden');originalForget();story.ink='pink';story.fold=0;story.turns={};story.basins={};for(const r of Object.values(realms))for(const o of r.objects){delete o.wasOn;if(o.baseX)o.x=o.baseX}saveGame();campaignControls()};$('#forget').onclick=showForgetConfirmation;
 addEventListener('keydown',e=>{if(mode!=='game'||e.repeat||e.target.closest('input,textarea,select,[contenteditable=true]'))return;if(e.key.toLowerCase()==='f'){e.preventDefault();cycleCampaignFold()}if(e.key.toLowerCase()==='e'){e.preventDefault();recordCampaignEcho()}});
 
 function makeGameForgiving(){
