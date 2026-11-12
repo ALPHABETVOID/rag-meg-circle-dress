@@ -19,7 +19,6 @@ struct ContentView: View {
                 .foregroundStyle(.white)
             }
         }
-        .ignoresSafeArea(edges: [.horizontal, .bottom])
     }
 }
 
