@@ -6,7 +6,12 @@
 	objectVersion = 90;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		B005D113CA66ACCAFE000001 /* index.html in Resources */ = {isa = PBXBuildFile; fileRef = B005D113CA66ACCAFE000002 /* index.html */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
+		B005D113CA66ACCAFE000002 /* index.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = index.html; path = ../../index.html; sourceTree = SOURCE_ROOT; };
 		000000000000000000000120 /* Rag Meg Circle Dress.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Rag Meg Circle Dress.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B5FF9C2330A4348F0046AC8C /* Rag-Meg-Circle-Dress-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Rag-Meg-Circle-Dress-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -32,6 +37,7 @@
 			isa = PBXGroup;
 			children = (
 				B5FF9C2330A4348F0046AC8C /* Rag-Meg-Circle-Dress-Info.plist */,
+				B005D113CA66ACCAFE000002 /* index.html */,
 				000000000000000000000010 /* Rag Meg Circle Dress */,
 				000000000000000000000020 /* Products */,
 			);
@@ -104,6 +110,7 @@
 		000000000000000140000000 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			files = (
+				B005D113CA66ACCAFE000001 /* index.html in Resources */,
 			);
 		};
 /* End PBXResourcesBuildPhase section */
