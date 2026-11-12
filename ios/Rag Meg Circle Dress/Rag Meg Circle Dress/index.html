@@ -124,6 +124,8 @@ let pose=null,hangLocked=false, soundOn=true,reduced=matchMedia('(prefers-reduce
 const story={metGreg:false,absorbed:false,wet:false,absorb:0,ended:false,box:false,pebble:false,bell:false,dried:false,elsewhere:false,orb:false,boundary:false,homeVisits:0,dressFound:false,bureau:false,radio:false,rested:false,quests:0,pose:null,water:0};
 const freshStory={...story};
 const discoveries=new Set();
+// The original committee puddle refills on every visit; story.absorbed still tracks the first encounter.
+let townPuddleAbsorbedThisVisit=false;
 const LEGACY_SAVE_KEY="rag-meg-circle-dress-save-v3";
 const SAVE_PREFIX="rag-meg-circle-dress-save-slot-v1-";
 const ACTIVE_SLOT_KEY="rag-meg-circle-dress-active-slot-v1";
@@ -366,9 +368,23 @@ function clothStep(){if(squeezePointer!==null||keys.has('s'))squeezeUntil=time+.
 }
 // A shared floor plane keeps the mesh's lower edge quietly rumpled.
 function centerSafe(){return cloth[3*COLS+6].x}
-function nearby(){const cx=center();let best=null,dist=Infinity;for(const o of objects){const d=Math.abs(cx-o.x);if(d<o.reach&&d<dist){if((o.id==='puddle'&&story.absorbed)||(o.id==='dress'&&story.dressFound))continue;dist=d;best=o}}return best}
-function absorbPuddle(){if(story.absorbed)return;const touching=cloth.filter(p=>p.x>979&&p.x<1101&&p.y>groundAt(p.x)-15).length>2;story.absorb=touching?Math.min(1,story.absorb+1/14):Math.max(0,story.absorb-.025);if(story.absorb>=1){story.absorbed=true;story.wet=true;story.water=Math.min(3,(story.water||0)+1);fx('puddle');tone(130,.5);say(story.metGreg?'LONG GREG: We no longer have quorum.\nMEETING ADJOURNED.':'The puddle was a committee member.\nThe meeting has lost quorum.',5800);questComplete()}}
-function physicalDiscoveries(){waterPhysics();skyPhysics();if(realm!=='town'){realmPhysics();return}absorbPuddle();const cx=center();
+function nearby(){const cx=center();let best=null,dist=Infinity;for(const o of objects){const d=Math.abs(cx-o.x);if(d<o.reach&&d<dist){if((o.id==='puddle'&&townPuddleAbsorbedThisVisit)||(o.id==='dress'&&story.dressFound))continue;dist=d;best=o}}return best}
+function finishTownPuddleAbsorption(){
+ if(townPuddleAbsorbedThisVisit)return false;
+ const first=!story.absorbed;
+ townPuddleAbsorbedThisVisit=true;story.absorbed=true;story.absorb=1;
+ story.wet=true;story.water=Math.min(3,(story.water||0)+1);
+ fx('puddle');tone(130,.5);
+ say(first?(story.metGreg?'LONG GREG: We no longer have quorum.\nMEETING ADJOURNED.':'The puddle was a committee member.\nThe meeting has lost quorum.'):'The committee has lost quorum again.',5800);
+ questComplete();return true;
+}
+function absorbPuddle(){
+ if(townPuddleAbsorbedThisVisit)return;
+ const touching=cloth.filter(p=>p.x>979&&p.x<1101&&p.y>groundAt(p.x)-15).length>2;
+ story.absorb=touching?Math.min(1,story.absorb+1/14):Math.max(0,story.absorb-.025);
+ if(story.absorb>=1)finishTownPuddleAbsorption();
+}
+function physicalDiscoveries(){waterPhysics();skyPhysics();narrativePuddlePhysics();if(realm!=='town'){realmPhysics();return}absorbPuddle();const cx=center();
  // Each chapter asks the cloth to occupy a slightly different physical relationship.
  if(!story.bell&&Math.abs(cx-2020)<62&&cloth.some(p=>p.y<groundAt(2020)-68)){story.bell=true;fx('bell');say('The bell has been reached by fabric.\nIt rings for nobody in particular.',4800);questComplete()}
  if(!story.orb&&Math.abs(cx-2680)<80&&cloth.some(p=>p.y<groundAt(2680)-125)){story.orb=true;fx('orb');say('The orb comes down to your level.\nThis is considered a successful negotiation.',4800);questComplete()}
@@ -386,7 +402,7 @@ function interact(id){if(mode!=='game')return;audioReady();const o=objects.find(
  case 'home':story.homeVisits++;say(story.dressFound?'Rag Meg Circle Dress.\nHome, with her circle dress.':'Rag Meg Circle Dress. That is your full name.\nYour circle dress is missing. It is very important.',5500);break;
  case 'box':if(!story.box){story.box=true;tone(280,.12);say('BOX 4 contains a receipt.\n“BOX 3 — delivered elsewhere.”\nNo circle dress.')}else say(story.elsewhere?'The receipt is finally correct.':'The receipt insists: elsewhere.');break;
  case 'greg':if(story.dressFound){say('LONG GREG: Circle Dress.\nMEG: yes.\nLONG GREG: Both of you.');break}if(story.absorbed)say('LONG GREG: It was our most fluid member.\nYour circle went east. I should have led with that.');else if(!story.metGreg){story.metGreg=true;say('LONG GREG: The puddle has the floor.\nIt has had the floor since Tuesday.',5500)}else say('LONG GREG: You are absorbent.\nThis is being treated as consent.',4700);break;
- case 'puddle':say('The committee member remains liquid.');break;
+ case 'puddle':if(!finishTownPuddleAbsorption())say('The committee member remains liquid.');break;
  case 'choir':if(story.absorbed)say('The choir is on its own time now.');else{tone(174.61,.7);say('One note.\nThe minutes will reflect this.')}break;
  case 'sign':say('OUTSKIRTS\nThe town becomes less certain from here.');break;
  case 'pebble':if(!story.pebble){pebbleShift=45;pebbleX=1795;story.pebble=true;tone(420,.22);say('Something was growing under that.\nThe pebble has been reassigned.')}else say('The sprout does not need a committee.');break;
@@ -408,7 +424,7 @@ function drawWorld(){ctx.save();ctx.translate(-camera,-viewY);ctx.strokeStyle='#
  case 'home':ctx.beginPath();ctx.moveTo(a-55,g);ctx.lineTo(a-55,g-75);ctx.quadraticCurveTo(a,g-133,a+55,g-75);ctx.lineTo(a+55,g);ctx.stroke();ctx.strokeRect(a-12,g-50,24,50);ellipse(a+5,g-26,1.5,1.5,true);if(story.ended){ctx.fillStyle='#f2b8c655';ctx.fillRect(a-10,g-48,20,46);ctx.fillStyle='#fff'}break;
  case 'box':ctx.strokeRect(a-24,g-34,48,34);line(a-24,g-34,a+(story.box?42:24),g-(story.box?57:34));text('4',a,g-11,14,'#ddd');if(story.box){ctx.save();ctx.translate(a+35,g-10);ctx.rotate(.15);ctx.strokeRect(0,-24,14,24);line(3,-17,11,-17);line(3,-12,9,-12);ctx.restore()}break;
  case 'greg':stickPerson(a,g,1.18,!story.absorbed);break;
- case 'puddle':if(!story.absorbed){ctx.globalAlpha=1-story.absorb;ctx.fillStyle='#bdc9d42a';ellipse(a,g-4,61,5,true);ctx.fillStyle='#fff';ellipse(a,g-4,61,5);line(a+56,g-8,a+56,g-43);ctx.strokeRect(a+41,g-63,31,20);text('P',a+56,g-48,12,'#ddd');ctx.globalAlpha=1}else{line(a+43,g-2,a+77,g-2);text('adjourned',a,g+24,10,'#777')}break;
+ case 'puddle':if(!townPuddleAbsorbedThisVisit){ctx.globalAlpha=1-story.absorb;ctx.fillStyle='#bdc9d42a';ellipse(a,g-4,61,5,true);ctx.fillStyle='#fff';ellipse(a,g-4,61,5);line(a+56,g-8,a+56,g-43);ctx.strokeRect(a+41,g-63,31,20);text('P',a+56,g-48,12,'#ddd');ctx.globalAlpha=1}else{line(a+43,g-2,a+77,g-2);text('adjourned',a,g+24,10,'#777')}break;
  case 'choir':for(let i=0;i<3;i++)stickPerson(a+i*23+(story.absorbed?30+i*14:0),g,.42,false);break;
  case 'sign':line(a,g,a,g-67);ctx.strokeRect(a-39,g-92,78,25);text('ELSEWHERE →',a,g-76,9,'#bbb');break;
  case 'pebble':ellipse(pebbleX,g-6,10,6);if(story.pebble){line(a,g,a,g-21);ctx.beginPath();ctx.moveTo(a,g-9);ctx.quadraticCurveTo(a-17,g-24,a-13,g-10);ctx.quadraticCurveTo(a-6,g-3,a,g-9);ctx.stroke();line(a,g-15,a+9,g-23)}break;
@@ -1050,20 +1066,48 @@ function spaceLegacyRooms(){
  for(const r of Object.values(realms))for(const o of r.objects)if(o.portal&&scaled.has(o.portal)&&Number.isFinite(o.arrival))o.arrival=Math.round(o.arrival*factor);
 }
 
+function absorbNarrativeCommittee(o){
+ if(narrativeTriggeredThisVisit.has(o.id))return false;
+ const returnKey='story-return:'+o.id,returned=discoveries.has(returnKey);
+ narrativePending.add(returnKey);narrativeTriggeredThisVisit.add(o.id);o.absorbHold=1;
+ story.water=Math.min(3,(story.water||0)+1);story.wet=true;fx('puddle');
+ say(o.lines[Math.min(returned?1:0,o.lines.length-1)],9000);saveGame();
+ return true;
+}
+// Each recurring puddle requires actual cloth contact, not a poke. A poke remains a shortcut.
+function narrativePuddlePhysics(){
+ if(mode!=='game')return;
+ for(const o of objects){
+  if(o.device!=='narrative'||o.role!=='committee'||narrativeTriggeredThisVisit.has(o.id))continue;
+  const g=groundAt(o.x);
+  const touching=story.dressFound&&dressBody
+   ?Math.abs(dressBody.x-o.x)<65&&dressBody.y+45>g-18
+   :cloth.filter(p=>Math.abs(p.x-o.x)<65&&p.y>g-18).length>2;
+  o.absorbHold=touching?Math.min(1,(o.absorbHold||0)+1/30):Math.max(0,(o.absorbHold||0)-.04);
+  if(o.absorbHold>=1)absorbNarrativeCommittee(o);
+ }
+}
 function narrativeInteract(o){
+ if(o.role==='committee'){absorbNarrativeCommittee(o);return true}
  if(o.role==='moon'){
   const altitude=groundAt(o.x)-(dressBody?.y??groundAt(o.x));
   if(altitude<(o.skyY||480)){say('The moon is not accepting ground-level appointments.\nHold FLY and meet it in the sky.');return true}
  }
  const returnKey='story-return:'+o.id,returned=discoveries.has(returnKey),firstThisVisit=!narrativeTriggeredThisVisit.has(o.id);
  narrativePending.add(returnKey);narrativeTriggeredThisVisit.add(o.id);
- if(firstThisVisit&&o.role==='committee'){story.water=Math.min(3,(story.water||0)+1);story.wet=true;fx('puddle')}
  if(firstThisVisit&&o.role==='orb'){const destination=Math.abs(o.x-o.hopA)<20?o.hopB:o.hopA;o.x=destination;fx('orb')}
  if(firstThisVisit&&o.role==='gregreturn')fx('greg');
  say(o.lines[Math.min(returned?1:0,o.lines.length-1)],9000);saveGame();return true;
 }
 
-function completeNarrativeVisit(){for(const key of narrativePending)discoveries.add(key);narrativePending.clear();narrativeTriggeredThisVisit.clear();saveGame()}
+function completeNarrativeVisit(){
+ for(const key of narrativePending)discoveries.add(key);
+ narrativePending.clear();narrativeTriggeredThisVisit.clear();
+ // Every successful entrance (including MAP travel) starts with fresh, absorbable puddles.
+ for(const o of objects)if(o.device==='narrative'&&o.role==='committee')o.absorbHold=0;
+ townPuddleAbsorbedThisVisit=false;story.absorb=0;
+ saveGame();
+}
 
 function drawNarrativeObject(o){
  const a=o.x,g=groundAt(a),sky=o.role==='moon',y=sky?g-(o.skyY||480):g;
@@ -1071,7 +1115,12 @@ function drawNarrativeObject(o){
  if(o.role==='mailbox'){line(a,g,a,g-72);ctx.strokeRect(a-32,g-108,64,38);ctx.beginPath();ctx.arc(a,g-108,32,Math.PI,0);ctx.stroke();line(a+32,g-94,a+47,g-94);line(a+47,g-94,a+47,g-70)}
  else if(o.role==='orb'){ellipse(a,g-185,22,22,true);ctx.fillStyle='#111';ellipse(a-6,g-187,1.5,1.5,true);ellipse(a+6,g-187,1.5,1.5,true)}
  else if(sky){ctx.globalAlpha=.9;ellipse(a,y,54,54);ctx.globalAlpha=.15;ellipse(a,y,70,70);ctx.globalAlpha=1}
- else if(o.role==='committee'){ctx.globalAlpha=(discoveries.has('story-return:'+o.id)||narrativePending.has('story-return:'+o.id))?.25:.65;ellipse(a,g-4,62,7,true);ctx.globalAlpha=1;line(a+48,g-8,a+48,g-73);ctx.strokeRect(a+30,g-91,36,18)}
+ else if(o.role==='committee'){
+  if(!narrativeTriggeredThisVisit.has(o.id)){
+   ctx.globalAlpha=1-(o.absorbHold||0);ctx.fillStyle='#bdc9d48c';ellipse(a,g-4,62,7,true);ctx.globalAlpha=1;
+   line(a+48,g-8,a+48,g-73);ctx.strokeRect(a+30,g-91,36,18);
+  }else{line(a+28,g-2,a+72,g-2);text('adjourned',a,g+11,10,'#777')}
+ }
  else if(o.role==='gregabsence'){ctx.setLineDash([5,7]);ctx.strokeRect(a-16,g-176,32,176);ctx.setLineDash([])}
  else if(o.role==='gregreturn'){stickPerson(a,g,1.2,true);line(a-28,g-142,a-54,g-90);line(a+28,g-142,a+54,g-90)}
  else {stickPerson(a,g,.72,o.role==='agent');if(o.role==='agent'){ctx.strokeRect(a-25,g-168,50,12);line(a,g-156,a,g-145)}}
@@ -1242,7 +1291,7 @@ const originalInteract=interact;interact=function(id){
  }
  originalInteract(id)
 };
-const originalTravel=travel;travel=function(to,arrival=200){const r=realms[to];if(!r)return;if(!gameBeaten()&&r.act&&(!story.dressFound||!campaignDone(r.gate))){say(to==='circlefinish'?'Three arcs are still unfinished.':'This door is waiting for '+puzzleName(r.gate).toLowerCase()+'.');return}const oldRealm=realm;originalTravel(to,clamp(arrival,70,r.width-70));if(realm!==to)return;echoActors=[];echoRecord=null;echoHistory=[];for(const o of objects){o.hold=0;o.wasOn=false}if(oldRealm!==realm)completeNarrativeVisit();if(r.act&&!discoveries.has('intro:'+r.act)){discoveries.add('intro:'+r.act);say('ACT '+actNumerals[r.act]+'\n'+actNames[r.act]+'\n'+({3:'You are home. The house disagrees.',4:'You have been sorted incorrectly.',5:'These colors are on loan.',6:'The sky has a basement.',7:'Please become the correct shape.',8:'Someone has already been here. It was you, shortly.',9:'There is one loose end. It is architectural.'}[r.act]),12000);saveGame()}if(oldRealm!==realm)campaignControls()};
+const originalTravel=travel;travel=function(to,arrival=200){const r=realms[to];if(!r)return;if(!gameBeaten()&&r.act&&(!story.dressFound||!campaignDone(r.gate))){say(to==='circlefinish'?'Three arcs are still unfinished.':'This door is waiting for '+puzzleName(r.gate).toLowerCase()+'.');return}const oldRealm=realm;originalTravel(to,clamp(arrival,70,r.width-70));if(realm!==to)return;echoActors=[];echoRecord=null;echoHistory=[];for(const o of objects){o.hold=0;o.wasOn=false}completeNarrativeVisit();if(r.act&&!discoveries.has('intro:'+r.act)){discoveries.add('intro:'+r.act);say('ACT '+actNumerals[r.act]+'\n'+actNames[r.act]+'\n'+({3:'You are home. The house disagrees.',4:'You have been sorted incorrectly.',5:'These colors are on loan.',6:'The sky has a basement.',7:'Please become the correct shape.',8:'Someone has already been here. It was you, shortly.',9:'There is one loose end. It is architectural.'}[r.act]),12000);saveGame()}if(oldRealm!==realm)campaignControls()};
 const originalCompletePuzzle=completePuzzle;completePuzzle=function(o){originalCompletePuzzle(o);if(o.id==='homecolor')story.ended=false;if(o.id==='firstdye'){story.ink='blue';discoveries.add('dye:blue')}if(o.id==='adequatehook'){story.gameBeaten=true;story.ended=true;saveGame();showCampaignEnding()}else saveGame();if(o.id==='air'){say('PERMISSION TO BE AIRBORNE — GRANTED.\nPush the joystick up or hold FLY to rise.\nUse the joystick to steer; release it to drift down.\nFans lift you too. Your permit works everywhere.',14000)}campaignControls()};
 const originalRealmPhysics=realmPhysics;realmPhysics=function(){originalRealmPhysics();campaignPhysics()};
 const originalSqueeze=squeezeMeg;squeezeMeg=function(){if(mode!=='game')return;if(!campaignSqueeze())originalSqueeze()};
@@ -1277,7 +1326,7 @@ showJourneyMap=function(){
  }
  const close=document.createElement('button');close.textContent='BACK TO MEG';close.onclick=()=>{clearMovement();panel.classList.add('hidden')};panel.append(close);panel.classList.remove('hidden')
 };
-const originalForget=forgetJourney;forgetJourney=function(){echoActors=[];echoRecord=null;echoHistory=[];narrativePending.clear();narrativeTriggeredThisVisit.clear();campaignClock=0;endingVisible=false;$('#ending').classList.add('hidden');originalForget();story.ink='pink';story.fold=0;story.turns={};story.basins={};for(const r of Object.values(realms))for(const o of r.objects){delete o.wasOn;if(o.baseX)o.x=o.baseX}saveGame();campaignControls()};$('#forget').onclick=showForgetConfirmation;
+const originalForget=forgetJourney;forgetJourney=function(){echoActors=[];echoRecord=null;echoHistory=[];narrativePending.clear();narrativeTriggeredThisVisit.clear();townPuddleAbsorbedThisVisit=false;campaignClock=0;endingVisible=false;$('#ending').classList.add('hidden');originalForget();story.ink='pink';story.fold=0;story.turns={};story.basins={};for(const r of Object.values(realms))for(const o of r.objects){delete o.wasOn;if(o.baseX)o.x=o.baseX}saveGame();campaignControls()};$('#forget').onclick=showForgetConfirmation;
 addEventListener('keydown',e=>{if(mode!=='game'||e.repeat||e.target.closest('input,textarea,select,[contenteditable=true]'))return;if(e.key.toLowerCase()==='f'){e.preventDefault();cycleCampaignFold()}if(e.key.toLowerCase()==='e'){e.preventDefault();recordCampaignEcho()}});
 
 function makeGameForgiving(){
@@ -1449,7 +1498,7 @@ function syncSoundButtons(){
 function toggleGameSound(){soundOn=!soundOn;try{localStorage.setItem('rag-meg-sound-v1',soundOn?'on':'off')}catch{};syncSoundButtons();if(soundOn)audioReady();applyAudioLevels();if(soundOn)fx('click')}
 try{soundOn=localStorage.getItem('rag-meg-sound-v1')!=='off'}catch{};syncSoundButtons();
 
-makeStars();loadGame();expandWorlds();campaignInstall();installBreezeFans();makeGameForgiving();initRealms();resetCloth(Number.isFinite(story.position)?clamp(story.position,60,WORLD-60):300);resize();migrateTrailStars();requestAnimationFrame(frame);
+makeStars();loadGame();story.absorb=0;expandWorlds();campaignInstall();installBreezeFans();makeGameForgiving();initRealms();resetCloth(Number.isFinite(story.position)?clamp(story.position,60,WORLD-60):300);resize();migrateTrailStars();requestAnimationFrame(frame);
 </script>
 </body>
 </html>
