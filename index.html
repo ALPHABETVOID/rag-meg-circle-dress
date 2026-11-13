@@ -60,7 +60,7 @@ button,a,[role="button"]{-webkit-user-drag:none!important;user-drag:none!importa
 #slot-list button.active{border-color:#f2b8c6;background:#332128}
 #slots-back{margin-top:16px;text-align:center}
 #slot-note{font-size:11px;color:#aaa;line-height:1.5;margin:12px 0 0}
-#quick-sound{position:absolute;right:12px;top:max(60px,calc(env(safe-area-inset-top) + 52px));z-index:7;pointer-events:auto;background:#000c;border:1px solid #555;min-height:38px;padding:7px 10px;font-size:11px}
+#quick-sound{position:absolute;right:12px;top:max(60px,calc(env(safe-area-inset-top) + 52px));z-index:7;pointer-events:auto;width:40px;height:40px;padding:8px;background:#0008;border:0;color:#999}#quick-sound svg{display:block;width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 #forget-confirmation{position:absolute;inset:0;z-index:40;display:grid;place-items:center;padding:24px;background:#000c;pointer-events:auto;text-align:center}
 #forget-confirmation>div{width:min(92%,430px);background:#0a0a0f;border:1px solid #777;padding:24px}
 #forget-confirmation h2{margin:0 0 16px;font-size:22px;font-weight:normal}
@@ -101,7 +101,7 @@ button,a,[role="button"]{-webkit-user-drag:none!important;user-drag:none!importa
 <canvas id="c" aria-label="Rag Meg: drag a pink kitchen rag through a quiet, side-scrolling town."></canvas>
 <div id="ui">
 <h1 id="title">RAG MEG<small>CIRCLE DRESS</small></h1>
-<div id="menu"><button class="item" id="begin">BEGIN</button><button class="item" id="save-slots">SAVE SLOTS</button><button class="item" id="open-settings">SETTINGS</button><button class="item" id="leave">LEAVE</button><a class="menu-site" href="https://entervoidstar.com" target="_blank" rel="noopener noreferrer">entervoidstar.com ↗</a></div><button id="quick-sound" aria-pressed="true">SOUND ON</button><div id="room-complete" class="hidden" role="status" aria-live="polite"><strong>OBJECTIVES COMPLETE</strong><small id="room-complete-name"></small></div>
+<div id="menu"><button class="item" id="begin">BEGIN</button><button class="item" id="save-slots">SAVE SLOTS</button><button class="item" id="open-settings">SETTINGS</button><button class="item" id="leave">LEAVE</button><a class="menu-site" href="https://entervoidstar.com" target="_blank" rel="noopener noreferrer">entervoidstar.com ↗</a></div><button id="quick-sound" aria-pressed="true" aria-label="Turn sound off"></button><div id="room-complete" class="hidden" role="status" aria-live="polite"><strong>OBJECTIVES COMPLETE</strong><small id="room-complete-name"></small></div>
 <div id="slots" class="hidden" role="dialog" aria-label="Save slots"><h2>FOUR JOURNEYS</h2><div id="slot-list"></div><p id="slot-note">Each slot keeps its own progress. Switching slots reloads the game into that journey.</p><button id="slots-back">BACK</button></div>
 <div id="settings" class="hidden" role="dialog" aria-label="Settings"><button id="controls-help">CONTROLS &amp; TUTORIAL</button><button id="room-notes">ROOM NOTES</button><button id="sound">SOUND — on</button><button id="music-toggle">MUSIC — on</button><label class="audio-level">music <input id="music-level" type="range" min="0" max="100" value="38" aria-label="Music volume"></label><label class="audio-level">effects <input id="effects-level" type="range" min="0" max="100" value="65" aria-label="Sound effects volume"></label><p>MATERIAL — damp cotton.<br>No further qualifications.</p><button id="forget">FORGET THIS JOURNEY</button><button id="back">BACK</button></div>
 <div id="task" class="hidden"><span id="area"></span><span id="chapter"></span><div id="resources"><span id="star-count" role="status" aria-label="0 of 780 stars collected">★ 0 / 780<small>HERE 0 / 20</small></span><span id="water-icons" class="resource-group" role="img"></span><span id="thread-icons" class="resource-group" role="img"></span><span id="color-icons" class="resource-group hidden" role="img"></span></div><span id="objective" hidden></span></div>
@@ -1502,7 +1502,11 @@ function renderRoomCompletion(status){
  panel.classList.toggle('hidden',mode!=='game'||completionRoom!==realm||time>=completionUntil);
 }
 function syncSoundButtons(){
- $('#sound').textContent=soundOn?'SOUND — on':'SOUND — off';$('#quick-sound').textContent=soundOn?'SOUND ON':'SOUND OFF';$('#quick-sound').setAttribute('aria-pressed',String(soundOn));
+ const quickSound=$('#quick-sound');
+ $('#sound').textContent=soundOn?'SOUND — on':'SOUND — off';
+ quickSound.innerHTML=soundOn?'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 9a4 4 0 0 1 0 6"/><path d="M18.5 6.5a8 8 0 0 1 0 11"/></svg>':'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/></svg>';
+ quickSound.setAttribute('aria-pressed',String(soundOn));
+ quickSound.setAttribute('aria-label',soundOn?'Turn sound off':'Turn sound on');
 }
 function toggleGameSound(){soundOn=!soundOn;try{localStorage.setItem('rag-meg-sound-v1',soundOn?'on':'off')}catch{};syncSoundButtons();if(soundOn)audioReady();applyAudioLevels();if(soundOn)fx('click')}
 try{soundOn=localStorage.getItem('rag-meg-sound-v1')!=='off'}catch{};syncSoundButtons();
